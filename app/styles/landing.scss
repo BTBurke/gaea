@@ -1,10 +1,13 @@
 body {
-  background: #eeeeee;
+  background: #ffffff;
 }
 
 .landing-header {
-  height: 50px;
-  background: #111111;
+  min-height: 50px;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  background: #2c3e50;
   color: #ffffff;
   line-height: 50px;
   font-size: 24px;
@@ -12,6 +15,7 @@ body {
   .logo {
     height: 40px;
     padding-top: 0px;
+    padding-left: 20px;
   }
 }
 
@@ -28,8 +32,9 @@ body {
 
 .landing-login-box {
   height: auto;
-  background: #999999;
+  background: #ecf0f1;
   margin-top: 25%;
+  max-width: 350px;
   h1 {
     font-size: 2em;
     line-height: 2em;
@@ -37,4 +42,57 @@ body {
     margin-bottom: 0;
   }
   padding: 10px 10px 10px 10px;
+}
+
+.landing-before-sale {
+  max-width: 1400px;
+  background: #ecf0f1;
+  margin-left: auto;
+  margin-right: auto;
+  height: 60px;
+  font-size: 36px;
+  font-weight: bold;
+  color: #e74c3c;
+  text-align: center;
+  padding-top: 10px;
+}
+
+.landing-foot-boundingbox {
+  height: auto;
+  background: #2c3e50;
+  max-width: 1400px;
+  margin-right: auto;
+  margin-left: auto;
+  padding-bottom: 20px;
+}
+
+.landing-benefit {
+  background: #2c3e50;
+  padding-top: 10px;
+  padding-bottom: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  height: 200px;
+  h2 {
+    font-size: 26px;
+    line-height: 34px;
+    color: #ffffff;
+    text-align: center;
+    font-weight: bold;
+  }
+  p {
+    font-size: 20px;
+    line-height: 24px;
+    color: #ffffff;
+    text-align: center;
+  }
+}
+
+.landing-footer {
+  padding-top: 40px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 12px;
+  text-align: center;
 }
