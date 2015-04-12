@@ -13,11 +13,9 @@ var React = require('react'),
     Button = B.Button,
     Glyphicon = B.Glyphicon;
 
-var Link = require('react-router').Link;
-var FluxComponent = require('flummox').FluxComponent;
-var AppFlux = require('../appflux');
-const flux = new AppFlux();
+var AjaxLoginButton = require("../components/ajaxbutton");
 
+var Link = require('react-router').Link;
 
 class Landing extends React.Component {
   constructor(props) {
@@ -26,7 +24,8 @@ class Landing extends React.Component {
       "user": '',
       "pw": '',
       "height": 0,
-      "img": ''
+      "img": '',
+      "loginBtn": '',
     }
   }
 
@@ -62,6 +61,7 @@ class Landing extends React.Component {
   }
 
   handleSubmit() {
+    this.setState({"loginBtn": "fetch"});
     console.log(this.state.user, this.state.pw);
   }
 
@@ -103,7 +103,7 @@ class Landing extends React.Component {
                 ref='password'
                 onChange={this.handleChange.bind(this)}
                 />
-              <Button bsStyle="primary" onClick={this.handleSubmit.bind(this)}>Login</Button>
+              <AjaxLoginButton status={this.state.loginBtn} onClick={this.handleSubmit.bind(this)}></AjaxLoginButton>
               </form>
               </div>
             </Col>
@@ -111,7 +111,13 @@ class Landing extends React.Component {
         </Grid>
       </div>
       <div className={"landing-before-sale"}>
-        <span className={"call"}>Join the GAEA today</span>
+        <Grid fluid={true}>
+          <Row>
+            <Col xs={12} md={6} mdOffset={6} lg={4} lgOffset={4}>
+              <Button bsStyle='success' bsSize='large' block><span className="call">Join the GAEA</span></Button>
+            </Col>
+          </Row>
+      </Grid>
       </div>
       <div className={"landing-foot-boundingbox"}>
         <Grid fluid={true}>

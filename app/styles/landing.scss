@@ -1,5 +1,5 @@
 body {
-  background: #ffffff;
+  background: #ecf0f1;
 }
 
 .landing-header {
@@ -55,11 +55,12 @@ body {
   color: #e74c3c;
   text-align: center;
   padding-top: 10px;
+  padding-bottom: 15px;
 }
 
 .landing-foot-boundingbox {
   height: auto;
-  background: #2c3e50;
+  background: #ecf0f1;
   max-width: 1400px;
   margin-right: auto;
   margin-left: auto;
@@ -67,7 +68,7 @@ body {
 }
 
 .landing-benefit {
-  background: #2c3e50;
+  background: #ecf0f1;
   padding-top: 10px;
   padding-bottom: 20px;
   padding-left: 10px;
@@ -76,14 +77,14 @@ body {
   h2 {
     font-size: 26px;
     line-height: 34px;
-    color: #ffffff;
+    //color: #ffffff;
     text-align: center;
     font-weight: bold;
   }
   p {
     font-size: 20px;
     line-height: 24px;
-    color: #ffffff;
+    //color: #ffffff;
     text-align: center;
   }
 }
@@ -95,4 +96,20 @@ body {
   margin-right: auto;
   font-size: 12px;
   text-align: center;
+}
+
+.call {
+  font-size: 20px;
+}
+
+.landing-spinner {
+  .chasing-dots {
+  margin-left: auto;
+  margin-right: auto;
+  }
+  .dot1, .dot2 {
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #ffffff;
+  }
 }

@@ -2,6 +2,7 @@
 var React = require('react'),
     Landing = require("./pages/landing"),
     Tos = require("./pages/tos");
+    //Login = require("./pages/login")
 
 // React-router
 var Router = require('react-router'),
@@ -10,10 +11,6 @@ var Router = require('react-router'),
 	Route = Router.Route,
 	RouteHandler = Router.RouteHandler;
 
-// Get state and action stores, instantiate new
-// var AppFlux = require('./appflux');
-// const flux = new AppFlux();
-// var FluxComponent = require('flummox').FluxComponent;
 
 // Public views are rendered under the External component, does
 // not require login
