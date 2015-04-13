@@ -1,4 +1,41 @@
-var Store = require("flummox").Store;
+var Store = require("marty");
+
+var UserConstants = Marty.createConstants([
+  'USER_LOGIN',
+  'USER_LOGOUT',
+  'USER_UPDATE',
+  'USER_LOGIN_FAILED',
+  'USER_UPDATE_FAILED'
+]);
+
+// UserAPI reflects all routes associated with managing user state
+class UserAPI extends Marty.HttpStateSource {
+   login(user, pw) {
+      if (user === 'admin' && pw === 'admin') {
+        return this.get('http://echo.jsontest.com/userid/admin');
+      }
+   }
+}
+var userAPI = Marty.register(UserAPI);
+
+// UserQueries sends HTTP requests to the server and dispatches actions
+// based on server response
+class UserQueries extends Marty.Queries {
+  login(user, pw) {
+    this.dispatch(UserConstants.USER_LOGIN_STARTING, user);
+
+    return userAPI.login(user, pw)
+      .then(res => this.dispatch(UserConstants.USER_LOGIN, res.body))
+      .catch(err => this.dispatch(UserConstants.USER_LOGIN_FAILED, err));
+  }
+
+  logout(user) {
+    return this.dispatch(UserConstants.USER_LOGOUT);
+  }
+
+}
+var userQueries = Marty.register(UserQueries);
+
 
 // class User {
 //   constructor() {
@@ -34,41 +71,45 @@ var Store = require("flummox").Store;
 //   }
 // }
 
-class UserStore extends Store {
-  constructor(flux) {
-    super();
-
-    console.log(flux);
-    const userActionIds = flux.getActionIds('user');
-    this.register(userActionIds.login, this.handleLogin);
-    this.register(userActionIds.logout, this.handleLogout);
-    this.register(userActionIds.updateProfile, this.handleUpdateProfile);
-
-    this.state = {
-      user: {},
+class UserStore extends Marty.Store {
+  constructor(options) {
+    super(options);
+    this.state = {};
+    this.handlers = {
+      handleLogin: UserConstants.USER_LOGIN,
+      handleLogout: UserConstants.USER_LOGOUT
     };
   }
 
+  //////////////////////////////////////////////////////
+  // Action Handlers
+  //////////////////////////////////////////////////////
   handleLogin(user) {
-    this.setState({
-      user: {"userID": "admin"},
-    });
+    this.state[userId] = user.userid;
+    this.hasChanged();
   }
-
   handleLogout() {
-    this.setState({
-      user: {},
+    this.state = {};
+    this.hasChanged();
+  }
+
+  //////////////////////////////////////////////////////
+  // Methods
+  /////////////////////////////////////////////////////
+  Login(user, pw) {
+    return this.fetch({
+      id: user,
+      locally: function () {
+        return this.state[userId];
+      },
+      remotely: function () {
+        return userQueries.login(user,pw)
+      }
     });
   }
 
-  handleUpdateProfile(user) {
-    this.setState({
-      user: {"userID": "admin"},
-    });
-  }
-
-  getState() {
-    return this.state.user;
+  Logout() {
+    return userQueries.logout();
   }
 }
 
