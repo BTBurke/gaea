@@ -82,16 +82,15 @@ class Landing extends React.Component {
       <div>
       <div className={"landing-header"}><img className={"logo"} src={"images/gaea.png"}></img>Guangzhou American Employees Association</div>
       <div className={"landing-main-content-img"} style={style}>
-        <Grid fluid={true}>
-          <Row>
-            <Col xs={10} xsOffset={1} md={7} mdOffset={4} lg={5} lgOffset={6}>
+        <div className="container">
+          <div className="row">
+            <div className="col s10 m7 l5 offset-s1 offset-m4 offset-l5">
               <div className={"landing-login-box"}>
               <h1>Members Login</h1>
-                <form onSubmit={this.handleSubmit.bind(this)}>
+                <form className="col s12 m12 l12" onSubmit={this.handleSubmit.bind(this)}>
                 <Input
                 type='text'
                 value={this.state.user}
-                placeholder=''
                 label='Email address'
                 hasFeedback
                 ref='username'
@@ -101,7 +100,6 @@ class Landing extends React.Component {
                 <Input
                 type='password'
                 value={this.state.pw}
-                placeholder=''
                 label='Password'
                 hasFeedback
                 ref='password'
@@ -110,9 +108,9 @@ class Landing extends React.Component {
               <AjaxLoginButton status={this.state.loginBtn} onClick={this.handleSubmit.bind(this)}></AjaxLoginButton>
               </form>
               </div>
-            </Col>
-          </Row>
-        </Grid>
+            </div>
+          </div>
+        </div>
       </div>
       <div className={"landing-before-sale"}>
         <Grid fluid={true}>

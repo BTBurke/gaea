@@ -1,7 +1,8 @@
 // Pages
 var React = require('react'),
     Landing = require("./pages/landing"),
-    Tos = require("./pages/tos");
+    Tos = require("./pages/tos"),
+    Home = require('./pages/home');
     //Login = require("./pages/login")
 
 // React-router
@@ -17,11 +18,9 @@ var Router = require('react-router'),
 var External = React.createClass({
   render: function () {
     return (
-      //<FluxComponent flux={flux} connectToStores={['user']}>
       <div>
         <RouteHandler/>
       </div>
-      //</FluxComponent>
     );
   }
 });
@@ -42,9 +41,10 @@ var routes = (
   <Route name="external" path="/" handler={External}>
     <DefaultRoute handler={Landing}/>
     <Route name="tos" path="tos" handler={Tos}/>
+    <Route name="home" path="home" handler={Home}/>
   </Route>
 );
 
-Router.run(routes, Router.HistoryLocation, function (Handler) {
+Router.run(routes, function (Handler) {
   React.render(<Handler />, document.getElementById("app"));
 });

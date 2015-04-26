@@ -1,19 +1,16 @@
-var Store = require("marty");
+var Marty = require("marty");
 
 var UserConstants = Marty.createConstants([
-  'USER_LOGIN',
-  'USER_LOGOUT',
+  'USER_RECEIVE',
   'USER_UPDATE',
-  'USER_LOGIN_FAILED',
+  'USER_RECEIVE_FAILED',
   'USER_UPDATE_FAILED'
 ]);
 
 // UserAPI reflects all routes associated with managing user state
 class UserAPI extends Marty.HttpStateSource {
-   login(user, pw) {
-      if (user === 'admin' && pw === 'admin') {
-        return this.get('http://echo.jsontest.com/userid/admin');
-      }
+   getUser() {
+      return this.get('http://echo.jsontest.com/user_name/admin/first_name/admin/last_name/admin/email/test@gzaea.org/role/admin/uuid/xxxx-xxxx-xxxxxxx-xxxx');
    }
 }
 var userAPI = Marty.register(UserAPI);
@@ -21,96 +18,79 @@ var userAPI = Marty.register(UserAPI);
 // UserQueries sends HTTP requests to the server and dispatches actions
 // based on server response
 class UserQueries extends Marty.Queries {
-  login(user, pw) {
-    this.dispatch(UserConstants.USER_LOGIN_STARTING, user);
+  getUser() {
+    this.dispatch(UserConstants.USER_RECEIVE_STARTING);
 
-    return userAPI.login(user, pw)
-      .then(res => this.dispatch(UserConstants.USER_LOGIN, res.body))
-      .catch(err => this.dispatch(UserConstants.USER_LOGIN_FAILED, err));
+    return userAPI.getUser()
+      .then(res => this.dispatch(UserConstants.USER_RECEIVE, res.body))
+      .catch(err => this.dispatch(UserConstants.USER_RECEIVE_FAILED, err));
   }
-
-  logout(user) {
-    return this.dispatch(UserConstants.USER_LOGOUT);
-  }
-
 }
 var userQueries = Marty.register(UserQueries);
 
 
-// class User {
-//   constructor() {
-//     this.userName = null;
-//     this.firstName = null;
-//     this.lastName = null;
-//     this.emailAddress = null;
-//     this.fullName = null;
-//     this.role = null;
-//     this.uuid = null;
-//   }
-//
-//   fromProps(props) {
-//     this.userName = props.user_name;
-//     this.firstName = props.first_name;
-//     this.lastName = props.last_name;
-//     this.emailAddress = props.email;
-//     this.fullName = props.first_name + ' ' + props.last_name;
-//     this.role = props.role;
-//     this.uuid = props.uuid;
-//   }
-//
-//   isLoggedIn() {
-//     return this.uuid !== null
-//   }
-//
-//   isAdmin() {
-//     return this.role === 'admin'
-//   }
-//
-//   isSuperAdmin() {
-//     return this.role === 'superadmin'
-//   }
-// }
+class User {
+
+  constructor(props) {
+    this.userName = props.user_name;
+    this.firstName = props.first_name;
+    this.lastName = props.last_name;
+    this.emailAddress = props.email;
+    this.fullName = props.first_name + ' ' + props.last_name;
+    this.role = props.role;
+    this.uuid = props.uuid;
+  }
+
+  isLoggedIn() {
+    return this.uuid !== null
+  }
+
+  isAdmin() {
+    return this.role === 'admin'
+  }
+
+  isSuperAdmin() {
+    return this.role === 'superadmin'
+  }
+}
 
 class UserStore extends Marty.Store {
   constructor(options) {
     super(options);
     this.state = {};
     this.handlers = {
-      handleLogin: UserConstants.USER_LOGIN,
-      handleLogout: UserConstants.USER_LOGOUT
+      handleReceive: UserConstants.USER_RECEIVE,
     };
   }
 
   //////////////////////////////////////////////////////
   // Action Handlers
   //////////////////////////////////////////////////////
-  handleLogin(user) {
-    this.state[userId] = user.userid;
+  handleReceive(user) {
+    console.log("handling user receive...");
+    this.state['user'] = new User(user);
+    console.log(this.state);
     this.hasChanged();
   }
-  handleLogout() {
-    this.state = {};
-    this.hasChanged();
-  }
+
 
   //////////////////////////////////////////////////////
   // Methods
   /////////////////////////////////////////////////////
-  Login(user, pw) {
+
+  getUser() {
     return this.fetch({
-      id: user,
-      locally: function () {
-        return this.state[userId];
+      id: 'user',
+      locally: function() {
+        return this.state['user'];
       },
-      remotely: function () {
-        return userQueries.login(user,pw)
+      remotely: function() {
+        return userQueries.getUser();
       }
     });
+
   }
 
-  Logout() {
-    return userQueries.logout();
-  }
 }
 
-module.exports = UserStore;
+module.exports = Marty.register(UserStore);
