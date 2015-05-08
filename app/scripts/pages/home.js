@@ -11,7 +11,7 @@ class Home extends React.Component {
   render() {
     return (
       <div>
-      <TopNav />
+      <TopNav user={this.props.user.userName}/>
       <div>First: {this.props.user.firstName}</div>
       <div>Last: {this.props.user.lastName}</div>
       </div>
