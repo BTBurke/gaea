@@ -15,7 +15,7 @@ Built with the following technologies:
 To set up the development environment:
 
 1. Install [Node.js and NPM](https://nodejs.org/)
-2. Install Ruby SASS compiler
+2. Install [Ruby SASS compiler](http://sass-lang.com/install)
 3. Clone repository
 4. Run ```npm install``` and ```bower install```
 5. Run ```gulp watch```
