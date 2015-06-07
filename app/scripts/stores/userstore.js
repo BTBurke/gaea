@@ -22,7 +22,6 @@ class UserAPI extends Marty.HttpStateSource {
      
    }
 }
-//var userAPI = Marty.register(UserAPI);
 
 
 //////////////////////////////////
@@ -40,7 +39,6 @@ class UserQueries extends Marty.Queries {
       .catch(err => this.dispatch(UserConstants.USER_RECEIVE_FAILED, err));
   }
 }
-//var userQueries = Marty.register(UserQueries);
 
 
 ////////////////////////////////////
