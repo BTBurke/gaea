@@ -12,10 +12,13 @@ var Router = require('react-router'),
 	Route = Router.Route,
 	RouteHandler = Router.RouteHandler;
 
-
+// For Marty Flux
 var { ApplicationContainer } = require('marty');
 var Application = require('./stores/application');
 var app = new Application();
+
+//For testing
+window.Marty = require('marty');
 
 // Public views are rendered under the External component, does
 // not require login
