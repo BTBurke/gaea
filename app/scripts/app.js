@@ -13,14 +13,18 @@ var Router = require('react-router'),
 	RouteHandler = Router.RouteHandler;
 
 
+var { ApplicationContainer } = require('marty');
+var Application = require('./stores/application');
+var app = new Application();
+
 // Public views are rendered under the External component, does
 // not require login
 var External = React.createClass({
   render: function () {
     return (
-      <div>
+      <ApplicationContainer app={app}>
         <RouteHandler/>
-      </div>
+      </ApplicationContainer>
     );
   }
 });

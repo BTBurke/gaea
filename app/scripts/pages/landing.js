@@ -117,7 +117,7 @@ class Landing extends React.Component {
       <div className={"landing-before-sale"}>
         <Grid fluid={true}>
           <Row>
-            <Col xs={12} md={6} mdOffset={6} lg={4} lgOffset={4}>
+            <Col xs={12} md={6} mdOffset={3} lg={4} lgOffset={4}>
               <Button bsStyle='success' bsSize='large' block><span className="call">Join the GAEA</span></Button>
             </Col>
           </Row>

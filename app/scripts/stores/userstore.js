@@ -7,13 +7,27 @@ var UserConstants = Marty.createConstants([
   'USER_UPDATE_FAILED'
 ]);
 
+//////////////////////////////////////////////////////////////////
 // UserAPI reflects all routes associated with managing user state
+//////////////////////////////////////////////////////////////////
+
 class UserAPI extends Marty.HttpStateSource {
    getUser() {
-      return this.get('http://echo.jsontest.com/user_name/admin/first_name/admin/last_name/admin/email/test@gzaea.org/role/admin/uuid/xxxx-xxxx-xxxxxxx-xxxx');
+      var res = this.get('http://echo.jsontest.com/user_name/admin/first_name/admin/last_name/admin/email/test@gzaea.org/role/admin/uuid/xxxx-xxxx-xxxxxxx-xxxx');
+      if (res.status == 200) {
+        return res;
+      } else {
+        throw new Error("Some shit fucked up");
+      }
+     
    }
 }
-var userAPI = Marty.register(UserAPI);
+//var userAPI = Marty.register(UserAPI);
+
+
+//////////////////////////////////
+// Queries
+//////////////////////////////////
 
 // UserQueries sends HTTP requests to the server and dispatches actions
 // based on server response
@@ -21,13 +35,17 @@ class UserQueries extends Marty.Queries {
   getUser() {
     this.dispatch(UserConstants.USER_RECEIVE_STARTING);
 
-    return userAPI.getUser()
+    return this.app.UserAPI.getUser()
       .then(res => this.dispatch(UserConstants.USER_RECEIVE, res.body))
       .catch(err => this.dispatch(UserConstants.USER_RECEIVE_FAILED, err));
   }
 }
-var userQueries = Marty.register(UserQueries);
+//var userQueries = Marty.register(UserQueries);
 
+
+////////////////////////////////////
+// Model
+////////////////////////////////////
 
 class User {
 
@@ -54,19 +72,20 @@ class User {
   }
 }
 
+///////////////////////////////////
+// Store
+///////////////////////////////////
 class UserStore extends Marty.Store {
   constructor(options) {
     super(options);
     this.state = {};
     this.handlers = {
-      handleReceive: UserConstants.USER_RECEIVE,
+      _handleReceive: UserConstants.USER_RECEIVE,
     };
   }
 
-  //////////////////////////////////////////////////////
   // Action Handlers
-  //////////////////////////////////////////////////////
-  handleReceive(user) {
+  _handleReceive(user) {
     console.log("handling user receive...");
     this.state['user'] = new User(user);
     console.log(this.state);
@@ -74,10 +93,7 @@ class UserStore extends Marty.Store {
   }
 
 
-  //////////////////////////////////////////////////////
   // Methods
-  /////////////////////////////////////////////////////
-
   getUser() {
     return this.fetch({
       id: 'user',
@@ -85,7 +101,7 @@ class UserStore extends Marty.Store {
         return this.state['user'];
       },
       remotely: function() {
-        return userQueries.getUser();
+        return this.app.UserQueries.getUser();
       }
     });
 
@@ -93,4 +109,7 @@ class UserStore extends Marty.Store {
 
 }
 
-module.exports = Marty.register(UserStore);
+//module.exports = Marty.register(UserStore);
+module.exports.UserStore = UserStore;
+module.exports.UserQueries = UserQueries;
+module.exports.UserAPI = UserAPI;

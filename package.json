@@ -1,6 +1,6 @@
 {
   "name": "gaea",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "dependencies": {},
   "devDependencies": {
     "babelify": "^6.0.1",
@@ -25,7 +25,7 @@
     "gulp-util": "~3.0.1",
     "gulp-webserver": "latest",
     "jest-cli": "latest",
-    "marty": "^0.9.10",
+    "marty": "^0.10.1",
     "react": "latest",
     "react-bootstrap": "^0.19.1",
     "react-router": "^0.13.2",
