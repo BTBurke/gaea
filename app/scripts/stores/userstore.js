@@ -13,7 +13,7 @@ var UserConstants = Marty.createConstants([
 
 class UserAPI extends Marty.HttpStateSource {
    getUser() {
-      var res = this.get('http://echo.jsontest.com/user_name/admin/first_name/admin/last_name/admin/email/test@gzaea.org/role/admin/uuid/xxxx-xxxx-xxxxxxx-xxxx');
+      var res = this.get('http://127.0.0.1:9000/user');
       if (res.status == 200) {
         return res;
       } else {
@@ -51,7 +51,7 @@ class User {
     this.userName = props.user_name;
     this.firstName = props.first_name;
     this.lastName = props.last_name;
-    this.emailAddress = props.email;
+    this.email = props.email;
     this.fullName = props.first_name + ' ' + props.last_name;
     this.role = props.role;
     this.uuid = props.uuid;
