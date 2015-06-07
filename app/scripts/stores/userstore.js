@@ -1,10 +1,12 @@
 var Marty = require("marty");
+var AppError = require("../services/apperror.js");
+var Config = require("../config");
 
 var UserConstants = Marty.createConstants([
   'USER_RECEIVE',
   'USER_UPDATE',
-  'USER_RECEIVE_FAILED',
-  'USER_UPDATE_FAILED'
+  'REQUEST_FAILED',
+  'LOGIN_REQUIRED'
 ]);
 
 //////////////////////////////////////////////////////////////////
@@ -13,13 +15,7 @@ var UserConstants = Marty.createConstants([
 
 class UserAPI extends Marty.HttpStateSource {
    getUser() {
-      var res = this.get('http://127.0.0.1:9000/user');
-      if (res.status == 200) {
-        return res;
-      } else {
-        throw new Error("Some shit fucked up");
-      }
-     
+        return this.get(Config.baseURL + '/user');
    }
 }
 
@@ -32,11 +28,23 @@ class UserAPI extends Marty.HttpStateSource {
 // based on server response
 class UserQueries extends Marty.Queries {
   getUser() {
-    this.dispatch(UserConstants.USER_RECEIVE_STARTING);
-
     return this.app.UserAPI.getUser()
-      .then(res => this.dispatch(UserConstants.USER_RECEIVE, res.body))
-      .catch(err => this.dispatch(UserConstants.USER_RECEIVE_FAILED, err));
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            this.dispatch(UserConstants.USER_RECEIVE, res.body);
+            break;
+          case 401:
+            this.dispatch(UserConstants.LOGIN_REQUIRED);
+            break;
+          default:
+            throw new AppError("Some shit really fucked up").getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(UserConstants.REQUEST_FAILED, err)
+      });
   }
 }
 
