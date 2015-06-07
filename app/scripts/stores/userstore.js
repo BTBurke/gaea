@@ -94,7 +94,6 @@ class UserStore extends Marty.Store {
   _handleReceive(user) {
     console.log("handling user receive...");
     this.state['user'] = new User(user);
-    console.log(this.state);
     this.hasChanged();
   }
 
