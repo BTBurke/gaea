@@ -16,7 +16,7 @@ class Home extends React.Component {
   render() {
     return (
       <div>
-      <TopNav user={this.props.user.userName}/>
+      <TopNav user={this.props.user.fullName}/>
       <B.Grid>
         <B.Row>
           <B.Col md={3} lg={3}>
@@ -30,7 +30,7 @@ class Home extends React.Component {
 
             <B.Panel header='Use your duty-free liquor benefit'>
               <p>The next duty-free liquor order is coming up.  We expect that all orders will have to be in by the end of July for a delivery date in August.</p>
-              <B.Button bsStyle='success' bsSize='small' href='/#/order'>Submit an order</B.Button>
+              <B.Button bsStyle='success' bsSize='small' href='/#/order'>Order booze</B.Button>
               <div className="home-posted-on">Posted on 5-June-2015</div>
 
             </B.Panel>
