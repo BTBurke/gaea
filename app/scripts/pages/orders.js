@@ -2,6 +2,7 @@
 
 var Marty = require('marty');
 var UserStore = require('../stores/userstore');
+var OrderStore = require('../stores/orderstore');
 var React = require('react');
 var B = require('react-bootstrap');
 
@@ -13,24 +14,25 @@ var { ApplicationContainer } = require('marty');
 
 var app = new Application();
 
-class Home extends React.Component {
+class Orders extends React.Component {
   constructor(props) {
     super(props);
     
     this.menu = {'title': undefined,
         'items': [
-          {'key': 0, 'href': '/#/order', 'text': 'Submit an order'},
-          {'key': 1, 'href': '/#/events', 'text': 'See Schedule of Events'}
+          {'key': 0, 'href': '/#/order/completed', 'text': 'View completed orders'},
           ]
       };
     this.adminMenu = {'title': 'Admin Links',
         'items': [
-          {'key': 0, 'href': '/#/announcements/edit', 'text': 'Add or Edit Announcements'}
+          {'key': 0, 'href': '/#/sale', 'text': 'Create a new sale'}
           ]
     }
   }
   
   render() {
+    
+    console.log('comp receive', this.props.orders);
     
     var adminMenu = function(role, menu) {
       if (role === 'admin') {
@@ -52,11 +54,8 @@ class Home extends React.Component {
 
           <B.Col md={9} lg={9}>
 
-            <B.Panel header='Use your duty-free liquor benefit'>
-              <p>The next duty-free liquor order is coming up.  We expect that all orders will have to be in by the end of July for a delivery date in August.</p>
-              <B.Button bsStyle='success' bsSize='small' href='/#/order'>Order booze</B.Button>
-              <div className="home-posted-on">Posted on 5-June-2015</div>
-
+            <B.Panel header='Open Orders'>
+              Orders: {this.props.orders[0]['sale_id']}
             </B.Panel>
           </B.Col>
         </B.Row>
@@ -68,11 +67,16 @@ class Home extends React.Component {
 }
 
 
-module.exports = Marty.createContainer(Home, {
-  listenTo: 'UserStore',
+module.exports = Marty.createContainer(Orders, {
+  listenTo: ['UserStore', 'OrderStore'],
   fetch: {
-    user() {
+    user: function() {
       return this.app.UserStore.getUser();
+    },
+    orders: function() {
+      var ord = this.app.OrderStore.getOrders();
+      console.log('page receive:', ord);
+      return ord;
     }
   }
 });

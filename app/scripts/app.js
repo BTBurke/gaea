@@ -3,6 +3,7 @@ var React = require('react'),
     Landing = require("./pages/landing"),
     Tos = require("./pages/tos"),
     Home = require('./pages/home');
+    Orders = require('./pages/orders');
     //Login = require("./pages/login")
 
 // React-router
@@ -49,6 +50,7 @@ var routes = (
     <DefaultRoute handler={Landing}/>
     <Route name="tos" path="tos" handler={Tos}/>
     <Route name="home" path="home" handler={Home}/>
+    <Route name="order" path="order" handler={Orders}/>
   </Route>
 );
 

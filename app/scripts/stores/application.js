@@ -4,14 +4,6 @@ var UserConstants = Marty.createConstants([
   'LOGIN_REQUIRED',
 ]);
 
-// Add hooks for all HttpStateSources
-// Marty.HttpStateSource.addHook({
-//    id: 'CORS',
-//    priority: 1,
-//    before(req) {
-//        req.headers['Access-Control-Allow-Origin'] = '*';
-//    }
-// });
 
 Marty.HttpStateSource.addHook({
    id: 'JWT',
@@ -34,6 +26,7 @@ Marty.HttpStateSource.addHook({
 // });
 
 var { UserStore, UserQueries, UserAPI } = require('./userstore');
+var { OrderStore, OrderQueries, OrderAPI } = require('./orderstore');
 
 class Application extends Marty.Application {
     constructor(options) {
@@ -42,6 +35,10 @@ class Application extends Marty.Application {
         this.register('UserStore', UserStore);
         this.register('UserQueries', UserQueries);
         this.register('UserAPI', UserAPI);
+        
+        this.register('OrderStore', OrderStore);
+        this.register('OrderQueries', OrderQueries);
+        this.register('OrderAPI', OrderAPI);
     }
 }
 

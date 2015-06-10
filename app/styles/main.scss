@@ -1,7 +1,11 @@
 $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/bootstrap";
 $bootstrap-sass-asset-helper: false !default;
 
+// Pages
 @import "bootstrap-sass-official/assets/stylesheets/bootstrap";
 @import "landing";
 @import "home";
-//@import "materialize";
+
+
+// Component Styles
+@import "comp-sidemenu";
