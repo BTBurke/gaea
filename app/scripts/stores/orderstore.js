@@ -27,33 +27,33 @@ class OrderAPI extends Marty.HttpStateSource {
         return this.get(Config.baseURL + '/order');
    }
    createOrder() {
-     
+
    }
    deleteOrder() {
-     
+
    }
    submitOrder() {
-     
+
    }
    updateOrder() {
-     
+
    }
    readOrderItems() {
-     
+
    }
    updateOrderItem() {
-     
+
    }
    createOrderItem() {
-     
+
    }
    deleteOrderItem() {
-     
+
    }
    getInventory() {
-     
+
    }
-   
+
 }
 
 
@@ -100,6 +100,8 @@ class Order {
     this.user_id = props.user_id;
     this.order_id = props.order_id;
     this.sale_type = props.sale_type;
+    this.item_qty = props.item_qty;
+    this.amount_total = props.amount_total;
   }
 }
 
@@ -127,7 +129,7 @@ class OrderStore extends Marty.Store {
     };
     this.handlers = {
       _ordersRead: Constants.ORDERS_READ,
-      
+
     };
   }
 
@@ -138,8 +140,8 @@ class OrderStore extends Marty.Store {
     console.log('state update', this.state['orders']);
     this.hasChanged();
   }
-  
-  
+
+
 
 
   // Methods

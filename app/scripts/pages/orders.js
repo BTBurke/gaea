@@ -8,6 +8,7 @@ var B = require('react-bootstrap');
 
 var TopNav = require('../components/topnav');
 var SideMenu = require('../components/sidemenu');
+var OrderTable = require('../components/ordertable');
 
 var Application = require('../stores/application');
 var { ApplicationContainer } = require('marty');
@@ -17,7 +18,7 @@ var app = new Application();
 class Orders extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.menu = {'title': undefined,
         'items': [
           {'key': 0, 'href': '/#/order/completed', 'text': 'View completed orders'},
@@ -29,11 +30,9 @@ class Orders extends React.Component {
           ]
     }
   }
-  
+
   render() {
-    
-    console.log('comp receive', this.props.orders);
-    
+
     var adminMenu = function(role, menu) {
       if (role === 'admin') {
         return (
@@ -41,7 +40,7 @@ class Orders extends React.Component {
         );
       }
     }
-    
+
     return (
       <div>
       <TopNav user={this.props.user.fullName}/>
@@ -53,10 +52,7 @@ class Orders extends React.Component {
           </B.Col>
 
           <B.Col md={9} lg={9}>
-
-            <B.Panel header='Open Orders'>
-              Orders: {this.props.orders[0]['sale_id']}
-            </B.Panel>
+              <OrderTable title="Open Orders" orders={this.props.orderstore.orders}/>
           </B.Col>
         </B.Row>
       </B.Grid>
@@ -73,7 +69,7 @@ module.exports = Marty.createContainer(Orders, {
     user: function() {
       return this.app.UserStore.getUser();
     },
-    orders: function() {
+    orderstore: function() {
       var ord = this.app.OrderStore.getOrders();
       console.log('page receive:', ord);
       return ord;

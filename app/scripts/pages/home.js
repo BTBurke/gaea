@@ -16,7 +16,7 @@ var app = new Application();
 class Home extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.menu = {'title': undefined,
         'items': [
           {'key': 0, 'href': '/#/order', 'text': 'Submit an order'},
@@ -25,13 +25,13 @@ class Home extends React.Component {
       };
     this.adminMenu = {'title': 'Admin Links',
         'items': [
-          {'key': 0, 'href': '/#/announcements/edit', 'text': 'Add or Edit Announcements'}
+          {'key': 0, 'href': '/#/announcements', 'text': 'Add or Edit Announcements'}
           ]
     }
   }
-  
+
   render() {
-    
+
     var adminMenu = function(role, menu) {
       if (role === 'admin') {
         return (
@@ -39,7 +39,7 @@ class Home extends React.Component {
         );
       }
     }
-    
+
     return (
       <div>
       <TopNav user={this.props.user.fullName}/>
