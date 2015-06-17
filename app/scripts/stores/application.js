@@ -27,6 +27,7 @@ Marty.HttpStateSource.addHook({
 
 var { UserStore, UserQueries, UserAPI } = require('./userstore');
 var { OrderStore, OrderQueries, OrderAPI } = require('./orderstore');
+var { InventoryStore, InventoryQueries, InventoryAPI } = require('./inventorystore');
 
 class Application extends Marty.Application {
     constructor(options) {
@@ -39,6 +40,10 @@ class Application extends Marty.Application {
         this.register('OrderStore', OrderStore);
         this.register('OrderQueries', OrderQueries);
         this.register('OrderAPI', OrderAPI);
+        
+        this.register('InventoryStore', InventoryStore);
+        this.register('InventoryQueries', InventoryQueries);
+        this.register('InventoryAPI', InventoryAPI);
     }
 }
 

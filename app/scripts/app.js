@@ -4,6 +4,7 @@ var React = require('react'),
     Tos = require("./pages/tos"),
     Home = require('./pages/home');
     Orders = require('./pages/orders');
+    EditOrder = require('./pages/editorder');
     //Login = require("./pages/login")
 
 // React-router
@@ -51,6 +52,7 @@ var routes = (
     <Route name="tos" path="tos" handler={Tos}/>
     <Route name="home" path="home" handler={Home}/>
     <Route name="order" path="order" handler={Orders}/>
+    <Route name="editorder" path="/order/:orderID" handler={EditOrder}/>
   </Route>
 );
 
