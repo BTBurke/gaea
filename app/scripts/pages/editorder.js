@@ -12,6 +12,11 @@ var app = new Application();
 class EditOrder extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            'filter': [],
+            'search': undefined,
+            'sort': 'type'
+        }
     }
     
     render() {
