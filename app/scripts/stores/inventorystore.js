@@ -79,7 +79,7 @@ class Inventory {
     this.year = props.year;
     this.nonmem_price = props.nonmem_price;
     this.mem_price = props.mem_price;
-    this.type = props.type;
+    this.types = props.types;
     this.origin = props.origin;
     this.changelog = props.changelog;
   }
@@ -104,7 +104,7 @@ class InventoryStore extends Marty.Store {
   // Action Handlers
   _inventoryRead(inv) {
     console.log('Inventory: received', inv);
-    this.state['inventory'] = new Inventory(inv);
+    this.state['inventory'] = _.map(inv, function(inv1) {return new Inventory(inv1)});
     console.log('Inventory: state update', this.state['inventory']);
     this.hasChanged();
   }
