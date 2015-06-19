@@ -44,11 +44,15 @@ class EditOrder extends React.Component {
         console.log("Clear filter");
     }
     
-    onAdd(id, refs) {
-        console.log("id", id);
-        console.log("refs", this.refs);
-        console.log("passed in refs", refs);
-        console.log("qty", refs.qty.getValue())
+    onAdd(id, qty) {
+
+        var item = {
+            'inventory_id': id,
+            'qty': qty,
+            'order_id': this.props.params.orderID,
+            'user_id': this.props.user.userID
+        }
+        this.app.OrderQueries.createOrderItem(item);
     }
     
     filterInventory(inventory) {
@@ -92,6 +96,7 @@ class EditOrder extends React.Component {
                 <B.Col md={9} lg={9}>
                     <OrderItems inventory={this.filterInventory(this.props.inventory)}
                         onAdd={this.onAdd.bind(this)}
+                        items={this.props.items}
                     />
                 </B.Col>
             </B.Row>
@@ -109,8 +114,9 @@ module.exports = Marty.createContainer(EditOrder, {
     user: function() {
       return this.app.UserStore.getUser();
     },
-    orderstore: function() {
-      var ord = this.app.OrderStore.getOrders();
+    items: function() {
+      var loc = this.props.params.orderID;
+      var ord = this.app.OrderStore.getItems(loc);
       console.log('page receive:', ord);
       return ord;
     },
@@ -119,7 +125,7 @@ module.exports = Marty.createContainer(EditOrder, {
         console.log("location", loc);
         console.log("this.app", this.app);
         return this.app.InventoryStore.getInventoryByOrder(loc);
-    }
+    },
   },
   pending() {
       return (

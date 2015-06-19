@@ -5,11 +5,13 @@ var _ = require('underscore');
 class OrderItems extends React.Component {
     constructor(props) {
         super(props);
+        
+        this.itemsByID = _.indexBy(this.props.items, 'inventory_id');
     }
     
     onAddLocal(id) {
         console.log("refs local", this.refs);
-        this.props.onAdd(id, this.refs['qty-'+id].getValue());
+        this.props.onAdd(id, parseInt(this.refs['qty-'+id].getValue()));
     }
     
     render() {
@@ -20,7 +22,45 @@ class OrderItems extends React.Component {
                 return function() {
                     f(id);
                 }
-            }.bind(this);
+        }.bind(this);
+        
+        var cartArea = function(id) {
+            var item = _.findWhere(this.props.items, {'inventory_id': id});
+            var inv = _.findWhere(this.props.inventory, {'inventory_id': id});
+            
+            if (item) {
+                return (
+                    <div>
+                    <div className="oi-item-cart-header">In Cart</div>
+                    <div className="oi-item-cart">
+                        <B.Row>
+                            <B.Col md={2} lg={2}>
+                            <div className="oi-item-cart-glyph">
+                                <B.Glyphicon glyph="shopping-cart"/>
+                            </div>
+                            </B.Col>
+                            <B.Col md={4} lg={4}>
+                            <div className="oi-item-cart-qty-header">
+                                Qty
+                            </div>
+                            <div className="oi-item-cart-qty">
+                                {item.qty}
+                            </div>
+                            </B.Col>
+                            <B.Col md={6} lg={6}>
+                            <div className="oi-item-cart-total-header">
+                                Total
+                            </div>
+                            <div className="oi-item-cart-total">
+                                {item.qty * inv.mem_price}<span className="oi-rmb">RMB</span>
+                            </div>
+                            </B.Col>
+                        </B.Row>
+                    </div>
+                    </div>
+                );
+            }
+        }.bind(this);
             
             return (
                 <div className="oi-item" key={item.supplier_id}>
@@ -43,7 +83,7 @@ class OrderItems extends React.Component {
                             <tr>
                                 <td width="15%">{item.supplier_id}</td>
                                 <td width="25%">{_.last(item.types)}</td>
-                                <td width="25%">{item.origin.reverse().join(", ")}</td>
+                                <td width="25%">{item.origin.slice(0).reverse().join(", ")}</td>
                                 <td width="10%">{item.year}</td>
                                 <td width="10%">{item.abv + "%"}</td>
                                 <td width="10%">{item.size}</td>
@@ -75,7 +115,7 @@ class OrderItems extends React.Component {
                             <B.Col md={3} lg={3}>
                             <div className="oi-item-select">
                             <form>
-                                <B.Input type='select' ref={'qty-'+item.supplier_id} bsSize='small' label='Quantity' placeholder='0'>
+                                <B.Input type='select' ref={'qty-'+item.inventory_id} bsSize='small' label='Quantity' placeholder='0'>
                                   <option value='0'>0</option>
                                   <option value='1'>1</option>
                                   <option value='2'>2</option>
@@ -104,7 +144,7 @@ class OrderItems extends React.Component {
                             <B.Col md={3} lg={3}>
                                 <div className="oi-item-btn">
                                 <B.Button bsStyle='info' 
-                                onClick={_handleAdd(item.supplier_id)}>
+                                onClick={_handleAdd(item.inventory_id)}>
                                     Add to Cart
                                 </B.Button>
                                 </div>
@@ -113,15 +153,7 @@ class OrderItems extends React.Component {
                         </div>
                     </B.Col>
                     <B.Col md={3} lg={3}>
-                        <div className="oi-item-cart">
-                            <B.Row>
-                                <B.Col md={4} lg={4}>
-                                    <div className="oi-item-cart-glyph">
-                                        <B.Glyphicon glyph="shopping-cart"/>
-                                    </div>
-                                </B.Col>
-                            </B.Row>
-                        </div>
+                        {cartArea(item.inventory_id)}
                     </B.Col>
                 </B.Row>
                 </div>

@@ -39,7 +39,9 @@ class FilterMenu extends React.Component {
         console.log("filteredInventory", this.props.inventory);
         
         var listOfTypes = _.pluck(this.props.inventory, 'types');
+        console.log("all the types", listOfTypes);
         var listOfOrigins = _.pluck(this.props.inventory, 'origin');
+        console.log("all the origins", listOfOrigins);
         
         var makeItem = function(item) {
             return (
@@ -55,8 +57,10 @@ class FilterMenu extends React.Component {
         
         if (this.props.filter.length == 0) {
             // return first item in lists only
+            console.log("No filters applied");
             var displayTypes = _.uniq(_.map(listOfTypes, function(t) { return makeItem(t[0]) }));
         } else {
+            console.log("filters applied", this.props.filter);
             var mostSpecific = _.last(this.props.filter);
             console.log("Most specific", mostSpecific);
             var displayTypes = _.uniq(_.map(listOfTypes, function(t) {
@@ -73,8 +77,14 @@ class FilterMenu extends React.Component {
         
         if (this.props.origin.length == 0) {
             // return first item in lists only
-            var displayOrigins = _.uniq(_.map(listOfOrigins, function(t) { return makeItemOrigin(t[0]) }));
+            console.log("No origin applied");
+            var displayOrigins = _.uniq(_.map(listOfOrigins, function(t) {
+                console.log("going for origins", t);
+                return makeItemOrigin(t[0])
+                
+            }));
         } else {
+            console.log("Origin applied:", this.props.origin);
             var mostSpecific = _.last(this.props.origin);
             console.log("Most specific", mostSpecific);
             var displayOrigins = _.uniq(_.map(listOfOrigins, function(t) {

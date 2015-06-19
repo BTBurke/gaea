@@ -38,8 +38,9 @@ class OrderAPI extends Marty.HttpStateSource {
    updateOrder() {
 
    }
-   readOrderItems() {
-
+   readOrderItems(ordID) {
+    console.log("Going to get all order items...");
+    return this.get(Config.baseURL + "/order/" + ordID + "/item");
    }
    updateOrderItem() {
 
@@ -47,7 +48,7 @@ class OrderAPI extends Marty.HttpStateSource {
    createOrderItem(item) {
     console.log("Going to add order item...");
     return this.request({
-      url: '/order/item',
+      url: Config.baseURL + '/order/' + item.order_id + '/item',
       method: 'POST',
       body: item
     });
@@ -110,6 +111,28 @@ class OrderQueries extends Marty.Queries {
           this.dispatch(Constants.REQUEST_FAILED, err)
         });
   }
+
+  readOrderItems(ord) {
+    return this.app.OrderAPI.readOrderItems(ord)
+      .then(res => {
+          switch (res.status) {
+            case 200:
+              console.log("Server receive:", res.body);
+              this.dispatch(Constants.ORDER_ITEMS_READ, res.body);
+              break;
+            case 401:
+              this.dispatch(Constants.LOGIN_REQUIRED);
+              break;
+            default:
+              throw new AppError("Failed to read order items").getError();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.dispatch(Constants.REQUEST_FAILED, err)
+        });
+  }
+  
 }
 
 
@@ -150,12 +173,12 @@ class OrderStore extends Marty.Store {
     super(options);
     this.state = {
       'orders': undefined,
-      'current': undefined,
       'items': undefined
     };
     this.handlers = {
       _ordersRead: Constants.ORDERS_READ,
       _addItem: Constants.ORDER_ITEMS_CREATE,
+      _readItem: Constants.ORDER_ITEMS_READ
 
     };
   }
@@ -172,8 +195,17 @@ class OrderStore extends Marty.Store {
     this.state['items'] = this.state['items'].concat(item);
     console.log('items update', this.state['items']);
     this.hasChanged();
+
   }
 
+  _readItem(items) {
+    if (items.qty === 0) {
+      this.state['items'] = [];
+    } else {
+      this.state['items'] = this.map(items.order_items, function(item) { return new OrderItem(item)});
+    }
+    this.hasChanged();
+  }
 
 
 
@@ -188,7 +220,18 @@ class OrderStore extends Marty.Store {
         return this.app.OrderQueries.readOrders();
       }
     });
-    
+  }
+  
+  getItems(ord) {
+    return this.fetch({
+     id: 'items',
+     locally: function() {
+       return this.state['items'];
+     },
+     remotely: function() {
+       return this.app.OrderQueries.readOrderItems(ord);
+     }
+    });
   }
 
 }

@@ -47,14 +47,35 @@
     }
 }
 
+ .oi-item-cart-header {
+        font-size: 15px;
+        font-weight: bold;
+}
+
 .oi-item-cart {
     background-color: #f39c12;
     min-height: 40px;
     padding-left: 10px;
+    padding-top: 10px;
+    
+   
     
     .oi-item-cart-glyph {
         font-size: 24px;
         color: #2C3E50;
+    }
+    
+    .oi-item-cart-qty-header {
+        font-size: 8px;
+    }
+    .oi-item-cart-qty {
+        font-size: 24px;
+    }
+    .oi-item-cart-total-header {
+        font-size: 8px;
+    }
+    .oi-item-cart-total {
+        font-size: 24px;
     }
 }
 
