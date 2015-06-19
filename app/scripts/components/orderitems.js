@@ -7,15 +7,20 @@ class OrderItems extends React.Component {
         super(props);
     }
     
+    onAddLocal(id) {
+        console.log("refs local", this.refs);
+        this.props.onAdd(id, this.refs['qty-'+id].getValue());
+    }
+    
     render() {
         
         var makeItem = function(item) {
-            
+            var f = this.onAddLocal.bind(this);
             var _handleAdd = function(id) {
                 return function() {
-                    console.log('id', id);
+                    f(id);
                 }
-            }
+            }.bind(this);
             
             return (
                 <div className="oi-item" key={item.supplier_id}>
@@ -70,7 +75,7 @@ class OrderItems extends React.Component {
                             <B.Col md={3} lg={3}>
                             <div className="oi-item-select">
                             <form>
-                                <B.Input type='select' bsSize='xsmall' label='Quantity' placeholder='0'>
+                                <B.Input type='select' ref={'qty-'+item.supplier_id} bsSize='small' label='Quantity' placeholder='0'>
                                   <option value='0'>0</option>
                                   <option value='1'>1</option>
                                   <option value='2'>2</option>
@@ -98,7 +103,10 @@ class OrderItems extends React.Component {
                             </B.Col>
                             <B.Col md={3} lg={3}>
                                 <div className="oi-item-btn">
-                                <B.Button bsStyle='info' onClick={_handleAdd(item.supplier_id)}>Add to Cart</B.Button>
+                                <B.Button bsStyle='info' 
+                                onClick={_handleAdd(item.supplier_id)}>
+                                    Add to Cart
+                                </B.Button>
                                 </div>
                             </B.Col>
                         </B.Row>

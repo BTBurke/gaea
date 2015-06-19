@@ -44,8 +44,13 @@ class OrderAPI extends Marty.HttpStateSource {
    updateOrderItem() {
 
    }
-   createOrderItem() {
-
+   createOrderItem(item) {
+    console.log("Going to add order item...");
+    return this.request({
+      url: '/order/item',
+      method: 'POST',
+      body: item
+    });
    }
    deleteOrderItem() {
 
@@ -83,6 +88,27 @@ class OrderQueries extends Marty.Queries {
         console.log(err);
         this.dispatch(Constants.REQUEST_FAILED, err)
       });
+  }
+  
+  createOrderItem(item) {
+    return this.app.OrderAPI.createOrderItem(item)
+      .then(res => {
+          switch (res.status) {
+            case 200:
+              console.log("Server receive:", res.body);
+              this.dispatch(Constants.ORDER_ITEMS_CREATE, res.body);
+              break;
+            case 401:
+              this.dispatch(Constants.LOGIN_REQUIRED);
+              break;
+            default:
+              throw new AppError("Failed to add order item").getError();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.dispatch(Constants.REQUEST_FAILED, err)
+        });
   }
 }
 
@@ -129,6 +155,7 @@ class OrderStore extends Marty.Store {
     };
     this.handlers = {
       _ordersRead: Constants.ORDERS_READ,
+      _addItem: Constants.ORDER_ITEMS_CREATE,
 
     };
   }
@@ -138,6 +165,12 @@ class OrderStore extends Marty.Store {
     console.log('received', orders);
     this.state['orders'] = _.each(orders, function(order) { return new Order(order)});
     console.log('state update', this.state['orders']);
+    this.hasChanged();
+  }
+  
+  _addItem(item) {
+    this.state['items'] = this.state['items'].concat(item);
+    console.log('items update', this.state['items']);
     this.hasChanged();
   }
 
@@ -155,7 +188,7 @@ class OrderStore extends Marty.Store {
         return this.app.OrderQueries.readOrders();
       }
     });
-
+    
   }
 
 }

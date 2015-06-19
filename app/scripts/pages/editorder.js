@@ -44,6 +44,13 @@ class EditOrder extends React.Component {
         console.log("Clear filter");
     }
     
+    onAdd(id, refs) {
+        console.log("id", id);
+        console.log("refs", this.refs);
+        console.log("passed in refs", refs);
+        console.log("qty", refs.qty.getValue())
+    }
+    
     filterInventory(inventory) {
         
         var filters = this.state.filter;
@@ -83,7 +90,9 @@ class EditOrder extends React.Component {
                     onOriginClick={this.onOriginClick.bind(this)}/>
                 </B.Col>
                 <B.Col md={9} lg={9}>
-                    <OrderItems inventory={this.filterInventory(this.props.inventory)}/>
+                    <OrderItems inventory={this.filterInventory(this.props.inventory)}
+                        onAdd={this.onAdd.bind(this)}
+                    />
                 </B.Col>
             </B.Row>
             </B.Grid>
@@ -111,5 +120,10 @@ module.exports = Marty.createContainer(EditOrder, {
         console.log("this.app", this.app);
         return this.app.InventoryStore.getInventoryByOrder(loc);
     }
+  },
+  pending() {
+      return (
+        <div>Loading...</div>
+    );
   }
 });
