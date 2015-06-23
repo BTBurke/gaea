@@ -42,8 +42,13 @@ class OrderAPI extends Marty.HttpStateSource {
     console.log("Going to get all order items...");
     return this.get(Config.baseURL + "/order/" + ordID + "/item");
    }
-   updateOrderItem() {
-
+   updateOrderItem(item) {
+    console.log("Going to update order item...");
+    return this.request({
+      url: Config.baseURL + '/order/' + item.order_id + '/item/' + item.order_item_id,
+      method: 'PUT',
+      body: item
+    });
    }
    createOrderItem(item) {
     console.log("Going to add order item...");
@@ -53,11 +58,12 @@ class OrderAPI extends Marty.HttpStateSource {
       body: item
     });
    }
-   deleteOrderItem() {
-
-   }
-   getInventory() {
-
+   deleteOrderItem(item) {
+     console.log("Going to delete order item...");
+     return this.request({
+       url: Config.baseURL + '/order/' + item.order_id + /item/ + item.order_item_id,
+       method: 'DELETE'
+     });
    }
 
 }
@@ -112,6 +118,27 @@ class OrderQueries extends Marty.Queries {
         });
   }
 
+ updateOrderItem(item) {
+    return this.app.OrderAPI.updateOrderItem(item)
+      .then(res => {
+          switch (res.status) {
+            case 200:
+              console.log("Server receive:", res.body);
+              this.dispatch(Constants.ORDER_ITEMS_UPDATE, res.body);
+              break;
+            case 401:
+              this.dispatch(Constants.LOGIN_REQUIRED);
+              break;
+            default:
+              throw new AppError("Failed to update order item").getError();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.dispatch(Constants.REQUEST_FAILED, err)
+        });
+  }
+  
   readOrderItems(ord) {
     return this.app.OrderAPI.readOrderItems(ord)
       .then(res => {
@@ -125,6 +152,27 @@ class OrderQueries extends Marty.Queries {
               break;
             default:
               throw new AppError("Failed to read order items").getError();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.dispatch(Constants.REQUEST_FAILED, err)
+        });
+  }
+  
+  deleteOrderItem(ord) {
+    return this.app.OrderAPI.deleteOrderItem(ord)
+      .then(res => {
+          switch (res.status) {
+            case 200:
+              console.log("Server receive:", res.body);
+              this.dispatch(Constants.ORDER_ITEMS_DELETE, res.body);
+              break;
+            case 401:
+              this.dispatch(Constants.LOGIN_REQUIRED);
+              break;
+            default:
+              throw new AppError("Failed to delete order item").getError();
           }
         })
         .catch(err => {
@@ -178,7 +226,9 @@ class OrderStore extends Marty.Store {
     this.handlers = {
       _ordersRead: Constants.ORDERS_READ,
       _addItem: Constants.ORDER_ITEMS_CREATE,
-      _readItem: Constants.ORDER_ITEMS_READ
+      _readItem: Constants.ORDER_ITEMS_READ,
+      _deleteItem: Constants.ORDER_ITEMS_DELETE,
+      _updateItem: Constants.ORDER_ITEMS_UPDATE
 
     };
   }
@@ -195,7 +245,6 @@ class OrderStore extends Marty.Store {
     this.state['items'] = this.state['items'].concat(item);
     console.log('items update', this.state['items']);
     this.hasChanged();
-
   }
 
   _readItem(items) {
@@ -204,6 +253,17 @@ class OrderStore extends Marty.Store {
     } else {
       this.state['items'] = this.map(items.order_items, function(item) { return new OrderItem(item)});
     }
+    this.hasChanged();
+  }
+  
+  _deleteItem(item) {
+    this.state['items'] = _.reject(this.state.items, function (i) { return item.order_item_id === i.order_item_id});
+    this.hasChanged();
+  }
+  
+  _updateItem(item) {
+    this.state['items'] = _.reject(this.state.items, function (i) { return item.order_item_id === i.order_item_id});
+    this.state['items'] = this.state.items.concat(item);
     this.hasChanged();
   }
 

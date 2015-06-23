@@ -14,53 +14,86 @@ class OrderItems extends React.Component {
         this.props.onAdd(id, parseInt(this.refs['qty-'+id].getValue()));
     }
     
+    onUpdateLocal(id) {
+        this.props.onUpdate(id, parseInt(this.refs['qty-'+id].getValue()));
+    }
+    
     render() {
         
         var makeItem = function(item) {
-            var f = this.onAddLocal.bind(this);
+            var addItemFunc = this.onAddLocal.bind(this);
+            var updateItemFunc = this.onUpdateLocal.bind(this);
             var _handleAdd = function(id) {
                 return function() {
-                    f(id);
+                    addItemFunc(id);
                 }
-        }.bind(this);
-        
-        var cartArea = function(id) {
-            var item = _.findWhere(this.props.items, {'inventory_id': id});
-            var inv = _.findWhere(this.props.inventory, {'inventory_id': id});
-            
-            if (item) {
-                return (
-                    <div>
-                    <div className="oi-item-cart-header">In Cart</div>
-                    <div className="oi-item-cart">
-                        <B.Row>
-                            <B.Col md={2} lg={2}>
-                            <div className="oi-item-cart-glyph">
-                                <B.Glyphicon glyph="shopping-cart"/>
-                            </div>
-                            </B.Col>
-                            <B.Col md={4} lg={4}>
-                            <div className="oi-item-cart-qty-header">
-                                Qty
-                            </div>
-                            <div className="oi-item-cart-qty">
-                                {item.qty}
-                            </div>
-                            </B.Col>
-                            <B.Col md={6} lg={6}>
-                            <div className="oi-item-cart-total-header">
-                                Total
-                            </div>
-                            <div className="oi-item-cart-total">
-                                {item.qty * inv.mem_price}<span className="oi-rmb">RMB</span>
-                            </div>
-                            </B.Col>
-                        </B.Row>
-                    </div>
-                    </div>
-                );
+            }.bind(this);
+            var _handleUpdate =function(id) {
+                return function() {
+                    updateItemFunc(id);
+                }
             }
-        }.bind(this);
+        
+            var addOrUpdateBtn = function(id) {
+                var item = _.findWhere(this.props.items, {'inventory_id': id});
+                if (item) {
+                    return (
+                            <div className="oi-item-btn">
+                                <B.Button bsStyle='default' 
+                                    onClick={_handleUpdate(id)}>
+                                Update Cart
+                                </B.Button>
+                            </div>
+                    );
+                } else {
+                    return (
+                    <div className="oi-item-btn">
+                        <B.Button bsStyle='info' 
+                            onClick={_handleAdd(id)}>
+                            Add to Cart
+                        </B.Button>
+                    </div>
+                    );
+                }
+            }.bind(this);
+        
+            var cartArea = function(id) {
+                var item = _.findWhere(this.props.items, {'inventory_id': id});
+                var inv = _.findWhere(this.props.inventory, {'inventory_id': id});
+                
+                if (item) {
+                    return (
+                        <div>
+                        <div className="oi-item-cart-header">In Cart</div>
+                        <div className="oi-item-cart">
+                            <B.Row>
+                                <B.Col md={2} lg={2}>
+                                <div className="oi-item-cart-glyph">
+                                    <B.Glyphicon glyph="shopping-cart"/>
+                                </div>
+                                </B.Col>
+                                <B.Col md={3} lg={3}>
+                                <div className="oi-item-cart-qty-header">
+                                    Qty
+                                </div>
+                                <div className="oi-item-cart-qty">
+                                    {item.qty}
+                                </div>
+                                </B.Col>
+                                <B.Col md={7} lg={7}>
+                                <div className="oi-item-cart-total-header">
+                                    Total
+                                </div>
+                                <div className="oi-item-cart-total">
+                                    {item.qty * inv.mem_price}<span className="oi-rmb">RMB</span>
+                                </div>
+                                </B.Col>
+                            </B.Row>
+                        </div>
+                        </div>
+                    );
+                }
+            }.bind(this);
             
             return (
                 <div className="oi-item" key={item.supplier_id}>
@@ -142,12 +175,7 @@ class OrderItems extends React.Component {
                             </div>
                             </B.Col>
                             <B.Col md={3} lg={3}>
-                                <div className="oi-item-btn">
-                                <B.Button bsStyle='info' 
-                                onClick={_handleAdd(item.inventory_id)}>
-                                    Add to Cart
-                                </B.Button>
-                                </div>
+                                {addOrUpdateBtn(item.inventory_id)}
                             </B.Col>
                         </B.Row>
                         </div>

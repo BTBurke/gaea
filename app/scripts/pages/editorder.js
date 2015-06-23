@@ -6,6 +6,8 @@ var _ = require('underscore');
 var TopNav = require('../components/topnav');
 var FilterMenu = require('../components/filtermenu');
 var OrderItems = require('../components/orderitems');
+var Notifier = require('../components/notifier');
+var TotalBar = require('../components/totalbar');
 
 var Application = require('../stores/application');
 var { ApplicationContainer } = require('marty');
@@ -19,8 +21,18 @@ class EditOrder extends React.Component {
             'filter': [],
             'origin': [],
             'search': undefined,
-            'sort': 'type'
+            'sort': 'type',
+            'message': ''
         }
+        
+    }
+    
+    message(msg) {
+        this.setState({'message': msg});
+    }
+    
+    clearMessage() {
+        this.setState({'message': ''});
     }
     
     onFilterClick(e) {
@@ -45,14 +57,43 @@ class EditOrder extends React.Component {
     }
     
     onAdd(id, qty) {
-
+        if (qty === 0) {
+            console.log("Add 0 items, no op")
+            return
+        }
         var item = {
             'inventory_id': id,
             'qty': qty,
             'order_id': this.props.params.orderID,
             'user_id': this.props.user.userID
         }
+        
+        var thisItem = _.findWhere(this.props.inventory, {'inventory_id': id});
+        this.message("Adding " + thisItem.name + " to your cart");
         this.app.OrderQueries.createOrderItem(item);
+    }
+    
+    onUpdate(id, qty) {
+        var item = _.findWhere(this.props.items, {'inventory_id': id});
+        var thisItem = _.findWhere(this.props.inventory, {'inventory_id': id});
+
+        if (!item) {
+            console.log("Could not find item in inventory to update.")
+            return
+        }
+        switch(qty) {
+            case 0:
+                this.message("Removing " + thisItem.name + " from your cart");
+                this.app.OrderQueries.deleteOrderItem(item);
+                break;
+            case item.qty:
+                console.log("Order quantity did not change, no op.")
+                break;
+            default:
+                this.message("Changing quantity of " + thisItem.name + " in your cart");
+                item.qty = qty;
+                this.app.OrderQueries.updateOrderItem(item);
+        }
     }
     
     filterInventory(inventory) {
@@ -84,6 +125,10 @@ class EditOrder extends React.Component {
         return (
             <div>
             <TopNav user={this.props.user.fullName}/>
+            <TotalBar user={this.props.user}
+                inventory={this.props.inventory}
+                items={this.props.items}
+            />
             <B.Grid>
             <B.Row>
                 <B.Col md={3} lg={3}>
@@ -96,12 +141,13 @@ class EditOrder extends React.Component {
                 <B.Col md={9} lg={9}>
                     <OrderItems inventory={this.filterInventory(this.props.inventory)}
                         onAdd={this.onAdd.bind(this)}
+                        onUpdate={this.onUpdate.bind(this)}
                         items={this.props.items}
                     />
                 </B.Col>
             </B.Row>
             </B.Grid>
-            
+            <Notifier message={this.state.message}/>
             </div>
             
             );
