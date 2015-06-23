@@ -1,6 +1,7 @@
 var React = require('react');
 var B = require('react-bootstrap');
 var _ = require('underscore');
+var Sticky = require('react-sticky');
 
 class TotalBar extends React.Component {
     constructor(props){
@@ -20,8 +21,9 @@ class TotalBar extends React.Component {
         }.bind(this), 0);
         return (
             <B.Grid>
+                <Sticky>
                 <div className="tb-bar">
-                    <B.Col md={4} lg={4} mdOffset={6} lgOffset={6}>
+                    <B.Col md={2} lg={2} mdOffset={8} lgOffset={8}>
                     <span className="tb-cart"><B.Glyphicon glyph="shopping-cart"/></span>
                     <span className="tb-total-rmb">{total}</span><span className="tb-rmb">RMB</span>
                     /
@@ -31,6 +33,7 @@ class TotalBar extends React.Component {
                         <B.Button bsStyle='info'>Checkout</B.Button>
                     </B.Col>
                 </div>
+                </Sticky>
             </B.Grid>
         );
     }
