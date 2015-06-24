@@ -2,6 +2,8 @@
     margin-bottom: 20px;
     border: 1px solid #bbb;
     border-radius: 4px;
+    position: relative;
+    z-index: 100;
 }
 
 .oi-item-header {
@@ -12,18 +14,21 @@
     height: 40px;
     line-height: 40px;
     padding-left: 10px;
+    position: relative;
 }
 
 .oi-item-desc {
     margin-bottom: 20px;
     padding-left: 10px;
     padding-right: 10px;
+    position: relative;
 }
 
 .oi-item-price {
     //background-color: #b4bcc2;
     min-height: 40px;
     padding-left: 10px;
+    position: relative;
     
     .oi-item-price-non-header, .oi-item-price-mem-header {
         font-size: 15px;
@@ -50,6 +55,7 @@
  .oi-item-cart-header {
         font-size: 15px;
         font-weight: bold;
+        position: relative;
 }
 
 .oi-item-cart {
@@ -57,6 +63,7 @@
     min-height: 40px;
     padding-left: 10px;
     padding-top: 10px;
+    position: relative;
     
    
     
@@ -82,4 +89,5 @@
 .oi-rmb {
     padding-left: 4px;
     font-size: 10px;
+    position: relative;
 }

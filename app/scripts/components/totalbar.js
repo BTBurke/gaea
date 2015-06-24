@@ -2,12 +2,18 @@ var React = require('react');
 var B = require('react-bootstrap');
 var _ = require('underscore');
 var Sticky = require('react-sticky');
+var Link = require('react-router').Link;
 
 class TotalBar extends React.Component {
     constructor(props){
         super(props);
         
         this.rate = 6.21;
+        this.stickyStyle = {
+            'position': 'fixed',
+            'top': 0,
+            'width': '225px'
+        }
     }
 
     render() {
@@ -19,22 +25,51 @@ class TotalBar extends React.Component {
             
             return item.qty * price + tot; 
         }.bind(this), 0);
+        
+        var itemTotal = _.reduce(this.props.items, function(tot, item) {
+            return item.qty + tot;
+        }.bind(this), 0);
+        
+        console.log("props", this.props);
+        var linkTarget = "/order/" + this.props.params.orderID + "/checkout";
+        
         return (
-            <B.Grid>
-                <Sticky>
+                <Sticky stickyStyle={this.stickyStyle}>
                 <div className="tb-bar">
-                    <B.Col md={2} lg={2} mdOffset={8} lgOffset={8}>
-                    <span className="tb-cart"><B.Glyphicon glyph="shopping-cart"/></span>
-                    <span className="tb-total-rmb">{total}</span><span className="tb-rmb">RMB</span>
-                    /
-                    <span className="tb-total-usd">${(total/this.rate).toFixed(2)}</span>
-                    </B.Col>
-                    <B.Col md={2} lg={2}>
-                        <B.Button bsStyle='info'>Checkout</B.Button>
-                    </B.Col>
+                <div className="tb-bar-internal">
+                    <div className="tb-cart-header">
+                        <span className="tb-cart"><B.Glyphicon glyph="shopping-cart"/></span>Your Cart
+                    </div>
+                    <div className="tb-cart-items">
+                    <B.Row>
+                        <B.Col md={6} lg={6}>
+                        <span className="tb-cart-items-header">Items</span>
+                        </B.Col>
+                        <B.Col md={6} lg={6}>
+                        <span className="tb-cart-items-total">{itemTotal}</span>
+                        </B.Col>
+                    </B.Row>
+                    </div>
+                    <div className="tb-cart-total">
+                        <B.Row>
+                            <B.Col md={6} lg={6}>
+                            Total
+                            </B.Col>
+                            <B.Col md={6} lg={6}>
+                            <span className="tb-total-rmb">{total}</span><span className="tb-rmb">RMB</span>
+                            </B.Col>
+                        </B.Row>
+                        <B.Row>
+                            <B.Col md={6} lg={6} mdOffset={6} lgOffset={6}>
+                            <span className="tb-total-usd">${(total/this.rate).toFixed(2)}</span>
+                            </B.Col>
+                        </B.Row>
+                    </div>
+                
+                    <Link to={linkTarget}><B.Button bsStyle='info' block>Checkout</B.Button></Link>
+                </div>
                 </div>
                 </Sticky>
-            </B.Grid>
         );
     }
     

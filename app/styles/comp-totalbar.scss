@@ -1,11 +1,48 @@
 .tb-bar {
-    height: 50px;
+    width: 225px;
     z-index: 10000;
     color: #fff;
-    background: #aaa;
+    background: #2C3E50;
+    position: relative;
+    border-radius: 5px;
+    margin-top: 25px;
+
+    .tb-bar-internal {
+        padding: 10px 10px 10px 10px;
+    }
+    
+}
+
+.tb-cart-header {
+    font-size: 20px;
+    padding-bottom: 15px;
+
+    .tb-cart {
+        padding-right: 8px;
+        color: #f39c12;
+    }
+}
+
+.tb-cart-items {
+    padding-bottom: 10px;
+    font-size: 18px;
+    .tb-cart-items-total {
+        color: #f39c12;
+    }
+}
+
+.tb-cart-total {
+    padding-bottom: 15px;
+    font-size: 18px;
+    
+    .tb-total-rmb, .tb-total-usd {
+        font-size: 18px;
+        color: #f39c12;
+    }
 }
 
 .tb-rmb {
     font-size: 10px;
     padding-left: 4px;
+    color: #fff;
 }

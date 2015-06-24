@@ -1,0 +1,44 @@
+.co-buttons {
+    padding-top: 20px;
+}
+
+.co-order-header {
+    font-size: 20px;
+    color: #f39c12;
+    font-weight: bold;
+}
+
+.os-order-total {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    
+    .os-order-total-label {
+        font-size: 20px;
+    }
+    
+    .os-order-total-amount {
+        font-size: 20px;
+        color: #f39c12;
+        padding-left: 15px;
+        font-weight: bold;
+    }
+    
+    .os-order-total-usd {
+        font-size: 20px;
+        color: #f39c12;
+        font-weight: bold;
+    }
+    
+    .os-order-total-divider {
+        font-size: 20px;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+    
+    
+}
+
+.os-rmb {
+        font-size: 10px;
+        padding-left: 4px;
+}

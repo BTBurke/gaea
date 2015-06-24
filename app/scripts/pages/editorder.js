@@ -125,10 +125,7 @@ class EditOrder extends React.Component {
         return (
             <div>
             <TopNav user={this.props.user.fullName}/>
-            <TotalBar user={this.props.user}
-                inventory={this.props.inventory}
-                items={this.props.items}
-            />
+            
             <B.Grid>
             <B.Row>
                 <B.Col md={3} lg={3}>
@@ -137,6 +134,12 @@ class EditOrder extends React.Component {
                     origin={this.state.origin}
                     onFilterClick={this.onFilterClick.bind(this)}
                     onOriginClick={this.onOriginClick.bind(this)}/>
+                    
+                    <TotalBar user={this.props.user}
+                        inventory={this.props.inventory}
+                        items={this.props.items}
+                        params={this.props.params}
+                    />
                 </B.Col>
                 <B.Col md={9} lg={9}>
                     <OrderItems inventory={this.filterInventory(this.props.inventory)}
