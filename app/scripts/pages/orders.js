@@ -21,12 +21,12 @@ class Orders extends React.Component {
 
     this.menu = {'title': undefined,
         'items': [
-          {'key': 0, 'href': '/#/order/completed', 'text': 'View completed orders'},
+          {'key': 0, 'href': '/order/completed', 'text': 'View completed orders'},
           ]
       };
     this.adminMenu = {'title': 'Admin Links',
         'items': [
-          {'key': 0, 'href': '/#/sale', 'text': 'Create a new sale'}
+          {'key': 0, 'href': '/sale', 'text': 'Create a new sale'}
           ]
     }
   }

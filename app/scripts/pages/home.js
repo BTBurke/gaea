@@ -19,13 +19,15 @@ class Home extends React.Component {
 
     this.menu = {'title': undefined,
         'items': [
-          {'key': 0, 'href': '/#/order', 'text': 'Submit an order'},
-          {'key': 1, 'href': '/#/events', 'text': 'See Schedule of Events'}
+          {'key': 0, 'href': '/order', 'text': 'Manage your orders'},
+          {'key': 1, 'href': '/events', 'text': 'See Schedule of Events'}
           ]
       };
     this.adminMenu = {'title': 'Admin Links',
         'items': [
-          {'key': 0, 'href': '/#/announcements', 'text': 'Add or Edit Announcements'}
+          {'key': 0, 'href': '/announcements', 'text': 'Add or Edit Announcements'},
+          {'key': 1, 'href': '/sale', 'text': 'Manage Sales'},
+          {'key': 2, 'href': '/user', 'text': "Manage Users"}
           ]
     }
   }

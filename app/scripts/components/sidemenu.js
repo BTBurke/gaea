@@ -1,5 +1,6 @@
 var React = require('react');
 var B = require('react-bootstrap');
+var Link = require('react-router').Link;
 
 class SideMenu extends React.Component {
     constructor(props) {
@@ -10,7 +11,7 @@ class SideMenu extends React.Component {
         var menu = this.props.menu;
         var listitems = menu.items.map(function(item) {
             return (
-                <B.ListGroupItem key={item.key} href={item.href}>{item.text}</B.ListGroupItem>
+                <B.ListGroupItem key={item.key}><Link to={item.href}>{item.text}</Link></B.ListGroupItem>
             );
         });
         
