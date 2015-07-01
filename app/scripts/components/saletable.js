@@ -1,6 +1,7 @@
 var React = require('react');
 var B = require('react-bootstrap');
 var _ = require('underscore');
+var Link = require('react-router').Link;
 
 var Utils = require('../services/utils');
 
@@ -16,11 +17,11 @@ class SaleTable extends React.Component {
     if (sales.length === 0) {
       return (
         <B.Panel header={this.props.title}>
-        No open sales.  Create a new sale from the menu on the left.
+        No sales.
         </B.Panel>
       );
     }
-
+    
     var displaysales = _.map(sales, function(sale, idx) {
 
       var shortOpen = new Date(sale.open_date);
@@ -32,10 +33,11 @@ class SaleTable extends React.Component {
           <td>{shortOpen.toDateString()}</td>
           <td>{shortClose.toDateString()}</td>
           <td>{Utils.Capitalize(sale.status)}</td>
-          <td><B.ButtonToolbar>
-            <B.Button bsSize='xsmall'><Link to={'/sale/' + sale.sale_id + '/inventory'}>Edit Inventory</Link></B.Button>
-            <B.Button bsStyle='info' bsSize='xsmall'><Link to={'/sale/' + sale.sale_id + '/orders'}>View Orders</Link></B.Button>
-            </B.ButtonToolbar>
+          <td>
+            <span className="st-linkL"><Link to={'/sale/' + sale.sale_id}>Edit Sale</Link></span>|
+            <span className="st-linkM"><Link to={'/sale/' + sale.sale_id + '/inventory'}>Edit Inventory</Link></span>|
+            <span className="st-linkR"><Link to={'/sale/' + sale.sale_id + '/orders'}>View Orders</Link></span>
+            
           </td>
         </tr>
       );
@@ -45,11 +47,11 @@ class SaleTable extends React.Component {
         <B.Table condensed>
           <thead>
             <tr>
-              <th>Sale Type</th>
-              <th>Sale Open</th>
-              <th>Sale Close</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th width='15%'>Sale Type</th>
+              <th width='15%'>Sale Open</th>
+              <th width='15%'>Sale Close</th>
+              <th width='10%'>Status</th>
+              <th width='45%'>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -63,4 +65,4 @@ class SaleTable extends React.Component {
   }
 }
 
-module.exports = OrderTable;
+module.exports = SaleTable;

@@ -6,6 +6,7 @@ $bootstrap-sass-asset-helper: false !default;
 @import "landing";
 @import "home";
 @import "checkout";
+@import "editsale";
 
 
 // Component Styles
@@ -14,3 +15,4 @@ $bootstrap-sass-asset-helper: false !default;
 @import "comp-filtermenu";
 @import "comp-orderitems";
 @import "comp-totalbar";
+@import "comp-saletable";
