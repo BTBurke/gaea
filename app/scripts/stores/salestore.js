@@ -27,7 +27,13 @@ class SaleAPI extends Marty.HttpStateSource {
    deleteSale() {
 
    }
-   updateSale() {
+   updateSale(sale) {
+      console.log("Going to update sale...");
+      return this.request({
+      url: Config.baseURL + '/sale/' + sale.sale_id,
+      method: 'PUT',
+      body: sale
+    });
 
    }
 }
@@ -60,6 +66,27 @@ class SaleQueries extends Marty.Queries {
         this.dispatch(Constants.REQUEST_FAILED, err)
       });
   }
+  
+  updateSale(sale) {
+    return this.app.SaleAPI.updateSale(sale)
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            console.log("Server receive:", res.body);
+            this.dispatch(Constants.SALES_UPDATE, res.body);
+            break;
+          case 401:
+            this.dispatch(Constants.LOGIN_REQUIRED);
+            break;
+          default:
+            throw new AppError("Failed to update sale").getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(Constants.REQUEST_FAILED, err)
+      });
+  }
 }
 
 
@@ -74,6 +101,7 @@ class Sale {
     this.open_date = props.open_date;
     this.close_date = props.close_date;
     this.sale_type = props.sale_type;
+    this.sales_copy = props.sales_copy;
   }
 }
 
@@ -87,7 +115,8 @@ class SaleStore extends Marty.Store {
       'sales': undefined
     };
     this.handlers = {
-      _salesRead: Constants.SALES_READ
+      _salesRead: Constants.SALES_READ,
+      _updateSale: Constants.SALES_UPDATE
     };
   }
 
@@ -103,6 +132,12 @@ class SaleStore extends Marty.Store {
     }
   }
   
+  _updateSale(sale) {
+    this.state['sales'] = _.reject(this.state.sales, function (i) { return sale.sale_id === i.sale_id});
+    this.state['sales'] = this.state.sales.concat(sale);
+    this.hasChanged();
+  }
+  
   // Methods
   getSales() {
     return this.fetch({
@@ -111,18 +146,6 @@ class SaleStore extends Marty.Store {
         return this.state['sales'];
       },
       remotely: function() {
-        return this.app.SaleQueries.readSales();
-      }
-    });
-  }
-  
-  getSingleSale(saleID) {
-    return this.fetch({
-      id: 'singlesale',
-      locally: function(saleID) {
-        return _.findWhere(this.state['sales'], {'sale_id': saleID});
-      },
-      remotely: function(saleID) {
         return this.app.SaleQueries.readSales();
       }
     });

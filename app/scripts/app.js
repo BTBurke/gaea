@@ -30,7 +30,7 @@ window.Marty = require('marty');
 var External = React.createClass({
   render: function () {
     return (
-      <ApplicationContainer app={app}>
+      <ApplicationContainer app={app} router={this.context.router}>
         <RouteHandler/>
       </ApplicationContainer>
     );

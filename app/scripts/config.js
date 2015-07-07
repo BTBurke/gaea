@@ -5,7 +5,8 @@
 
 // For c9 development
 var Config = {
-    'baseURL': 'http://gserver-btburke75.c9.io'
+    'baseURL': 'http://gserver-btburke75.c9.io',
+    'homeURL': 'http://gaea-btburke75.c9.io'
 }
 
 module.exports = Config;
