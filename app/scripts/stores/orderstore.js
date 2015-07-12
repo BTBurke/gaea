@@ -207,7 +207,7 @@ class OrderItem {
     this.qty = props.qty;
     this.inventory_id = props.inventory_id;
     this.order_id = props.order_id;
-    this.order_item_id = props.order_item_id;
+    this.orderitem_id = props.orderitem_id;
     this.user_id = props.user_id;
     this.updated_at = props.updated_at;
   }

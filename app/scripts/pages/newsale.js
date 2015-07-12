@@ -2,8 +2,6 @@ var React = require('react');
 var B = require('react-bootstrap');
 var Marty = require('marty');
 var _ = require('underscore');
-var Navigation = require('react-router').Navigation;
-var reactMixin = require('react-mixin');
 
 var TopNav = require('../components/topnav');
 var Calendar = require('react-bootstrap-calendar').Calendar;
@@ -14,7 +12,7 @@ var Config = require('../config');
 var Application = require('../stores/application');
 var app = new Application();
 
-class EditSale extends React.Component {
+class NewSale extends React.Component {
   constructor(props) {
     super(props);
     
