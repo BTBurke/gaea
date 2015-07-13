@@ -57,6 +57,7 @@ class EditOrder extends React.Component {
     }
     
     onAdd(id, qty) {
+        console.log('add id', id);
         if (qty === 0) {
             console.log("Add 0 items, no op")
             return
@@ -64,8 +65,8 @@ class EditOrder extends React.Component {
         var item = {
             'inventory_id': id,
             'qty': qty,
-            'order_id': this.props.params.orderID,
-            'user_id': this.props.user.userID
+            'order_id': parseInt(this.props.params.orderID),
+            'user_name': this.props.user.user_name
         }
         
         var thisItem = _.findWhere(this.props.inventory, {'inventory_id': id});

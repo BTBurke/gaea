@@ -62,7 +62,6 @@ class User {
     this.email = props.email;
     this.fullName = props.first_name + ' ' + props.last_name;
     this.role = props.role;
-    this.userID = props.user_id;
   }
 
   isLoggedIn() {

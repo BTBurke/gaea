@@ -12,6 +12,14 @@ class OrderTable extends React.Component {
   render() {
 
     var orders = this.props.orders;
+    
+    if (orders.length === 0) {
+      return (
+        <B.Panel header={this.props.title}>
+        No open orders.  Create a new order from the current sales listed below.
+        </B.Panel>
+      );
+    }
 
     var displayorders = _.map(orders, function(order, idx) {
 

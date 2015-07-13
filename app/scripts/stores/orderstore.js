@@ -52,6 +52,7 @@ class OrderAPI extends Marty.HttpStateSource {
    }
    createOrderItem(item) {
     console.log("Going to add order item...");
+    console.log("Item to update", item);
     return this.request({
       url: Config.baseURL + '/order/' + item.order_id + '/item',
       method: 'POST',

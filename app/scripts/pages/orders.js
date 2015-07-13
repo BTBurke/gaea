@@ -5,10 +5,12 @@ var UserStore = require('../stores/userstore');
 var OrderStore = require('../stores/orderstore');
 var React = require('react');
 var B = require('react-bootstrap');
+var _ = require('underscore');
 
 var TopNav = require('../components/topnav');
 var SideMenu = require('../components/sidemenu');
 var OrderTable = require('../components/ordertable');
+var CurrentSales = require('../components/currentsales');
 
 var Application = require('../stores/application');
 var { ApplicationContainer } = require('marty');
@@ -29,6 +31,14 @@ class Orders extends React.Component {
           {'key': 0, 'href': '/sale', 'text': 'Create a new sale'}
           ]
     }
+    this.state = {
+      'transitionPending': false,
+      'spin': undefined
+    }
+  }
+  
+  createOrder(sale) {
+    console.log("creating new order for sale: ", sale);
   }
 
   render() {
@@ -52,7 +62,12 @@ class Orders extends React.Component {
           </B.Col>
 
           <B.Col md={9} lg={9}>
-              <OrderTable title="Open Orders" orders={this.props.orderstore.orders}/>
+              <OrderTable title="Open Orders" orders={_.reject(this.props.orderstore.orders, function(order) { return order.status === 'complete' })}/>
+          </B.Col>
+        </B.Row>
+        <B.Row>
+          <B.Col md={9} mdOffset={3} lg={9} lgOffset={3}>
+            <CurrentSales title="Current items for sale" sales={this.props.sales} createOrder={this.createOrder.bind(this)} />
           </B.Col>
         </B.Row>
       </B.Grid>
@@ -64,7 +79,7 @@ class Orders extends React.Component {
 
 
 module.exports = Marty.createContainer(Orders, {
-  listenTo: ['UserStore', 'OrderStore'],
+  listenTo: ['UserStore', 'OrderStore', 'SaleStore'],
   fetch: {
     user: function() {
       return this.app.UserStore.getUser();
@@ -73,6 +88,9 @@ module.exports = Marty.createContainer(Orders, {
       var ord = this.app.OrderStore.getOrders();
       console.log('page receive:', ord);
       return ord;
+    },
+    sales: function() {
+      return this.app.SaleStore.getSales();
     }
   }
 });
