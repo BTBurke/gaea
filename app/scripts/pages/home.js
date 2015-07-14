@@ -35,7 +35,7 @@ class Home extends React.Component {
   render() {
 
     var adminMenu = function(role, menu) {
-      if (role === 'admin') {
+      if (role === 'admin' || role === 'superadmin') {
         return (
           <SideMenu menu={menu}/>
         );

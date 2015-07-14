@@ -28,7 +28,8 @@ class CurrentSales extends React.Component {
                 <div className="cs-sale-title">{Utils.Capitalize(sale.sale_type)}</div>
                 <div className="cs-sale-close"> Closes {new Date(sale.close_date).toDateString()}</div>
                 <div className="cs-sale-copy">{sale.sales_copy}</div>
-                <B.Button bsStyle='info' bsSize='small' onClick={this.localCreateOrder(sale.sale_id).bind(this)}>Create a new {sale.sale_type} order</B.Button>
+                <B.Button bsStyle={this.props.spin === sale.sale_id ? 'default' : 'info'} bsSize='small' onClick={this.localCreateOrder(sale.sale_id).bind(this)}>Create a new {sale.sale_type} order</B.Button>
+                {this.props.spin === sale.sale_id ? <img src="images/ring.gif"/> : null}
                 {idx <= openSales.length -2 ? <hr/> : null }
             </div>
             ); 

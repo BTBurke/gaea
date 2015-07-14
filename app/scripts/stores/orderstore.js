@@ -26,8 +26,12 @@ class OrderAPI extends Marty.HttpStateSource {
      console.log("Going to read orders...");
         return this.get(Config.baseURL + '/order');
    }
-   createOrder() {
-
+   createOrder(order) {
+      return this.request({
+        url: Config.baseURL + '/order',
+        method: 'POST',
+        body: order
+      });
    }
    deleteOrder() {
 
@@ -96,6 +100,27 @@ class OrderQueries extends Marty.Queries {
         console.log(err);
         this.dispatch(Constants.REQUEST_FAILED, err)
       });
+  }
+  
+  createOrder(order) {
+    return this.app.OrderAPI.createOrder(order)
+      .then(res => {
+          switch (res.status) {
+            case 200:
+              console.log("Server receive:", res.body);
+              this.dispatch(Constants.ORDERS_CREATE, res.body);
+              break;
+            case 401:
+              this.dispatch(Constants.LOGIN_REQUIRED);
+              break;
+            default:
+              throw new AppError("Failed to create order").getError();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.dispatch(Constants.REQUEST_FAILED, err)
+        });
   }
   
   createOrderItem(item) {
@@ -226,6 +251,7 @@ class OrderStore extends Marty.Store {
     };
     this.handlers = {
       _ordersRead: Constants.ORDERS_READ,
+      _ordersCreate: Constants.ORDERS_CREATE,
       _addItem: Constants.ORDER_ITEMS_CREATE,
       _readItem: Constants.ORDER_ITEMS_READ,
       _deleteItem: Constants.ORDER_ITEMS_DELETE,
@@ -237,13 +263,23 @@ class OrderStore extends Marty.Store {
   // Action Handlers
   _ordersRead(orders) {
     console.log('received', orders);
-    this.state['orders'] = _.each(orders, function(order) { return new Order(order)});
-    console.log('state update', this.state['orders']);
+    if (orders.qty === 0) {
+      this.state['orders'] = [];
+      this.hasChanged();
+    } else {
+      this.state['orders'] = _.map(orders.orders, function(order) { return new Order(order)});
+      console.log('state update', this.state['orders']);
+      this.hasChanged();
+    }
+  }
+  
+  _ordersCreate(order) {
+    this.state['orders'] = this.state['orders'].concat(new Order(order));
     this.hasChanged();
   }
   
   _addItem(item) {
-    this.state['items'] = this.state['items'].concat(item);
+    this.state['items'] = this.state['items'].concat(new OrderItem(item));
     console.log('items update', this.state['items']);
     this.hasChanged();
   }
