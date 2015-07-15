@@ -2,14 +2,13 @@ var React = require('react');
 var B = require('react-bootstrap');
 var Marty = require('marty');
 var _ = require('underscore');
-var Navigation = require('react-router').Navigation;
-var reactMixin = require('react-mixin');
 
 var TopNav = require('../components/topnav');
 var Calendar = require('react-bootstrap-calendar').Calendar;
 var Directions = require('../components/directions');
 var Utils = require('../services/utils');
 var Config = require('../config');
+var log = require('../services/logger');
 
 var Application = require('../stores/application');
 var app = new Application();
@@ -17,12 +16,16 @@ var app = new Application();
 class EditSale extends React.Component {
   constructor(props) {
     super(props);
+    log.Debug("received props", props);
+    var thisSale = _.findWhere(props.sale, {"sale_id": parseInt(props.params.saleID)});
+    log.Debug("This sale", thisSale);
     
     this.state = {
-      'open': new Date(this.props.sale.open_date),
-      'close': new Date(this.props.sale.close_date),
-      'sale_type': this.props.sale.sale_type,
-      'sales_copy': this.props.sale.sales_copy
+      'sale_id': parseInt(thisSale.sale_id),
+      'open': new Date(thisSale.open_date),
+      'close': new Date(thisSale.close_date),
+      'sale_type': thisSale.sale_type,
+      'sales_copy': thisSale.sales_copy
     }
   }
   
@@ -50,10 +53,10 @@ class EditSale extends React.Component {
   
   onSaveChanges() {
     var update ={
-      'sale_id': this.props.sale.sale_id,
+      'sale_id': this.state.sale_id,
       'open_date': this.state.open,
       'close_date': this.state.close,
-      'sale_type': this.props.sale.sale_type,
+      'sale_type': this.state.sale_type,
       'sales_copy': this.state.sales_copy
     };
     
@@ -105,8 +108,8 @@ class EditSale extends React.Component {
                 </B.OverlayTrigger>
                 
                 
-                <B.Input type="select" ref="saletype" label="Sale Type" placeholder="Choose sale type" value={this.props.sale.sale_type} readOnly>
-                  <option value={this.props.sale.sale_type}>{Utils.Capitalize(this.props.sale.sale_type)}</option>
+                <B.Input type="select" ref="saletype" label="Sale Type" placeholder="Choose sale type" value={this.state.sale_type} readOnly>
+                  <option value={this.state.sale_type}>{Utils.Capitalize(this.state.sale_type)}</option>
                 </B.Input>
             </B.Col>
             </B.Row>
@@ -130,7 +133,7 @@ class EditSale extends React.Component {
     );
   }
 }
-reactMixin(EditSale.prototype, Navigation);
+
 
 module.exports = Marty.createContainer(EditSale, {
   listenTo: ['UserStore', 'SaleStore'],
@@ -140,7 +143,7 @@ module.exports = Marty.createContainer(EditSale, {
     },
     sale: function() {
       var sales = this.app.SaleStore.getSales();
-      sales.result = _.findWhere(sales.result, {"sale_id": this.props.params.saleID});
+      //sales.result = _.findWhere(sales.result, {"sale_id": this.props.params.saleID});
       return sales;
     }
   }

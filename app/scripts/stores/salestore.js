@@ -21,8 +21,12 @@ class SaleAPI extends Marty.HttpStateSource {
      console.log("Going to read sales...");
         return this.get(Config.baseURL + '/sale');
    }
-   createSale() {
-
+   createSale(sale) {
+     return this.request({
+      url: Config.baseURL + '/sale',
+      method: 'POST',
+      body: sale
+     });
    }
    deleteSale() {
 
@@ -59,6 +63,27 @@ class SaleQueries extends Marty.Queries {
             break;
           default:
             throw new AppError("Failed to get list of sales").getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(Constants.REQUEST_FAILED, err)
+      });
+  }
+  
+  createSale(sale) {
+    return this.app.SaleAPI.createSale(sale)
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            console.log("Server receive:", res.body);
+            this.dispatch(Constants.SALES_CREATE, res.body);
+            break;
+          case 401:
+            this.dispatch(Constants.LOGIN_REQUIRED);
+            break;
+          default:
+            throw new AppError("Failed to create sale").getError();
         }
       })
       .catch(err => {
@@ -116,7 +141,8 @@ class SaleStore extends Marty.Store {
     };
     this.handlers = {
       _salesRead: Constants.SALES_READ,
-      _updateSale: Constants.SALES_UPDATE
+      _updateSale: Constants.SALES_UPDATE,
+      _createSale: Constants.SALES_CREATE
     };
   }
 
@@ -134,6 +160,11 @@ class SaleStore extends Marty.Store {
   
   _updateSale(sale) {
     this.state['sales'] = _.reject(this.state.sales, function (i) { return sale.sale_id === i.sale_id});
+    this.state['sales'] = this.state.sales.concat(sale);
+    this.hasChanged();
+  }
+  
+  _createSale(sale) {
     this.state['sales'] = this.state.sales.concat(sale);
     this.hasChanged();
   }

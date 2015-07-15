@@ -8,6 +8,7 @@ var Calendar = require('react-bootstrap-calendar').Calendar;
 var Directions = require('../components/directions');
 var Utils = require('../services/utils');
 var Config = require('../config');
+var log = require('../services/logger');
 
 var Application = require('../stores/application');
 var app = new Application();
@@ -16,11 +17,23 @@ class NewSale extends React.Component {
   constructor(props) {
     super(props);
     
+    this.transitionPending = false;
+    
     this.state = {
-      'open': new Date(this.props.sale.open_date),
-      'close': new Date(this.props.sale.close_date),
-      'sale_type': this.props.sale.sale_type,
-      'sales_copy': this.props.sale.sales_copy
+      'open': new Date(),
+      'close': new Date(),
+      'sales_copy': ''
+    }
+  }
+  
+  componentWillReceiveProps(newprops) {
+    console.log("old props", this.props);
+    console.log("new props", newprops);
+    
+    if (this.transitionPending) {
+       var newSale = _.difference(newprops.sale, this.props.sale)[0];
+       log.Debug("Found new sale", newSale);
+       window.location = Config.homeURL + '/#/sale/' + newSale.sale_id + '/uploadinventory';
     }
   }
   
@@ -47,21 +60,16 @@ class NewSale extends React.Component {
   }
   
   onSaveChanges() {
-    var update ={
-      'sale_id': this.props.sale.sale_id,
+    var sale ={
       'open_date': this.state.open,
       'close_date': this.state.close,
-      'sale_type': this.props.sale.sale_type,
+      'sale_type': this.refs.saletype.getValue(),
       'sales_copy': this.state.sales_copy
     };
     
-    this.app.SaleQueries.updateSale(update);
+    log.Debug('Adding new sale', sale);
+    this.app.SaleQueries.createSale(sale);
     
-    setTimeout(function() {
-      console.log('context', this.context);
-      console.log('this', this);
-      window.location = Config.homeURL + '/#/sale';
-    }.bind(this), 2000);
   }
 
   render() {
@@ -70,7 +78,7 @@ class NewSale extends React.Component {
     var dirs = [
       {'section': 'Open Date', 'text': 'Enter the date you want the sale to begin.  Members will get an email announcing the sale.'},
       {'section': 'Close Date', 'text': 'Enter the date you want the sale to close. No new orders will be accepted after this date. Members will start getting emails 5 days before close for them to submit their order.'},
-      {'section': 'Sale Type', 'text': 'The type of sale cannot be changed.  Create a new sale if you need to edit this value.'},
+      {'section': 'Sale Type', 'text': 'Select the type of sale.  You will upload the inventory for the sale in the next step.'},
       {'section': 'Sales Copy', 'text': 'Write a description of the sale.  This text will appear as the body of the email announcing the sale and as an announcement on the homepage as long as the sale is open.'}
     ];
     
@@ -84,7 +92,7 @@ class NewSale extends React.Component {
       <B.Grid>
         <B.Row>
           <B.Col md={8} lg={8} mdOffset={2} lgOffset={2}>
-          <Directions title="Editing a sale" directions={dirs}/>
+          <Directions title="Creating a new sale" directions={dirs}/>
           </B.Col>
         </B.Row>
 
@@ -104,7 +112,8 @@ class NewSale extends React.Component {
                 
                 
                 <B.Input type="select" ref="saletype" label="Sale Type" placeholder="Choose sale type" value={this.props.sale.sale_type} readOnly>
-                  <option value={this.props.sale.sale_type}>{Utils.Capitalize(this.props.sale.sale_type)}</option>
+                  <option value="alcohol">Alcohol</option>
+                  <option value="merchandise">Merchandise</option>
                 </B.Input>
             </B.Col>
             </B.Row>
@@ -119,7 +128,7 @@ class NewSale extends React.Component {
              </div>
              <B.Row>
              <B.Col md={8} lg={8} mdOffset={3} lgOffset={3}>
-              <B.Button bsStyle='info' onClick={this.onSaveChanges.bind(this)}>Save Changes</B.Button>
+              <B.Button bsStyle='info' onClick={this.onSaveChanges.bind(this)}>Next Step: Upload Inventory</B.Button>
              </B.Col>
              </B.Row>
       </B.Grid>
@@ -128,9 +137,8 @@ class NewSale extends React.Component {
     );
   }
 }
-reactMixin(EditSale.prototype, Navigation);
 
-module.exports = Marty.createContainer(EditSale, {
+module.exports = Marty.createContainer(NewSale, {
   listenTo: ['UserStore', 'SaleStore'],
   fetch: {
     user: function() {
@@ -138,7 +146,7 @@ module.exports = Marty.createContainer(EditSale, {
     },
     sale: function() {
       var sales = this.app.SaleStore.getSales();
-      sales.result = _.findWhere(sales.result, {"sale_id": this.props.params.saleID});
+      //sales.result = _.findWhere(sales.result, {"sale_id": this.props.params.saleID});
       return sales;
     }
   }

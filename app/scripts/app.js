@@ -8,6 +8,7 @@ var React = require('react'),
     Checkout = require('./pages/checkout');
     Sales = require('./pages/sale');
     EditSale = require('./pages/editsale');
+    NewSale = require('./pages/newsale');
     //Login = require("./pages/login")
 
 // React-router
@@ -59,6 +60,7 @@ var routes = (
     <Route name="checkout" path="/order/:orderID/checkout" handler={Checkout}/>
     <Route name="sales" path="/sale" handler={Sales}/>
     <Route name="saleedit" path="/sale/:saleID" handler={EditSale}/>
+    <Route name="salenew" path="/sale/new" handler={NewSale}/>
   </Route>
 );
 
