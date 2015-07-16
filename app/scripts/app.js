@@ -59,8 +59,8 @@ var routes = (
     <Route name="editorder" path="/order/:orderID" handler={EditOrder}/>
     <Route name="checkout" path="/order/:orderID/checkout" handler={Checkout}/>
     <Route name="sales" path="/sale" handler={Sales}/>
-    <Route name="saleedit" path="/sale/:saleID" handler={EditSale}/>
     <Route name="salenew" path="/sale/new" handler={NewSale}/>
+    <Route name="saleedit" path="/sale/:saleID" handler={EditSale}/>
   </Route>
 );
 

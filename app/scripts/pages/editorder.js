@@ -123,6 +123,7 @@ class EditOrder extends React.Component {
     }
     
     render() {
+        console.log('page receives inventory', this.props.inventory);
         return (
             <div>
             <TopNav user={this.props.user.fullName}/>
@@ -162,19 +163,13 @@ module.exports = Marty.createContainer(EditOrder, {
   listenTo: ['UserStore', 'OrderStore', 'InventoryStore'],
   fetch: {
     user: function() {
-      return this.app.UserStore.getUser();
+        return this.app.UserStore.getUser();
     },
     items: function() {
-      var loc = this.props.params.orderID;
-      var ord = this.app.OrderStore.getItems(loc);
-      console.log('page receive:', ord);
-      return ord;
+        return this.app.OrderStore.getItems(this.props.params.orderID);
     },
     inventory: function() {
-        var loc = this.props.params.orderID;
-        console.log("location", loc);
-        console.log("this.app", this.app);
-        return this.app.InventoryStore.getInventoryByOrder(loc);
+        return this.app.InventoryStore.getInventoryByOrder(this.props.params.orderID);
     },
   },
   pending() {

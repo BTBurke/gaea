@@ -3,6 +3,8 @@ var AppError = require("../services/apperror.js");
 var Config = require("../config");
 var _ = require('underscore');
 
+var log = require('../services/logger');
+
 var Constants = Marty.createConstants([
   'INVENTORY_READ',
   'INVENTORY_CREATE',
@@ -18,9 +20,16 @@ var Constants = Marty.createConstants([
 
 class InventoryAPI extends Marty.HttpStateSource {
    readInventoryByOrder(orderID) {
+     console.log("API receive:", orderID);
      console.log("Going to read inventory for " + orderID + "...");
      //TODO: need to allow search along the lines of http://api.gzaea.org/v1/inventory?order=xxxxxx
-        return this.get(Config.baseURL + '/inventory');
+      return this.get(Config.baseURL + '/inventory?order=' + orderID);
+   }
+   
+   readInventoryBySale(saleID) {
+     log.Debug("Going to read inventory for " + saleID + "...");
+     //TODO: need to allow search by sale http://api.gzaea.org/v1/inventory?sale=xxxxxx
+     return this.get(Config.baseURL + '/inventory?sale=' + saleID);
    }
    createInventory() {
 
@@ -40,6 +49,7 @@ class InventoryAPI extends Marty.HttpStateSource {
 
 class InventoryQueries extends Marty.Queries {
   readInventoryByOrder(orderID) {
+    console.log("query receive:", orderID);
     return this.app.InventoryAPI.readInventoryByOrder(orderID)
       .then(res => {
         switch (res.status) {
@@ -51,7 +61,7 @@ class InventoryQueries extends Marty.Queries {
             this.dispatch(Constants.LOGIN_REQUIRED);
             break;
           default:
-            throw new AppError("Failed to get inventory. InventoryID: " + inventoryID).getError();
+            throw new AppError("Failed to get inventory. OrderID: " + orderID).getError();
         }
       })
       .catch(err => {
@@ -59,6 +69,28 @@ class InventoryQueries extends Marty.Queries {
         this.dispatch(Constants.REQUEST_FAILED, err)
       });
   }
+
+  readInventoryBySale(saleID) {
+    return this.app.InventoryAPI.readInventoryBySale(saleID)
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            console.log("Server receive:", res.body);
+            this.dispatch(Constants.INVENTORY_READ, res.body);
+            break;
+          case 401:
+            this.dispatch(Constants.LOGIN_REQUIRED);
+            break;
+          default:
+            throw new AppError("Failed to get inventory. saleID: " + saleID).getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(Constants.REQUEST_FAILED, err)
+      });
+  }
+  
 }
 
 
@@ -92,9 +124,7 @@ class Inventory {
 class InventoryStore extends Marty.Store {
   constructor(options) {
     super(options);
-    this.state = {
-      'inventory': undefined
-      };
+    this.state = {};
     this.handlers = {
       _inventoryRead: Constants.INVENTORY_READ,
 
@@ -104,8 +134,12 @@ class InventoryStore extends Marty.Store {
   // Action Handlers
   _inventoryRead(inv) {
     console.log('Inventory: received', inv);
-    this.state['inventory'] = _.map(inv, function(inv1) {return new Inventory(inv1)});
-    console.log('Inventory: state update', this.state['inventory']);
+    if (inv.qty > 0) {
+      this.state[inv.query] = _.map(inv.inventory, function(inv1) {return new Inventory(inv1)});
+    } else {
+      this.state[inv.query] = [];
+    }
+    console.log('Inventory: state update', this.state);
     this.hasChanged();
   }
 
@@ -114,16 +148,28 @@ class InventoryStore extends Marty.Store {
 
   // Methods
   getInventoryByOrder(orderID) {
+    console.log("i received orderid in store:", orderID);
     return this.fetch({
       id: 'inventory',
-      locally: function(orderID) {
-        return this.state['inventory'];
+      locally: function() {
+        return this.state['order-'+orderID];
       },
-      remotely: function(orderID) {
-        return this.app.InventoryQueries.readInventoryByOrder();
+      remotely: function() {
+        return this.app.InventoryQueries.readInventoryByOrder(orderID);
       }
     });
-
+  }
+    
+  getInventoryBySale(saleID) {
+    return this.fetch({
+      id: 'inventory',
+      locally: function() {
+        return this.state['sale-'+saleID];
+      },
+      remotely: function() {
+        return this.app.InventoryQueries.readInventoryBySale(saleID);
+      }
+    });
   }
 
 }

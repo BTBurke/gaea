@@ -160,12 +160,12 @@ class SaleStore extends Marty.Store {
   
   _updateSale(sale) {
     this.state['sales'] = _.reject(this.state.sales, function (i) { return sale.sale_id === i.sale_id});
-    this.state['sales'] = this.state.sales.concat(sale);
+    this.state['sales'] = this.state.sales.concat(new Sale(sale));
     this.hasChanged();
   }
   
   _createSale(sale) {
-    this.state['sales'] = this.state.sales.concat(sale);
+    this.state['sales'] = this.state.sales.concat(new Sale(sale));
     this.hasChanged();
   }
   

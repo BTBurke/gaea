@@ -9,6 +9,7 @@ var Directions = require('../components/directions');
 var Utils = require('../services/utils');
 var Config = require('../config');
 var log = require('../services/logger');
+var ErrorBar = require('../components/errorbar');
 
 var Application = require('../stores/application');
 var app = new Application();
@@ -20,6 +21,7 @@ class NewSale extends React.Component {
     this.transitionPending = false;
     
     this.state = {
+      'error': null,
       'open': new Date(),
       'close': new Date(),
       'sales_copy': ''
@@ -33,7 +35,7 @@ class NewSale extends React.Component {
     if (this.transitionPending) {
        var newSale = _.difference(newprops.sale, this.props.sale)[0];
        log.Debug("Found new sale", newSale);
-       window.location = Config.homeURL + '/#/sale/' + newSale.sale_id + '/uploadinventory';
+       window.location = Config.homeURL + '/#/sale/' + newSale.sale_id + '/inventory';
     }
   }
   
@@ -47,9 +49,14 @@ class NewSale extends React.Component {
   }
   
   onDatePickClose(d) {
-    console.log('date receive', d);
-    this.setState({'close': new Date(d)});
-    console.log('new date state', this.state);
+
+    var newDate = new Date(d);
+    this.setState({'close': newDate});
+    if (newDate <= this.state.open) {
+      this.setState({'error': 'Error: Closing date must be after opening date'});
+    } else {
+      this.setState({'error': null});
+    }
     setTimeout(() => {
       React.findDOMNode(this.refs.closedate).children[1].click();
     }, 300);
@@ -66,6 +73,18 @@ class NewSale extends React.Component {
       'sale_type': this.refs.saletype.getValue(),
       'sales_copy': this.state.sales_copy
     };
+    
+    if (sale.open_date >= sale.close_date) {
+      this.setState({'error': 'Error: The close date must be at least one day after the open date.'});
+      return;
+    }
+    
+    if (sale.sales_copy.length === 0) {
+      this.setState({'error': 'Error: Enter some sales copy, otherwise the main page announcing the sale will be blank and so will the announcement email.'});
+      return;
+    } else {
+      this.setState({'error': null});
+    }
     
     log.Debug('Adding new sale', sale);
     this.app.SaleQueries.createSale(sale);
@@ -93,6 +112,11 @@ class NewSale extends React.Component {
         <B.Row>
           <B.Col md={8} lg={8} mdOffset={2} lgOffset={2}>
           <Directions title="Creating a new sale" directions={dirs}/>
+          </B.Col>
+        </B.Row>
+        <B.Row>
+          <B.Col md={8} lg={8} mdOffset={2} lgOffset={2}>
+            <ErrorBar error={this.state.error}/>
           </B.Col>
         </B.Row>
 
