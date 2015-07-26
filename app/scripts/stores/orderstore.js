@@ -247,7 +247,6 @@ class OrderStore extends Marty.Store {
     super(options);
     this.state = {
       'orders': undefined,
-      'items': undefined
     };
     this.handlers = {
       _ordersRead: Constants.ORDERS_READ,
@@ -279,28 +278,31 @@ class OrderStore extends Marty.Store {
   }
   
   _addItem(item) {
-    this.state['items'] = this.state['items'].concat(new OrderItem(item));
-    console.log('items update', this.state['items']);
+    var order = "order-" + item.order_id;
+    this.state[order] = this.state[order].concat(new OrderItem(item));
+    console.log('items update', this.state[order]);
     this.hasChanged();
   }
 
   _readItem(items) {
     if (items.qty === 0) {
-      this.state['items'] = [];
+      this.state[items.query] = [];
     } else {
-      this.state['items'] = _.map(items.order_items, function(item) { return new OrderItem(item)});
+      this.state[items.query] = _.map(items.order_items, function(item) { return new OrderItem(item)});
     }
     this.hasChanged();
   }
   
   _deleteItem(item) {
-    this.state['items'] = _.reject(this.state.items, function (i) { return item.order_item_id === i.order_item_id});
+    var order = "order-" + item.order_id;
+    this.state[order] = _.reject(this.state[order], function (i) { return item.order_item_id === i.order_item_id});
     this.hasChanged();
   }
   
   _updateItem(item) {
-    this.state['items'] = _.reject(this.state.items, function (i) { return item.order_item_id === i.order_item_id});
-    this.state['items'] = this.state.items.concat(item);
+    var order = "order-" + item.order_id;
+    this.state[order] = _.reject(this.state[order], function (i) { return item.order_item_id === i.order_item_id});
+    this.state[order] = this.state[order].concat(item);
     this.hasChanged();
   }
 
@@ -323,7 +325,7 @@ class OrderStore extends Marty.Store {
     return this.fetch({
      id: 'items',
      locally: function() {
-       return this.state['items'];
+       return this.state['order-'+ord];
      },
      remotely: function() {
        return this.app.OrderQueries.readOrderItems(ord);
