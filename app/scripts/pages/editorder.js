@@ -66,7 +66,7 @@ class EditOrder extends React.Component {
             'inventory_id': id,
             'qty': qty,
             'order_id': parseInt(this.props.params.orderID),
-            'user_name': this.props.user.user_name
+            'user_name': this.props.user.userName
         }
         
         var thisItem = _.findWhere(this.props.inventory, {'inventory_id': id});

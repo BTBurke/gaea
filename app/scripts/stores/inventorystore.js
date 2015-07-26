@@ -111,9 +111,9 @@ class Inventory {
     this.year = props.year;
     this.nonmem_price = props.nonmem_price;
     this.mem_price = props.mem_price;
-    this.types = props.types;
-    this.origin = props.origin;
-    this.changelog = props.changelog;
+    this.types = props.types.split(">");
+    this.origin = props.origin.split(">");
+    this.changelog = props.changelog.split(">");
   }
 }
 

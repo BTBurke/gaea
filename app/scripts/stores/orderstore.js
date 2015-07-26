@@ -288,7 +288,7 @@ class OrderStore extends Marty.Store {
     if (items.qty === 0) {
       this.state['items'] = [];
     } else {
-      this.state['items'] = this.map(items.order_items, function(item) { return new OrderItem(item)});
+      this.state['items'] = _.map(items.order_items, function(item) { return new OrderItem(item)});
     }
     this.hasChanged();
   }
