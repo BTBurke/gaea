@@ -4,6 +4,7 @@ var Marty = require('marty');
 
 var TopNav = require('../components/topnav');
 var Directions = require('../components/directions');
+var UploadInventory = require('../components/uploadinventory');
 var log = require('../services/logger');
 
 var Application = require('../stores/application');
@@ -19,7 +20,7 @@ class EditInventory extends React.Component {
     }
 
     render() {
-      if len(this.props.inventory === 0) {
+      if (this.props.inventory.length === 0) {
         return (
           <div>
           <TopNav user={this.props.user.fullName} />
