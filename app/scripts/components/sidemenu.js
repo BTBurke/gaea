@@ -11,7 +11,7 @@ class SideMenu extends React.Component {
         var menu = this.props.menu;
         var listitems = menu.items.map(function(item) {
             return (
-                <B.ListGroupItem key={item.key}><Link to={item.href}>{item.text}</Link></B.ListGroupItem>
+                <B.ListGroupItem key={item.key}>{item.external ? <a href={item.href}>{item.text}</a> : <Link to={item.href}>{item.text}</Link>}</B.ListGroupItem>
             );
         });
         

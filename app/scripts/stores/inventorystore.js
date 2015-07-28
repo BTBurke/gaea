@@ -31,8 +31,13 @@ class InventoryAPI extends Marty.HttpStateSource {
      //TODO: need to allow search by sale http://api.gzaea.org/v1/inventory?sale=xxxxxx
      return this.get(Config.baseURL + '/inventory?sale=' + saleID);
    }
-   createInventory() {
-
+   uploadInventoryCSV(csvtext) {
+     log.Debug("Posting inventory CSV text...")
+     return this.request({
+      url: Config.baseURL + '/inventory/csv',
+      method: 'POST',
+      body: csvtext
+     });
    }
    deleteInventory() {
 
@@ -91,6 +96,27 @@ class InventoryQueries extends Marty.Queries {
       });
   }
   
+  uploadInventoryCSV(csvtext) {
+    return this.app.InventoryAPI.uploadInventoryCSV(csvtext)
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            console.log("Server receive:", res.body);
+            this.dispatch(Constants.INVENTORY_READ, res.body);
+            break;
+          case 401:
+            this.dispatch(Constants.LOGIN_REQUIRED);
+            break;
+          default:
+            throw new AppError("Failed to get inventory after uploading CSV." + saleID).getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(Constants.REQUEST_FAILED, err)
+      });
+  }
+  
 }
 
 
@@ -114,6 +140,7 @@ class Inventory {
     this.types = props.types.split(">");
     this.origin = props.origin.split(">");
     this.changelog = props.changelog.split(">");
+    this.in_stock = props.in_stock;
   }
 }
 

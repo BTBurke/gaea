@@ -5,13 +5,14 @@ var _ = require('underscore');
 
 var log = require('../services/logger');
 var Directions = require('./directions');
+var ErrorList = require('./errorlist');
 var config = require('../config');
 
 class UploadInventory extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            'errors': undefined,
+            'errors': [],
             'submit': false
         }
         
@@ -43,34 +44,40 @@ class UploadInventory extends React.Component {
         var errs = _.map(invs, function(inv, line) {
             return _.map(reqts, function(name, idx) {
                 if (inv[idx].length === 0) {
-                    return "Line " + (line+1) ": Required value missing - " + name;
+                    return "Line " + (line+2) + ": Required value missing - " + name;
                 } 
             }); 
         });
         
         log.Debug("reqts", reqts);
         
-        return _.flatten(errs)
+        return _.filter(_.flatten(errs), function (err) { return err !== undefined });
     }
         
     validateThenUpload() {
         var csvtext = this.refs.csvtext.getValue();
         log.Debug("csv text", csvtext)
-        this.setState({'errors': undefined, 'submit': true});
+        this.setState({'errors': [], 'submit': true});
         
         parse(csvtext, function(err, outputAsArray) {
              if (err) {
                  this.setState({'errors': [err]});
              } else {
                  var errs = this.validate(outputAsArray);
+                 log.Debug("errors:", errs);
                  if (errs) {
                      this.setState({'errors': errs});
                  }
              }
         }.bind(this));
         
-        if (this.state.errors === undefined) {
+        if (csvtext.length === 0) {
+            this.setState({'errors': ['Inventory CSV text is empty']});
+        }
+        
+        if (this.state.errors.length === 0) {
             log.Debug('Uploading validated CSV file...');
+            this.props.upload(csvtext);
         }
         this.setState({'submit': false});
     }
@@ -81,9 +88,10 @@ class UploadInventory extends React.Component {
         <div>
         <Directions title="Uploading a New Inventory" directions={this.directions}/>
         <form>
-        <B.Input type='textarea' label='Paste Inventory CSV' placeholder='' ref='csvtext' />
+        <B.Input type='textarea' label='Paste Inventory CSV' placeholder='' ref='csvtext' className="ui-inventory-box" />
         </form>
         <B.Button onClick={this.validateThenUpload.bind(this)} bsStyle={this.state.submit ? 'default' : 'info'}>Validate & Submit</B.Button>{this.state.submit ? <img src='images/ring.gif'/> : null}
+        <ErrorList errors={this.state.errors}/>
         </div>
         );
     }
