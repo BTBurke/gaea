@@ -6,6 +6,7 @@ var _ = require('underscore');
 var log = require('../services/logger');
 var Directions = require('./directions');
 var ErrorList = require('./errorlist');
+var Spinner = require('./spinner');
 var config = require('../config');
 
 class UploadInventory extends React.Component {
@@ -79,7 +80,7 @@ class UploadInventory extends React.Component {
             log.Debug('Uploading validated CSV file...');
             this.props.upload(csvtext);
         }
-        this.setState({'submit': false});
+        //this.setState({'submit': false});
     }
     
     render() {
@@ -90,7 +91,7 @@ class UploadInventory extends React.Component {
         <form>
         <B.Input type='textarea' label='Paste Inventory CSV' placeholder='' ref='csvtext' className="ui-inventory-box" />
         </form>
-        <B.Button onClick={this.validateThenUpload.bind(this)} bsStyle={this.state.submit ? 'default' : 'info'}>Validate & Submit</B.Button>{this.state.submit ? <img src='images/ring.gif'/> : null}
+        <B.Button onClick={this.validateThenUpload.bind(this)} bsStyle={this.state.submit ? 'default' : 'info'}>Validate and Submit{this.state.submit ? <Spinner /> : null}</B.Button>
         <ErrorList errors={this.state.errors}/>
         </div>
         );
