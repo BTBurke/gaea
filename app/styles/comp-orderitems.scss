@@ -30,7 +30,7 @@
     padding-left: 10px;
     position: relative;
     
-    .oi-item-price-non-header, .oi-item-price-mem-header {
+    .oi-item-price-non-header, .oi-item-price-mem-header, .oi-item-status-header {
         font-size: 15px;
         font-weight: bold;
         padding-left: auto;
@@ -45,6 +45,23 @@
         font-style: bold;
         font-size: 24px;
         text-align: center;
+    }
+    
+    .oi-item-status {
+        padding-left: auto;
+        padding-right: auto;
+        padding-top: 10px;
+        font-size: 15px;
+        text-align: center;
+        font-style: bold;
+    }
+    
+    .oi-item-status-instock {
+        color: green;
+    }
+    
+    .oi-item-status-outstock {
+        color: red;
     }
     
     .oi-item-btn {

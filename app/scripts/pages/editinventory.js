@@ -7,6 +7,7 @@ var Directions = require('../components/directions');
 var UploadInventory = require('../components/uploadinventory');
 var SideMenu = require('../components/sidemenu');
 var log = require('../services/logger');
+var InventoryItems = require('../components/inventoryitems');
 
 var Application = require('../stores/application');
 var app = new Application();
@@ -52,7 +53,7 @@ class EditInventory extends React.Component {
         return (
           <div>
           <TopNav user={this.props.user.fullName} />
-          <p>Still testing</p>
+          <InventoryItems inventory={this.props.inventory} />
           </div>
         );
       }

@@ -42,7 +42,7 @@ class InventoryAPI extends Marty.HttpStateSource {
    deleteInventory() {
 
    }
-   updateInventory() {
+   updateInventoryItem() {
 
    }
 }
