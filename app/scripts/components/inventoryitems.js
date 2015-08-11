@@ -54,7 +54,7 @@ class InventoryItems extends React.Component {
                 </B.Col>
                 </B.Row>
                 <B.Row>
-                    <B.Col md={9} lg={9}>
+                    <B.Col md={10} lg={10}>
                         <div className="oi-item-price">
                         <B.Row>
                             <B.Col md={3} lg={3}>
@@ -69,10 +69,11 @@ class InventoryItems extends React.Component {
                                 {item.mem_price}<span className="oi-rmb">RMB</span>
                             </div>
                             </B.Col>
-                            <B.Col md={3} lg={3}>
-                              
+                            <B.Col md={4} lg={4}>
+                             <div className="oi-item-status-header">Type</div>
+                             <div className="oi-item-status">{item.types.slice(0).join(" > ")}</div>
                             </B.Col>
-                            <B.Col md={3} lg={3}>
+                            <B.Col md={2} lg={2}>
                             <div className="oi-item-status-header">Status</div>
                             <div className="oi-item-status">
                                 {item.in_stock ? <span className="oi-item-status-instock">In Stock</span> : <span className="oi-item-status-outstock">Out of Stock</span>}
@@ -81,7 +82,7 @@ class InventoryItems extends React.Component {
                         </B.Row>
                         </div>
                     </B.Col>
-                    <B.Col md={3} lg={3}>
+                    <B.Col md={2} lg={2}>
                         <B.Button onClick={this._onClickTransition(item)}>Edit Item</B.Button>
                     </B.Col>
                 </B.Row>

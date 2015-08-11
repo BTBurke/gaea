@@ -142,6 +142,17 @@ class Inventory {
     this.changelog = props.changelog.split(">");
     this.in_stock = props.in_stock;
   }
+  
+  asSearchObject() {
+    return {
+      'supplier_id': this.supplier_id,
+      'name': this.name,
+      'desc': this.desc,
+      'types': this.types,
+      'origin': this.origin
+    }
+      
+    }
 }
 
 
