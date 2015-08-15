@@ -12,7 +12,7 @@ class InventoryItems extends React.Component {
     
     _onClickTransition(item) {
         return function() {
-            window.location = config.baseURL + '/#/sale/' + item.sale_id + '/inventory/' + item.inventory_id;
+            window.location = config.homeURL + '/#/sale/' + item.sale_id + '/inventory/' + item.inventory_id;
         }
     }
     
