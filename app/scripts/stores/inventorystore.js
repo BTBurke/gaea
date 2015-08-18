@@ -137,10 +137,25 @@ class Inventory {
     this.year = props.year;
     this.nonmem_price = props.nonmem_price;
     this.mem_price = props.mem_price;
-    this.types = props.types.split(">");
-    this.origin = props.origin.split(">");
-    this.changelog = props.changelog.split(">");
     this.in_stock = props.in_stock;
+    
+    if (typeof(props.types) === 'string') {
+      this.types = props.types.split(">");
+    } else {
+      this.types = props.types;
+    }
+    
+    if (typeof(props.origin) === 'string') {
+      this.origin = props.origin.split(">");
+    } else {
+      this.origin = props.origin;
+    }
+    
+    if (typeof(props.changelog) === 'string') {
+      this.changelog = props.changelog.split(">");
+    } else {
+      this.changelog = props.changelog;
+    }
   }
   
   asSearchObject() {
@@ -153,6 +168,26 @@ class Inventory {
     }
       
     }
+  
+  clone() {
+    return new Inventory({
+      'sale_id': this.sale_id,
+      'updated_at': this.updated_at,
+      'inventory_id': this.inventory_id,
+      'supplier_id': this.supplier_id,
+      'name': this.name,
+      'desc': this.desc,
+      'abv': this.abv,
+      'size': this.size,
+      'year': this.year,
+      'nonmem_price': this.nonmem_price,
+      'mem_price': this.mem_price,
+      'types': this.types,
+      'origin': this.origin,
+      'changelog': this.changelog,
+      'in_stock': this.in_stock
+    });
+  }
 }
 
 

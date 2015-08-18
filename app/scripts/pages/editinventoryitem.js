@@ -4,8 +4,11 @@ var Marty = require('marty');
 var _ = require('underscore');
 
 var log = require('../services/logger');
+var config = require('../config');
+
 var TopNav = require('../components/topnav');
 var SideMenu = require('../components/sidemenu');
+var ErrorList = require('../components/errorlist');
 
 var Application = require('../stores/application');
 var app = new Application();
@@ -20,14 +23,17 @@ class EditInventoryItem extends React.Component {
           ]
         }
         log.Debug('edit inventory received:', this.props.inventory)
+        
+        this.oldInventory = _.findWhere(this.props.inventory, {'inventory_id': parseInt(this.props.params.invID)});
         this.state = {
             transitionPending: false,
-            inventory: _.findWhere(this.props.inventory, {'inventory_id': parseInt(this.props.params.invID)})
+            inventory: this.oldInventory.clone(),
+            errors: []
         }
         
         if (this.state.inventory) {
             this.state.inventory.types = this.state.inventory.types.slice(0).join(">");
-            this.state.inventory.origin = this.state.inventory.origin.slice(0).join(">")
+            this.state.inventory.origin = this.state.inventory.origin.slice(0).join(">");
         }
     }
     
@@ -49,6 +55,56 @@ class EditInventoryItem extends React.Component {
             newInventory.in_stock = false;
         }
         this.setState({'inventory': newInventory});
+    }
+    
+    validate() {
+        var errors = _.filter(_.map(config.inventory_required, (field) => {
+            if (this.state.inventory[field].length === 0) {
+                return field + ' must have a value';
+            } else {
+                return null;
+            }
+        }), (error) => { return error != null});
+        if (errors.length > 0) {
+            this.setState({'errors': errors});
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    changelog(newItem, oldItem) {
+        log.Debug('new', newItem);
+        log.Debug('old', oldItem);
+        var changeLog = [];
+        var changedFields = [];
+        var now = new Date();
+        
+        for (var key in newItem) {
+            if (typeof(newItem[key]) === 'object') {
+                continue;
+            }
+            if (newItem[key] !== oldItem[key]) {
+                changeLog = changeLog.concat(now.toString() + " : " + this.props.user.fullName + " changed the value of " + key + " from '" + oldItem[key] + "' to '" + newItem[key] + "'");
+                changedFields = changedFields.concat(key);
+            }
+        }
+        return {
+            'changeLog': changeLog,
+            'changeField': changedFields
+        }
+    }
+    
+    updateItem() {
+        var validated = this.validate();
+        if (validated) {
+            var submitInv = this.state.inventory.clone();
+            
+            log.Debug("item update with", this.state.inventory);
+            var changes = this.changelog(submitInv, this.oldInventory);
+            log.Debug("changes", changes);
+        }
+        
     }
     
     render() {
@@ -119,6 +175,8 @@ class EditInventoryItem extends React.Component {
                         {text("Origin Tags", "origin", "Enter origin tags separated by >. These tags are used to filter the inventory (e.g., Scotland>Speyside)", null, null, true)}
                         
                         </form>
+                        <B.Button onClick={this.updateItem.bind(this)}>{this.state.inventory.inventory_id ? "Update Item" : "Create Item"}</B.Button>
+                        <ErrorList errors={this.state.errors} />
                     </B.Col>
                 </B.Row>
             </B.Grid>
