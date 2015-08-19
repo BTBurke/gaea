@@ -42,8 +42,19 @@ class InventoryAPI extends Marty.HttpStateSource {
    deleteInventory() {
 
    }
-   updateInventoryItem() {
-
+   createItem(item) {
+     return this.request({
+       url: Config.baseURL + '/inventory',
+       method: 'POST',
+       body: item
+     });
+   }
+   updateItem(payload) {
+    return this.request({
+      url: Config.baseURL + '/inventory/' + payload.old.inventory_id,
+      method: 'PUT',
+      body: payload
+    });
    }
 }
 
@@ -117,6 +128,48 @@ class InventoryQueries extends Marty.Queries {
       });
   }
   
+  createItem(item) {
+    return this.app.InventoryAPI.createItem(item)
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            console.log("Server receive:", res.body);
+            this.dispatch(Constants.INVENTORY_CREATE, res.body);
+            break;
+          case 401:
+            this.dispatch(Constants.LOGIN_REQUIRED);
+            break;
+          default:
+            throw new AppError("Failed to create inventory item").getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(Constants.REQUEST_FAILED, err)
+      });
+  }
+  
+  updateItem(payload) {
+    return this.app.InventoryAPI.updateItem(payload)
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            console.log("Server receive:", res.body);
+            this.dispatch(Constants.INVENTORY_UPDATE, res.body);
+            break;
+          case 401:
+            this.dispatch(Constants.LOGIN_REQUIRED);
+            break;
+          default:
+            throw new AppError("Failed to update inventory item " + payload.old.inventory_id ).getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(Constants.REQUEST_FAILED, err)
+      });
+  }
+  
 }
 
 
@@ -126,36 +179,55 @@ class InventoryQueries extends Marty.Queries {
 
 class Inventory {
   constructor(props) {
-    this.sale_id = props.sale_id;
-    this.updated_at = props.updated_at;
-    this.inventory_id = props.inventory_id;
-    this.supplier_id = props.supplier_id;
-    this.name = props.name;
-    this.desc = props.desc;
-    this.abv = props.abv;
-    this.size = props.size;
-    this.year = props.year;
-    this.nonmem_price = props.nonmem_price;
-    this.mem_price = props.mem_price;
-    this.in_stock = props.in_stock;
-    
-    if (typeof(props.types) === 'string') {
-      this.types = props.types.split(">");
+    if (props) {
+      this.sale_id = props.sale_id;
+      this.updated_at = props.updated_at;
+      this.inventory_id = props.inventory_id;
+      this.supplier_id = props.supplier_id;
+      this.name = props.name;
+      this.desc = props.desc;
+      this.abv = props.abv;
+      this.size = props.size;
+      this.year = props.year;
+      this.nonmem_price = props.nonmem_price;
+      this.mem_price = props.mem_price;
+      this.in_stock = props.in_stock;
+      
+      if (typeof(props.types) === 'string') {
+        this.types = props.types.split(">");
+      } else {
+        this.types = props.types;
+      }
+      
+      if (typeof(props.origin) === 'string') {
+        this.origin = props.origin.split(">");
+      } else {
+        this.origin = props.origin;
+      }
+      
+      if (typeof(props.changelog) === 'string') {
+        this.changelog = props.changelog.split(">");
+      } else {
+        this.changelog = props.changelog;
+      }
     } else {
-      this.types = props.types;
+      this.sale_id = undefined;
+      this.updated_at = undefined;
+      this.inventory_id = undefined;
+      this.supplier_id = undefined;
+      this.name = undefined;
+      this.desc = undefined;
+      this.abv = undefined;
+      this.size = undefined;
+      this.year = undefined;
+      this.nonmem_price = undefined;
+      this.mem_price = undefined;
+      this.in_stock = undefined;
+      this.types = undefined;
+      this.origin = undefined;
+      this.changelog = undefined;
     }
     
-    if (typeof(props.origin) === 'string') {
-      this.origin = props.origin.split(">");
-    } else {
-      this.origin = props.origin;
-    }
-    
-    if (typeof(props.changelog) === 'string') {
-      this.changelog = props.changelog.split(">");
-    } else {
-      this.changelog = props.changelog;
-    }
   }
   
   asSearchObject() {
@@ -188,6 +260,14 @@ class Inventory {
       'in_stock': this.in_stock
     });
   }
+  
+  stringifyArrays() {
+      var inv = this.clone();
+      inv.types = inv.types.join(">");
+      inv.origin = inv.origin.join(">");
+      inv.changelog = inv.changelog.join(">");
+      return inv;
+  }
 }
 
 
@@ -200,6 +280,8 @@ class InventoryStore extends Marty.Store {
     this.state = {};
     this.handlers = {
       _inventoryRead: Constants.INVENTORY_READ,
+      _inventoryCreate: Constants.INVENTORY_CREATE,
+      _inventoryUpdate: Constants.INVENTORY_UPDATE
 
     };
   }
@@ -216,8 +298,16 @@ class InventoryStore extends Marty.Store {
     this.hasChanged();
   }
 
+  _inventoryCreate(inv) {
+    this.state[inv.query] = this.state[inv.query].concat(new Inventory(inv.inventory));
+    this.hasChanged();
+  }
 
-
+  _inventoryUpdate(inv) {
+    this.state[inv.query] = _.reject(this.state[inv.query], function(i) { return i.inventory_id === inv.inventory.inventory_id});
+    this.state[inv.query] = this.state[inv.query].concat(new Inventory(inv.inventory));
+    this.hasChanged();
+  }
 
   // Methods
   getInventoryByOrder(orderID) {
@@ -250,3 +340,4 @@ class InventoryStore extends Marty.Store {
 module.exports.InventoryStore = InventoryStore;
 module.exports.InventoryQueries = InventoryQueries;
 module.exports.InventoryAPI = InventoryAPI;
+module.exports.Inventory = Inventory;

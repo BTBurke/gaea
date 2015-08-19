@@ -9,6 +9,7 @@ var config = require('../config');
 var TopNav = require('../components/topnav');
 var SideMenu = require('../components/sidemenu');
 var ErrorList = require('../components/errorlist');
+var { Inventory } = require('../stores/inventorystore');
 
 var Application = require('../stores/application');
 var app = new Application();
@@ -25,9 +26,15 @@ class EditInventoryItem extends React.Component {
         log.Debug('edit inventory received:', this.props.inventory)
         
         this.oldInventory = _.findWhere(this.props.inventory, {'inventory_id': parseInt(this.props.params.invID)});
+        if (this.oldInventory) {
+            var newInventory = this.oldInventory.clone();
+        } else {
+            var newInventory = new Inventory();
+        }
+        
         this.state = {
             transitionPending: false,
-            inventory: this.oldInventory.clone(),
+            inventory: newInventory,
             errors: []
         }
         
@@ -40,7 +47,7 @@ class EditInventoryItem extends React.Component {
     
     onChange(field) {
         return function() {
-            var newInventory = this.state.inventory;
+            var newInventory = this.state.inventory ? this.state.inventory : {};
             newInventory[field] = this.refs[field].getValue();
             this.setState({'inventory': newInventory});
         }.bind(this);
@@ -98,11 +105,33 @@ class EditInventoryItem extends React.Component {
     updateItem() {
         var validated = this.validate();
         if (validated) {
-            var submitInv = this.state.inventory.clone();
-            
+            try {
+                var submitInv = this.state.inventory.clone();
+            } catch (e) {
+                var submitInv = this.state.inventory;
+            }
             log.Debug("item update with", this.state.inventory);
             var changes = this.changelog(submitInv, this.oldInventory);
             log.Debug("changes", changes);
+            
+            if (changes.changeLog.length > 0) {
+                submitInv.changelog = submitInv.changelog.concat(changes.changeLog);
+            }
+            var submitStringified = submitInv.stringifyArrays();
+            var submitOld = this.oldInventory.stringifyArrays();
+            
+            if (submitInv.inventory_id) {
+                var payload = {
+                    'new': submitStringified,
+                    'old': submitOld,
+                    'change_fields': changes.changeField
+                }
+                log.Debug('going to submit item', payload);
+                this.app.InventoryQueries.updateItem(payload);
+            } else {
+                this.app.InventoryQueries.insertItem(submitInv);
+            }
+            
         }
         
     }
@@ -175,7 +204,7 @@ class EditInventoryItem extends React.Component {
                         {text("Origin Tags", "origin", "Enter origin tags separated by >. These tags are used to filter the inventory (e.g., Scotland>Speyside)", null, null, true)}
                         
                         </form>
-                        <B.Button onClick={this.updateItem.bind(this)}>{this.state.inventory.inventory_id ? "Update Item" : "Create Item"}</B.Button>
+                        <B.Button onClick={this.updateItem.bind(this)}>{this.oldInventory ? "Update Item" : "Create Item"}</B.Button>
                         <ErrorList errors={this.state.errors} />
                     </B.Col>
                 </B.Row>
