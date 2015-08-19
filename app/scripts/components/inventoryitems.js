@@ -9,18 +9,18 @@ class InventoryItems extends React.Component {
         super(props);
 
     }
-    
+
     _onClickTransition(item) {
         return function() {
             window.location = config.homeURL + '/#/sale/' + item.sale_id + '/inventory/' + item.inventory_id;
         }
     }
-    
+
     render() {
-        
+
         var makeItem = function(item) {
             return (
-                <div className="oi-item" key={item.supplier_id}>
+                <div className="oi-item" key={item.inventory_id}>
                 <B.Row>
                 <B.Col md={12} lg={12}>
                 <div className="oi-item-header">{item.name}</div>
@@ -89,7 +89,7 @@ class InventoryItems extends React.Component {
                 </div>
             );
         }.bind(this);
-        
+
         var items = _.map(this.props.inventory, function(item) { return makeItem(item) });
         console.log('items', items);
         return (

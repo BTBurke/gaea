@@ -10,6 +10,7 @@ var TopNav = require('../components/topnav');
 var SideMenu = require('../components/sidemenu');
 var ErrorList = require('../components/errorlist');
 var { Inventory } = require('../stores/inventorystore');
+var Effects = require('../components/effects');
 
 var Application = require('../stores/application');
 var app = new Application();
@@ -24,27 +25,42 @@ class EditInventoryItem extends React.Component {
           ]
         }
         log.Debug('edit inventory received:', this.props.inventory)
-        
+
         this.oldInventory = _.findWhere(this.props.inventory, {'inventory_id': parseInt(this.props.params.invID)});
         if (this.oldInventory) {
             var newInventory = this.oldInventory.clone();
         } else {
-            var newInventory = new Inventory();
+            var newInventory = {
+              'sale_id': parseInt(this.props.params.saleID),
+              'updated_at': new Date(),
+              'supplier_id': '',
+              'name': '',
+              'desc': '',
+              'abv': '',
+              'size': '',
+              'year': '',
+              'nonmem_price': '',
+              'mem_price': '',
+              'types': [],
+              'origin': [],
+              'changelog': '',
+              'in_stock': true
+            };
         }
-        
+
         this.state = {
             transitionPending: false,
             inventory: newInventory,
             errors: []
         }
-        
+
         if (this.state.inventory) {
             this.state.inventory.types = this.state.inventory.types.slice(0).join(">");
             this.state.inventory.origin = this.state.inventory.origin.slice(0).join(">");
         }
     }
-    
-    
+
+
     onChange(field) {
         return function() {
             var newInventory = this.state.inventory ? this.state.inventory : {};
@@ -52,10 +68,10 @@ class EditInventoryItem extends React.Component {
             this.setState({'inventory': newInventory});
         }.bind(this);
     }
-    
+
     onChangeStock() {
         var newInventory = this.state.inventory;
-        
+
         if (this.refs.stock === 'instock') {
             newInventory.in_stock = true;
         } else {
@@ -63,7 +79,7 @@ class EditInventoryItem extends React.Component {
         }
         this.setState({'inventory': newInventory});
     }
-    
+
     validate() {
         var errors = _.filter(_.map(config.inventory_required, (field) => {
             if (this.state.inventory[field].length === 0) {
@@ -79,14 +95,14 @@ class EditInventoryItem extends React.Component {
             return true;
         }
     }
-    
+
     changelog(newItem, oldItem) {
         log.Debug('new', newItem);
         log.Debug('old', oldItem);
         var changeLog = [];
         var changedFields = [];
         var now = new Date();
-        
+
         for (var key in newItem) {
             if (typeof(newItem[key]) === 'object') {
                 continue;
@@ -101,41 +117,48 @@ class EditInventoryItem extends React.Component {
             'changeField': changedFields
         }
     }
-    
+
+    createItem() {
+      var validated = this.validate();
+      if (validated) {
+        log.Debug("creating item", this.state.inventory);
+        this.setState({'transitionPending': true});
+        this.app.InventoryQueries.createItem(this.state.inventory);
+      }
+    }
+
     updateItem() {
         var validated = this.validate();
         if (validated) {
-            try {
-                var submitInv = this.state.inventory.clone();
-            } catch (e) {
-                var submitInv = this.state.inventory;
-            }
+            var submitInv = this.state.inventory.clone();
+
             log.Debug("item update with", this.state.inventory);
             var changes = this.changelog(submitInv, this.oldInventory);
             log.Debug("changes", changes);
-            
+
             if (changes.changeLog.length > 0) {
                 submitInv.changelog = submitInv.changelog.concat(changes.changeLog);
             }
             var submitStringified = submitInv.stringifyArrays();
             var submitOld = this.oldInventory.stringifyArrays();
-            
-            if (submitInv.inventory_id) {
-                var payload = {
-                    'new': submitStringified,
-                    'old': submitOld,
-                    'change_fields': changes.changeField
-                }
-                log.Debug('going to submit item', payload);
-                this.app.InventoryQueries.updateItem(payload);
-            } else {
-                this.app.InventoryQueries.insertItem(submitInv);
+
+            var payload = {
+                'new': submitStringified,
+                'old': submitOld,
+                'change_fields': changes.changeField
             }
-            
+            log.Debug('going to submit item', payload);
+            this.setState({"transitionPending": true});
+            this.app.InventoryQueries.updateItem(payload);
         }
-        
     }
-    
+
+    componentWillReceiveProps(nextProps) {
+      if (this.state.transitionPending) {
+        window.location = config.homeURL + '/#/sale/' + this.props.params.saleID + '/inventory';
+      }
+    }
+
     render() {
         var text = (label, ref, dir, before, after, bumpup) => {
             return (
@@ -149,7 +172,7 @@ class EditInventoryItem extends React.Component {
                 </B.Row>
             );
         }
-        
+
         var determineAvailability = () => {
             if (this.state.inventory) {
                 if (this.state.inventory.in_stock) {
@@ -169,25 +192,26 @@ class EditInventoryItem extends React.Component {
                 <B.Row>
                     <B.Col md={3} lg={3}>
                         <SideMenu menu={this.menu} />
+                        <Effects effects={this.props.effects} />
                     </B.Col>
                     <B.Col md={9} lg={9}>
                         <form>
                         {text("Supplier ID", "supplier_id", "Enter the supplier's ID code")}
-                        
+
                         {text("Product Name", "name", "Enter the name of the product")}
-                        
+
                         <B.Input type="textarea" label="Product Description" ref='desc' value={this.state.inventory ? this.state.inventory.desc : ""} onChange={this.onChange('desc')} />
-                        
+
                         {text("Alcohol By Volume (%)", "abv", "Enter the alcohol content", null, "%")}
-                        
+
                         {text("Item Size", "size", "Enter the size of the item (e.g., 750mL, 6x33cL)")}
-                        
+
                         {text("Year", "year", "Enter the year the item was made")}
-                        
+
                         {text("Non-Member Price", "nonmem_price", "Enter the non-member price in dollars", "$", ".00")}
-                        
+
                         {text("Member Price", "mem_price", "Enter the member price in dollars", "$", ".00")}
-                        
+
                         <B.Row>
                         <B.Col md={6} lg={6}>
                             <B.Input type='select' label='Stock Availability' ref='stock' value={determineAvailability()} onChange={this.onChangeStock.bind(this)}>
@@ -199,12 +223,12 @@ class EditInventoryItem extends React.Component {
                             <div className="eii-instruct">Select stock availability</div>
                         </B.Col>
                         </B.Row>
-                        
+
                         {text("Type Tags", "types", "Enter type tags separated by >. These tags are used to filter the inventory (e.g., Spirits>Gin, Wine>Red Wine>Malbec)", null, null, true)}
                         {text("Origin Tags", "origin", "Enter origin tags separated by >. These tags are used to filter the inventory (e.g., Scotland>Speyside)", null, null, true)}
-                        
+
                         </form>
-                        <B.Button onClick={this.updateItem.bind(this)}>{this.oldInventory ? "Update Item" : "Create Item"}</B.Button>
+                        <B.Button onClick={this.oldInventory ? this.updateItem.bind(this) : this.createItem.bind(this)}>{this.oldInventory ? "Update Item" : "Create Item"}</B.Button>
                         <ErrorList errors={this.state.errors} />
                     </B.Col>
                 </B.Row>
@@ -223,6 +247,9 @@ module.exports = Marty.createContainer(EditInventoryItem, {
     },
     inventory: function() {
         return this.app.InventoryStore.getInventoryBySale(this.props.params.saleID);
-    }  
+    },
+    effects: function() {
+          return this.app.InventoryStore.getInventoryEffects(this.props.params.invID);
+    }
   }
 });

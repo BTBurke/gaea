@@ -11,7 +11,8 @@ var Constants = Marty.createConstants([
   'INVENTORY_DELETE',
   'INVENTORY_UPDATE',
   'REQUEST_FAILED',
-  'LOGIN_REQUIRED'
+  'LOGIN_REQUIRED',
+  'EFFECTS_RECEIVE'
 ]);
 
 ////////////////////////////////////////////////////////////////////////////
@@ -25,7 +26,7 @@ class InventoryAPI extends Marty.HttpStateSource {
      //TODO: need to allow search along the lines of http://api.gzaea.org/v1/inventory?order=xxxxxx
       return this.get(Config.baseURL + '/inventory?order=' + orderID);
    }
-   
+
    readInventoryBySale(saleID) {
      log.Debug("Going to read inventory for " + saleID + "...");
      //TODO: need to allow search by sale http://api.gzaea.org/v1/inventory?sale=xxxxxx
@@ -55,6 +56,10 @@ class InventoryAPI extends Marty.HttpStateSource {
       method: 'PUT',
       body: payload
     });
+   }
+
+   getInventoryEffects(inventory_id) {
+     return this.get(Config.baseURL + '/inventory/' + inventory_id + '/effects')
    }
 }
 
@@ -106,7 +111,7 @@ class InventoryQueries extends Marty.Queries {
         this.dispatch(Constants.REQUEST_FAILED, err)
       });
   }
-  
+
   uploadInventoryCSV(csvtext) {
     return this.app.InventoryAPI.uploadInventoryCSV(csvtext)
       .then(res => {
@@ -127,7 +132,7 @@ class InventoryQueries extends Marty.Queries {
         this.dispatch(Constants.REQUEST_FAILED, err)
       });
   }
-  
+
   createItem(item) {
     return this.app.InventoryAPI.createItem(item)
       .then(res => {
@@ -148,7 +153,7 @@ class InventoryQueries extends Marty.Queries {
         this.dispatch(Constants.REQUEST_FAILED, err)
       });
   }
-  
+
   updateItem(payload) {
     return this.app.InventoryAPI.updateItem(payload)
       .then(res => {
@@ -169,7 +174,27 @@ class InventoryQueries extends Marty.Queries {
         this.dispatch(Constants.REQUEST_FAILED, err)
       });
   }
-  
+  getInventoryEffects(inventory_id) {
+    return this.app.InventoryAPI.getInventoryEffects(inventory_id)
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            console.log("Server receive:", res.body);
+            this.dispatch(Constants.EFFECTS_RECEIVE, res.body);
+            break;
+          case 401:
+            this.dispatch(Constants.LOGIN_REQUIRED);
+            break;
+          default:
+            throw new AppError("Failed to get inventory item change effects for " + inventory_id ).getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(Constants.REQUEST_FAILED, err)
+      });
+  }
+
 }
 
 
@@ -192,19 +217,19 @@ class Inventory {
       this.nonmem_price = props.nonmem_price;
       this.mem_price = props.mem_price;
       this.in_stock = props.in_stock;
-      
+
       if (typeof(props.types) === 'string') {
         this.types = props.types.split(">");
       } else {
         this.types = props.types;
       }
-      
+
       if (typeof(props.origin) === 'string') {
         this.origin = props.origin.split(">");
       } else {
         this.origin = props.origin;
       }
-      
+
       if (typeof(props.changelog) === 'string') {
         this.changelog = props.changelog.split(">");
       } else {
@@ -227,9 +252,9 @@ class Inventory {
       this.origin = undefined;
       this.changelog = undefined;
     }
-    
+
   }
-  
+
   asSearchObject() {
     return {
       'supplier_id': this.supplier_id,
@@ -238,9 +263,9 @@ class Inventory {
       'types': this.types,
       'origin': this.origin
     }
-      
+
     }
-  
+
   clone() {
     return new Inventory({
       'sale_id': this.sale_id,
@@ -260,7 +285,7 @@ class Inventory {
       'in_stock': this.in_stock
     });
   }
-  
+
   stringifyArrays() {
       var inv = this.clone();
       inv.types = inv.types.join(">");
@@ -277,11 +302,14 @@ class Inventory {
 class InventoryStore extends Marty.Store {
   constructor(options) {
     super(options);
-    this.state = {};
+    this.state = {
+      'inv-new': []
+    };
     this.handlers = {
       _inventoryRead: Constants.INVENTORY_READ,
       _inventoryCreate: Constants.INVENTORY_CREATE,
-      _inventoryUpdate: Constants.INVENTORY_UPDATE
+      _inventoryUpdate: Constants.INVENTORY_UPDATE,
+      _inventoryEffects: Constants.EFFECTS_RECEIVE
 
     };
   }
@@ -309,6 +337,15 @@ class InventoryStore extends Marty.Store {
     this.hasChanged();
   }
 
+  _inventoryEffects(eff) {
+    if (eff.qty === 0) {
+      this.state[eff.query] = [];
+    } else {
+      this.state[eff.query] = eff.users;
+    }
+    this.hasChanged();
+  }
+
   // Methods
   getInventoryByOrder(orderID) {
     console.log("i received orderid in store:", orderID);
@@ -322,7 +359,7 @@ class InventoryStore extends Marty.Store {
       }
     });
   }
-    
+
   getInventoryBySale(saleID) {
     return this.fetch({
       id: 'inventory',
@@ -331,6 +368,18 @@ class InventoryStore extends Marty.Store {
       },
       remotely: function() {
         return this.app.InventoryQueries.readInventoryBySale(saleID);
+      }
+    });
+  }
+
+  getInventoryEffects(inventoryID) {
+    return this.fetch({
+      id: 'effects',
+      locally: function() {
+        return this.state['inv-'+inventoryID];
+      },
+      remotely: function() {
+        return this.app.InventoryQueries.getInventoryEffects(inventoryID);
       }
     });
   }
