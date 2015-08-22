@@ -3,6 +3,8 @@ var AppError = require("../services/apperror.js");
 var Config = require("../config");
 
 var localstorage = require('local-storage');
+var log = require('../services/logger');
+var config = require('../config');
 
 var SessionConstants = Marty.createConstants([
   'REQUEST_FAILED',
@@ -12,7 +14,8 @@ var SessionConstants = Marty.createConstants([
   'LOGOUT',
   'USER_MESSAGE_SET',
   'USER_MESSAGE_DISMISS',
-  'ON_AUTH_REDIRECT'
+  'ON_AUTH_REDIRECT',
+  'SET_POPUP_CONTENT'
 ]);
 
 ////////////////////////////////////////////////////////////////////////
@@ -59,6 +62,10 @@ class SessionActions extends Marty.ActionCreators {
     
     setAuthRedirect(location) {
         this.dispatch(SessionConstants.ON_AUTH_REDIRECT, location);
+    }
+    
+    setPopupContent(htmlContent) {
+      this.dispatch(SessionConstants.SET_POPUP_CONTENT, htmlContent);
     }
 }
 
@@ -110,6 +117,9 @@ class SessionStore extends Marty.Store {
         'user_message': undefined,
         'error': undefined,
         'login_required': false
+        'login_success': false,
+        'login_tries': undefined,
+        'popup_content': undefined
     };
     this.handlers = {
       _handleLogin: SessionConstants.LOGIN_SUCCESS,
@@ -119,22 +129,74 @@ class SessionStore extends Marty.Store {
       _handleDismissMessage: SessionConstants.USER_MESSAGE_DISMISS,
       _handleRequestFailed: SessionConstants.REQUEST_FAILED,
       _handleLoginRequired: SessionConstants.LOGIN_REQUIRED,
-      _handleSetAuthRedirect: SessionConstants.ON_AUTH_REDIRECT
+      _handleSetAuthRedirect: SessionConstants.ON_AUTH_REDIRECT,
+      _handleSetPopupContent: SessionConstants.SET_POPUP_CONTENT
     };
   }
 
   // Action Handlers
-  _handleReceive(user) {
-    console.log("handling user receive...");
-    this.state['user'] = new User(user);
+  _handleLogin(resp){
+    log.Debug("handling session login...");
+    localstorage.set('gaea_jwt': resp.jwt);
+    this.setState({'login_success': true});
+    if (resp.redirect) {
+      this._redirect(resp.redirect);
+    }
+    if (this.state.auth_redirect) {
+      this._redirect(this.state.auth_redirect);
+    }
+    this.hasChanged();
+  }
+  
+  _handleLoginFail(resp) {
+    if (resp.login_tries) {
+      this.setState({'login_tries': resp.login_tries});
+    }
+    this._redirect('login');
+    this.hasChanged();
+  }
+  
+  _handleLogout(resp) {
+    localstorage.delete('gaea_jwt');
+    this.setState({'login_success': false});
+    this.hasChanged();
+    this._redirect('logout');
+  }
+  
+  _handleSetMessage(msg) {
+    this.setState({'user_message': msg});
+    this.hasChanged();
+  }
+  
+  _handleDismissMessage() {
+    this.setState({'user_message': undefined});
     this.hasChanged();
   }
 
-
+  _handleRequestFailed(err) {
+    this.setState({'error': err});
+    this.hasChanged();
+  }
+  
+  _handleLoginRequired() {
+    this.setState({'login_required': true});
+    this.hasChanged();
+  }
+  
+  _handleSetPopupContent(content) {
+    this.setState({'popup_content': content});
+    this.hasChanged();
+  }
+  
+  _redirect(target) {
+    log.Debug('redirecting to ' + target);
+    window.location = config.homeURL + '/#/' + target;
+  }
+  
   // Methods
-  getUser() {
+  getSession() {
     return this.fetch({
-      id: 'user',
+      id: 'session',
       locally: function() {
         return this.state;
       },
@@ -147,7 +209,7 @@ class SessionStore extends Marty.Store {
 
 }
 
-//module.exports = Marty.register(UserStore);
-module.exports.UserStore = UserStore;
-module.exports.UserQueries = UserQueries;
-module.exports.UserAPI = UserAPI;
+module.exports.SessionStore = SessionStore;
+module.exports.SessionQueries = SessionQueries;
+module.exports.SessionActions = SessionActions
+module.exports.SessionAPI = SessionAPI;
