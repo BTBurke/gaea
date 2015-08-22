@@ -64,17 +64,6 @@ class User {
     this.role = props.role;
   }
 
-  isLoggedIn() {
-    return this.uuid !== null
-  }
-
-  isAdmin() {
-    return this.role === 'admin'
-  }
-
-  isSuperAdmin() {
-    return this.role === 'superadmin'
-  }
 }
 
 ///////////////////////////////////
