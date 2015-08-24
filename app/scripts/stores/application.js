@@ -29,6 +29,9 @@ var { UserStore, UserQueries, UserAPI } = require('./userstore');
 var { OrderStore, OrderQueries, OrderAPI } = require('./orderstore');
 var { InventoryStore, InventoryQueries, InventoryAPI } = require('./inventorystore');
 var { SaleStore, SaleQueries, SaleAPI } = require('./salestore');
+var SessionStore = require('./sessionstore').SessionStore;
+var SessionQueries = require('./sessionstore').SessionQueries;
+var SessionActions = require('./sessionstore').SessionActions;
 
 class Application extends Marty.Application {
     constructor(options) {
@@ -37,19 +40,23 @@ class Application extends Marty.Application {
         this.register('UserStore', UserStore);
         this.register('UserQueries', UserQueries);
         this.register('UserAPI', UserAPI);
-        
+
         this.register('OrderStore', OrderStore);
         this.register('OrderQueries', OrderQueries);
         this.register('OrderAPI', OrderAPI);
-        
+
         this.register('InventoryStore', InventoryStore);
         this.register('InventoryQueries', InventoryQueries);
         this.register('InventoryAPI', InventoryAPI);
 
         this.register('SaleStore', SaleStore);
         this.register('SaleQueries', SaleQueries);
-        this.register('SaleAPI', SaleAPI);        
-        
+        this.register('SaleAPI', SaleAPI);
+
+        this.register('SessionStore', SessionStore);
+        this.register('SessionQueries', SessionQueries);
+        this.register('SessionActions', SessionActions);     
+
     }
 }
 

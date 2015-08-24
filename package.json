@@ -30,7 +30,7 @@
     "local-storage": "^1.4.2",
     "marty": "^0.10.1",
     "react": "latest",
-    "react-bootstrap": "^0.19.1",
+    "react-bootstrap": "^0.24.5",
     "react-mixin": "^1.5.0",
     "react-notification": "^1.3.0",
     "react-router": "^0.13.2",

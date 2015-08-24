@@ -1,17 +1,18 @@
 // Pages
-var React = require('react'),
-    Landing = require("./pages/landing"),
-    Tos = require("./pages/tos"),
-    Home = require('./pages/home');
-    Orders = require('./pages/orders');
-    EditOrder = require('./pages/editorder');
-    Checkout = require('./pages/checkout');
-    Sales = require('./pages/sale');
-    EditSale = require('./pages/editsale');
-    NewSale = require('./pages/newsale');
-    EditInventory = require('./pages/editinventory');
-    EditInventoryItem = require('./pages/editinventoryitem');
-    //Login = require("./pages/login")
+var React = require('react');
+var Landing = require("./pages/landing");
+var Tos = require("./pages/tos");
+var Home = require('./pages/home');
+var Orders = require('./pages/orders');
+var EditOrder = require('./pages/editorder');
+var Checkout = require('./pages/checkout');
+var Sales = require('./pages/sale');
+var EditSale = require('./pages/editsale');
+var NewSale = require('./pages/newsale');
+var EditInventory = require('./pages/editinventory');
+var EditInventoryItem = require('./pages/editinventoryitem');
+var SessionTest = require('./test/session_test');
+
 
 // React-router
 var Router = require('react-router'),
@@ -65,7 +66,8 @@ var routes = (
     <Route name="invitemedit" path="/sale/:saleID/inventory/:invID" handler={EditInventoryItem}/>
     <Route name="invedit" path="/sale/:saleID/inventory" handler={EditInventory}/>
     <Route name="saleedit" path="/sale/:saleID" handler={EditSale}/>
-    
+
+    <Route name="sessiontest" path="/test/session" handler={SessionTest}/>
   </Route>
 );
 

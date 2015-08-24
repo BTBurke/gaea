@@ -10,12 +10,13 @@ var SessionConstants = Marty.createConstants([
   'REQUEST_FAILED',
   'LOGIN_REQUIRED',
   'LOGIN_SUCCESS',
-  'LOGIN_FAIL',
+  'LOGIN_FAILED',
   'LOGOUT',
   'USER_MESSAGE_SET',
   'USER_MESSAGE_DISMISS',
   'ON_AUTH_REDIRECT',
-  'SET_POPUP_CONTENT'
+  'SET_POPUP_CONTENT',
+  'DISMISS_POPUP_CONTENT'
 ]);
 
 ////////////////////////////////////////////////////////////////////////
@@ -33,7 +34,7 @@ class SessionAPI extends Marty.HttpStateSource {
             }
         });
    }
-   
+
    logout(user) {
        return this.request({
            url: Config.baseURL + '/logout',
@@ -43,8 +44,8 @@ class SessionAPI extends Marty.HttpStateSource {
            }
        });
    }
-   
-   
+
+
 }
 
 ////////////////////////////////////////////////////////
@@ -55,17 +56,25 @@ class SessionActions extends Marty.ActionCreators {
     setMessage(msg, timeout) {
         this.dispatch(SessionConstants.USER_MESSAGE_SET, msg, timeout);
     }
-    
+
     dismissMessage() {
         this.dispatch(SessionConstants.USER_MESSAGE_DISMISS);
     }
-    
+
     setAuthRedirect(location) {
         this.dispatch(SessionConstants.ON_AUTH_REDIRECT, location);
     }
-    
+
     setPopupContent(htmlContent) {
       this.dispatch(SessionConstants.SET_POPUP_CONTENT, htmlContent);
+    }
+
+    dismissPopupContent() {
+      this.dispatch(SessionConstants.DISMISS_POPUP_CONTENT);
+    }
+
+    triggerLogin(msg) {
+      this.dispatch(SessionConstants.LOGIN_REQUIRED, msg);
     }
 }
 
@@ -93,7 +102,7 @@ class SessionQueries extends Marty.Queries {
         this.dispatch(SessionConstants.REQUEST_FAILED, err)
       });
   }
-  
+
   logout(user) {
     return this.app.SessionAPI.logout(pwd)
       .then(this.dispatch(SessionConstants.LOGOUT))
@@ -116,7 +125,8 @@ class SessionStore extends Marty.Store {
         'auth_redirect': undefined,
         'user_message': undefined,
         'error': undefined,
-        'login_required': false
+        'login_required': false,
+        'login_message': undefined,
         'login_success': false,
         'login_tries': 0,
         'popup_content': undefined
@@ -130,15 +140,16 @@ class SessionStore extends Marty.Store {
       _handleRequestFailed: SessionConstants.REQUEST_FAILED,
       _handleLoginRequired: SessionConstants.LOGIN_REQUIRED,
       _handleSetAuthRedirect: SessionConstants.ON_AUTH_REDIRECT,
-      _handleSetPopupContent: SessionConstants.SET_POPUP_CONTENT
+      _handleSetPopupContent: SessionConstants.SET_POPUP_CONTENT,
+      _handleDismissPopupContent: SessionConstants.DISMISS_POPUP_CONTENT
     };
   }
 
   // Action Handlers
   _handleLogin(resp){
     log.Debug("handling session login...");
-    localstorage.set('gaea_jwt': resp.jwt);
-    localstorage.set('gaea_user': resp.user);
+    localstorage.set('gaea_jwt', resp.jwt);
+    localstorage.set('gaea_user', resp.user);
     this.setState({'login_success': true,
                    'login_tries': 0,
                    'login_required': false
@@ -151,7 +162,7 @@ class SessionStore extends Marty.Store {
     }
     this.hasChanged();
   }
-  
+
   _handleLoginFail(resp) {
     if (resp.login_tries) {
       this.setState({'login_tries': this.state.login_tries+1});
@@ -159,7 +170,7 @@ class SessionStore extends Marty.Store {
     this._redirect('login');
     this.hasChanged();
   }
-  
+
   _handleLogout(resp) {
     localstorage.delete('gaea_jwt');
     localstorage.delete('gaea_user');
@@ -167,12 +178,12 @@ class SessionStore extends Marty.Store {
     this.hasChanged();
     this._redirect('logout');
   }
-  
+
   _handleSetMessage(msg) {
     this.setState({'user_message': msg});
     this.hasChanged();
   }
-  
+
   _handleDismissMessage() {
     this.setState({'user_message': undefined});
     this.hasChanged();
@@ -182,39 +193,52 @@ class SessionStore extends Marty.Store {
     this.setState({'error': err});
     this.hasChanged();
   }
-  
-  _handleLoginRequired() {
-    this.setState({'login_required': true});
+
+  _handleLoginRequired(msg) {
+    this.setState({'login_required': true,
+                  'login_message': msg});
     this.hasChanged();
   }
-  
+
   _handleSetPopupContent(content) {
     this.setState({'popup_content': content});
     this.hasChanged();
   }
-  
+
+  _handleDismissPopupContent() {
+    this.setState({'popup_content': undefined});
+    this.hasChanged();
+  }
+
+  _handleSetAuthRedirect(redirect) {
+    this.setState({'auth_redirect': redirect});
+    this.hasChanged();
+  }
+
   _redirect(target) {
     log.Debug('redirecting to ' + target);
     window.location = config.homeURL + '/#/' + target;
   }
-  
+
   // Methods
   getSession() {
-    return this.fetch({
-      id: 'session',
-      locally: function() {
-        return this.state;
-      },
-      remotely: function() {
-        console.log("Unable to return the session storage.");
-      }
-    });
-
+    return this.state;
   }
+  // getSession() {
+  //   return this.fetch({
+  //     id: 'session',
+  //     locally: function() {
+  //       return this.state;
+  //     },
+  //     remotely: function() {
+  //       console.log("Unable to return the session storage.");
+  //     }
+  //   });
+  //}
 
 }
 
 module.exports.SessionStore = SessionStore;
 module.exports.SessionQueries = SessionQueries;
-module.exports.SessionActions = SessionActions
+module.exports.SessionActions = SessionActions;
 module.exports.SessionAPI = SessionAPI;
