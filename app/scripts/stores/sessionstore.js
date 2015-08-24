@@ -118,7 +118,7 @@ class SessionStore extends Marty.Store {
         'error': undefined,
         'login_required': false
         'login_success': false,
-        'login_tries': undefined,
+        'login_tries': 0,
         'popup_content': undefined
     };
     this.handlers = {
@@ -138,7 +138,11 @@ class SessionStore extends Marty.Store {
   _handleLogin(resp){
     log.Debug("handling session login...");
     localstorage.set('gaea_jwt': resp.jwt);
-    this.setState({'login_success': true});
+    localstorage.set('gaea_user': resp.user);
+    this.setState({'login_success': true,
+                   'login_tries': 0,
+                   'login_required': false
+                  });
     if (resp.redirect) {
       this._redirect(resp.redirect);
     }
@@ -150,7 +154,7 @@ class SessionStore extends Marty.Store {
   
   _handleLoginFail(resp) {
     if (resp.login_tries) {
-      this.setState({'login_tries': resp.login_tries});
+      this.setState({'login_tries': this.state.login_tries+1});
     }
     this._redirect('login');
     this.hasChanged();
@@ -158,6 +162,7 @@ class SessionStore extends Marty.Store {
   
   _handleLogout(resp) {
     localstorage.delete('gaea_jwt');
+    localstorage.delete('gaea_user');
     this.setState({'login_success': false});
     this.hasChanged();
     this._redirect('logout');
