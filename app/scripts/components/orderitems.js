@@ -61,7 +61,12 @@ class OrderItems extends React.Component {
                 var item = _.findWhere(this.props.items, {'inventory_id': id});
                 var inv = _.findWhere(this.props.inventory, {'inventory_id': id});
                 
+
+                
                 if (item) {
+                    var memPrice = item.qty*parseFloat(inv.mem_price);
+                    var nonmemPrice = item.qty*parseFloat(inv.nonmem_price);
+                    
                     return (
                         <div>
                         <div className="oi-item-cart-header">In Cart</div>
@@ -85,7 +90,7 @@ class OrderItems extends React.Component {
                                     Total
                                 </div>
                                 <div className="oi-item-cart-total">
-                                    {item.qty * inv.mem_price}<span className="oi-rmb">RMB</span>
+                                    ${this.props.member ? memPrice.toFixed(2) : nonmemPrice.toFixed(2)}
                                 </div>
                                 </B.Col>
                             </B.Row>
@@ -136,13 +141,13 @@ class OrderItems extends React.Component {
                             <B.Col md={3} lg={3}>
                             <div className="oi-item-price-mem-header">Non-Member Price</div>
                             <div className="oi-item-price-mem">
-                                {item.nonmem_price}<span className="oi-rmb">RMB</span>
+                                ${parseFloat(item.nonmem_price).toFixed(2)}
                             </div>
                             </B.Col>
                             <B.Col md={3} lg={3}>
                             <div className="oi-item-price-non-header">Member Price</div>
                             <div className="oi-item-price-non">
-                                {item.mem_price}<span className="oi-rmb">RMB</span>
+                                ${parseFloat(item.mem_price).toFixed(2)}
                             </div>
                             </B.Col>
                             <B.Col md={3} lg={3}>

@@ -60,13 +60,13 @@ class InventoryItems extends React.Component {
                             <B.Col md={3} lg={3}>
                             <div className="oi-item-price-mem-header">Non-Member Price</div>
                             <div className="oi-item-price-mem">
-                                {item.nonmem_price}<span className="oi-rmb">RMB</span>
+                                ${parseFloat(item.mem_price).toFixed(2)}
                             </div>
                             </B.Col>
                             <B.Col md={3} lg={3}>
                             <div className="oi-item-price-non-header">Member Price</div>
                             <div className="oi-item-price-non">
-                                {item.mem_price}<span className="oi-rmb">RMB</span>
+                                ${parseFloat(item.nonmem_price).toFixed(2)}
                             </div>
                             </B.Col>
                             <B.Col md={4} lg={4}>

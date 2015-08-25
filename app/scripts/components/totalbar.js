@@ -21,7 +21,7 @@ class TotalBar extends React.Component {
         var total = _.reduce(this.props.items, function(tot, item) {
             var thisItem = _.findWhere(this.props.inventory, {'inventory_id': item.inventory_id});
             
-            var price = this.props.user.role === 'nonmember' ? thisItem.nonmem_price : thisItem.mem_price;
+            var price = this.props.user.role === 'nonmember' ? parseFloat(thisItem.nonmem_price) : parseFloat(thisItem.mem_price);
             
             return item.qty * price + tot; 
         }.bind(this), 0);
@@ -56,14 +56,10 @@ class TotalBar extends React.Component {
                             Total
                             </B.Col>
                             <B.Col md={6} lg={6}>
-                            <span className="tb-total-rmb">{total}</span><span className="tb-rmb">RMB</span>
+                            <span className="tb-total-usd">${total.toFixed(2)}</span>
                             </B.Col>
                         </B.Row>
-                        <B.Row>
-                            <B.Col md={6} lg={6} mdOffset={6} lgOffset={6}>
-                            <span className="tb-total-usd">${(total/this.rate).toFixed(2)}</span>
-                            </B.Col>
-                        </B.Row>
+
                     </div>
                 
                     <Link to={linkTarget}><B.Button bsStyle='info' block>Checkout</B.Button></Link>

@@ -29,6 +29,9 @@ class EditOrder extends React.Component {
     
     message(msg) {
         this.setState({'message': msg});
+        setTimeout(() => {
+            this.setState({'message': ''})
+        }, 1000);
     }
     
     clearMessage() {
@@ -148,6 +151,7 @@ class EditOrder extends React.Component {
                         onAdd={this.onAdd.bind(this)}
                         onUpdate={this.onUpdate.bind(this)}
                         items={this.props.items}
+                        member={this.props.user.role === 'nonmember' ? false : true}
                     />
                 </B.Col>
             </B.Row>
