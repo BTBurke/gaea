@@ -25,12 +25,12 @@ class Orders extends React.Component {
 
     this.menu = {'title': undefined,
         'items': [
-          {'key': 0, 'href': '/', 'text': 'Return to home'},
+          {'key': 0, 'href': '/home', 'text': 'Return to home'},
           ]
       };
     this.adminMenu = {'title': 'Admin Links',
         'items': [
-          {'key': 0, 'href': '/sale', 'text': 'View sales'}
+          {'key': 0, 'href': '/sale', 'text': 'Manage sales'}
           ]
     }
     this.state = {
@@ -38,39 +38,36 @@ class Orders extends React.Component {
       'spin': undefined
     }
   }
-  
+
   componentWillReceiveProps(newprops) {
-    console.log("old props", this.props);
-    console.log("new props", newprops);
-    
+
     if (this.state.transitionPending) {
        var newOrder = _.difference(newprops.orders, this.props.orders)[0];
-       console.log("new Order", newOrder);
        window.location = Config.homeURL + '/#/order/' + newOrder.order_id;
     }
   }
-  
+
   createOrder(sale) {
     console.log("creating new order for sale: ", sale);
     this.setState({'transitionPending': sale});
     this.setState({'spin': sale});
-    
+
     var currentSale = _.findWhere(this.props.sales, {"sale_id": sale});
-    
+
     var order = {
       'sale_id': currentSale.sale_id,
       'user_name': this.props.user.userName,
       'sale_type': currentSale.sale_type,
     }
-    
+
     this.app.OrderQueries.createOrder(order);
-    
+
   }
 
   render() {
 
     var adminMenu = function(role, menu) {
-      if (role === 'admin') {
+      if (role === 'admin' || role === 'superadmin') {
         return (
           <SideMenu menu={menu}/>
         );
@@ -96,7 +93,7 @@ class Orders extends React.Component {
         </B.Row>
         <B.Row>
           <B.Col md={9} mdOffset={3} lg={9} lgOffset={3}>
-            <CurrentSales title="Current items for sale" 
+            <CurrentSales title="Current items for sale"
               sales={this.props.sales}
               createOrder={this.createOrder.bind(this)}
               spin={this.state.spin}

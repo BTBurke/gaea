@@ -3,6 +3,7 @@ var B = require('react-bootstrap');
 var _ = require('underscore');
 
 var Utils = require('../services/utils');
+var log = require('../services/logger');
 
 class OrderTable extends React.Component {
   constructor(props) {
@@ -12,7 +13,7 @@ class OrderTable extends React.Component {
   render() {
 
     var orders = this.props.orders;
-    
+
     if (orders.length === 0) {
       return (
         <B.Panel header={this.props.title}>
@@ -20,6 +21,8 @@ class OrderTable extends React.Component {
         </B.Panel>
       );
     }
+      log.Debug('sales', this.props.sales);
+      log.Debug('orders', this.props.orders);
 
     var displayorders = _.map(orders, (order, idx) => {
 
@@ -46,7 +49,7 @@ class OrderTable extends React.Component {
             btn.text = undefined;
             btn.href = undefined;
         }
-        console.log("btn", btn);
+
         if (btn.text) {
           return (
             <B.Button bsStyle='info' bsSize='xsmall' href={btn.href}>{btn.text}</B.Button>

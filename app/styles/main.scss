@@ -1,6 +1,10 @@
 $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/bootstrap";
 $bootstrap-sass-asset-helper: false !default;
 
+//colors
+$base-blue-dark: #2C3E50;
+$base-orange: #f39c12;
+
 // Pages
 @import "bootstrap-sass-official/assets/stylesheets/bootstrap";
 @import "landing";
@@ -8,6 +12,7 @@ $bootstrap-sass-asset-helper: false !default;
 @import "checkout";
 @import "editsale";
 @import "editinventoryitem";
+@import "pay";
 
 
 // Component Styles

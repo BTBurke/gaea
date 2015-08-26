@@ -20,7 +20,6 @@ class Home extends React.Component {
     this.menu = {'title': undefined,
         'items': [
           {'key': 0, 'href': '/order', 'text': 'Manage your orders'},
-          {'key': 1, 'href': '/events', 'text': 'See Schedule of Events'}
           ]
       };
     this.adminMenu = {'title': 'Admin Links',
@@ -55,9 +54,9 @@ class Home extends React.Component {
           <B.Col md={9} lg={9}>
 
             <B.Panel header='Use your duty-free liquor benefit'>
-              <p>The next duty-free liquor order is coming up.  We expect that all orders will have to be in by the end of July for a delivery date in August.</p>
+              <p>The next duty-free liquor sale is open for orders.  Choose from over 500 items including wine, beer, and spirits.  Orders should be delivered by Thanksgiving!</p>
               <B.Button bsStyle='success' bsSize='small' href='/#/order'>Order booze</B.Button>
-              <div className="home-posted-on">Posted on 5-June-2015</div>
+              <div className="home-posted-on">Posted on 25-August-2015</div>
 
             </B.Panel>
           </B.Col>
