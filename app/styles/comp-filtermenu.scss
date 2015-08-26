@@ -7,8 +7,12 @@
     .fm-menu-header {
         font-size: 14px;
         color: #666;
-        padding-bottom: 10px;
+        padding-top: 5px;
+        padding-bottom: 5px;
         font-weight: bold;
+    }
+    .fm-no-results {
+        font-style: italic;
     }
     
     .fm-menu-section {
@@ -58,4 +62,17 @@
         padding-top: 10px;
     }
     
+}
+
+.fm-filter-clear {
+    background: #eee;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    width: 150px;
+    font-size: 10px;
+    font-weight: bold;
+    
+    .fm-filter-clear-btn {
+        cursor: pointer;
+    }
 }

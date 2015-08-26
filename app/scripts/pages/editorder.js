@@ -54,9 +54,14 @@ class EditOrder extends React.Component {
         
     }
     
-    clearFilter() {
+    onClearFilter() {
         this.setState({'filter': []});
         console.log("Clear filter");
+    }
+    
+    onClearOrigin() {
+        this.setState({'origin': []});
+        log.Debug("Clear origin");
     }
     
     onAdd(id, qty) {
@@ -125,8 +130,17 @@ class EditOrder extends React.Component {
         });
     }
     
+    sortBy(method) {
+        var sorts = {
+            'type': function(inv) { return inv.types[0] },
+            'price': function(inv) { return parseFloat(inv.mem_price) }
+        }
+        return sorts[method];
+    }
+    
     render() {
         console.log('page receives inventory', this.props.inventory);
+        var sortedInventory = _.sortBy(this.props.inventory, this.sortBy(this.state.sort));
         return (
             <div>
             <TopNav user={this.props.user.fullName}/>
@@ -134,11 +148,14 @@ class EditOrder extends React.Component {
             <B.Grid>
             <B.Row>
                 <B.Col md={3} lg={3}>
-                    <FilterMenu inventory={this.filterInventory(this.props.inventory)}
+                    <FilterMenu inventory={this.filterInventory(sortedInventory)}
                     filter={this.state.filter}
                     origin={this.state.origin}
                     onFilterClick={this.onFilterClick.bind(this)}
-                    onOriginClick={this.onOriginClick.bind(this)}/>
+                    onOriginClick={this.onOriginClick.bind(this)}
+                    onClearFilter={this.onClearFilter.bind(this)}
+                    onClearOrigin={this.onClearOrigin.bind(this)}
+                    />
                     
                     <TotalBar user={this.props.user}
                         inventory={this.props.inventory}
@@ -147,7 +164,7 @@ class EditOrder extends React.Component {
                     />
                 </B.Col>
                 <B.Col md={9} lg={9}>
-                    <OrderItems inventory={this.filterInventory(this.props.inventory)}
+                    <OrderItems inventory={this.filterInventory(sortedInventory)}
                         onAdd={this.onAdd.bind(this)}
                         onUpdate={this.onUpdate.bind(this)}
                         items={this.props.items}
