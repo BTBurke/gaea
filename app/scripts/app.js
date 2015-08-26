@@ -12,6 +12,7 @@ var NewSale = require('./pages/newsale');
 var EditInventory = require('./pages/editinventory');
 var EditInventoryItem = require('./pages/editinventoryitem');
 var SessionTest = require('./test/session_test');
+var Pay = require('./pages/pay');
 
 
 // React-router
@@ -61,6 +62,7 @@ var routes = (
     <Route name="order" path="order" handler={Orders}/>
     <Route name="editorder" path="/order/:orderID" handler={EditOrder}/>
     <Route name="checkout" path="/order/:orderID/checkout" handler={Checkout}/>
+    <Route name="pay" path="/order/:orderID/pay" handler={Pay}/>
     <Route name="sales" path="/sale" handler={Sales}/>
     <Route name="salenew" path="/sale/new" handler={NewSale}/>
     <Route name="invitemedit" path="/sale/:saleID/inventory/:invID" handler={EditInventoryItem}/>

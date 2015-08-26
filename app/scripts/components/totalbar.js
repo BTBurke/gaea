@@ -14,6 +14,26 @@ class TotalBar extends React.Component {
             'top': 0,
             'width': '225px'
         }
+        
+        this.state = {
+            'show_scroll': false
+        }
+    }
+    
+    showScroll() {
+        console.log("state change");
+        if (window.scrollY > 0) {
+            this.setState({'show_scroll': true});
+        } else {
+            this.setState({'show_scroll': false});
+        }
+     }
+    
+    doScroll() {
+        console.log("doing scroll...");
+  
+        window.scroll(0,0);
+        this.setState({'show_scroll': false});
     }
 
     render() {
@@ -29,12 +49,11 @@ class TotalBar extends React.Component {
         var itemTotal = _.reduce(this.props.items, function(tot, item) {
             return item.qty + tot;
         }.bind(this), 0);
-        
-        console.log("props", this.props);
+
         var linkTarget = "/order/" + this.props.params.orderID + "/checkout";
         
         return (
-                <Sticky stickyStyle={this.stickyStyle}>
+                <Sticky stickyStyle={this.stickyStyle} onStickyStateChange={this.showScroll.bind(this)}>
                 <div className="tb-bar">
                 <div className="tb-bar-internal">
                     <div className="tb-cart-header">
@@ -65,6 +84,7 @@ class TotalBar extends React.Component {
                     <Link to={linkTarget}><B.Button bsStyle='info' block>Checkout</B.Button></Link>
                 </div>
                 </div>
+                {this.state.show_scroll ? <a onClick={this.doScroll}>Return to top</a> : null}
                 </Sticky>
         );
     }

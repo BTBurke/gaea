@@ -8,6 +8,8 @@ var FilterMenu = require('../components/filtermenu');
 var OrderItems = require('../components/orderitems');
 var Notifier = require('../components/notifier');
 var TotalBar = require('../components/totalbar');
+var Loading = require('../components/loading');
+var log = require('../services/logger');
 
 var Application = require('../stores/application');
 var { ApplicationContainer } = require('marty');
@@ -42,32 +44,27 @@ class EditOrder extends React.Component {
         e.preventDefault();
         var filt = e.currentTarget.innerText;
         this.setState({'filter': this.state.filter.concat(filt)});
-        console.log("new filter", this.state.filter);
-        
+
     }
     
     onOriginClick(e) {
         e.preventDefault();
         var filt = e.currentTarget.innerText;
         this.setState({'origin': this.state.origin.concat(filt)});
-        console.log("new origin", this.state.origin);
-        
+
     }
     
     onClearFilter() {
         this.setState({'filter': []});
-        console.log("Clear filter");
     }
     
     onClearOrigin() {
         this.setState({'origin': []});
-        log.Debug("Clear origin");
     }
     
     onAdd(id, qty) {
         console.log('add id', id);
         if (qty === 0) {
-            console.log("Add 0 items, no op")
             return
         }
         var item = {
@@ -87,7 +84,7 @@ class EditOrder extends React.Component {
         var thisItem = _.findWhere(this.props.inventory, {'inventory_id': id});
 
         if (!item) {
-            console.log("Could not find item in inventory to update.")
+            log.Warn("Could not find item in inventory to update.")
             return
         }
         switch(qty) {
@@ -96,7 +93,7 @@ class EditOrder extends React.Component {
                 this.app.OrderQueries.deleteOrderItem(item);
                 break;
             case item.qty:
-                console.log("Order quantity did not change, no op.")
+                log.Debug("Order quantity did not change, no op.")
                 break;
             default:
                 this.message("Changing quantity of " + thisItem.name + " in your cart");
@@ -115,7 +112,6 @@ class EditOrder extends React.Component {
                 return true;
             } else {
                 var checks = _.map(filters, function(f1) { return _.contains(item, f1) });
-                console.log("checks", checks);
                 return _.every(checks, function(c) { return c === true });
             }
                 
@@ -139,7 +135,7 @@ class EditOrder extends React.Component {
     }
     
     render() {
-        console.log('page receives inventory', this.props.inventory);
+        log.Debug('page receives inventory', this.props.inventory);
         var sortedInventory = _.sortBy(this.props.inventory, this.sortBy(this.state.sort));
         return (
             <div>
@@ -195,7 +191,7 @@ module.exports = Marty.createContainer(EditOrder, {
   },
   pending() {
       return (
-        <div>Loading...</div>
+        <Loading />
     );
   }
 });

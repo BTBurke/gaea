@@ -33,13 +33,12 @@ class OrderAPI extends Marty.HttpStateSource {
         body: order
       });
    }
-   deleteOrder() {
-
-   }
-   submitOrder() {
-
-   }
-   updateOrder() {
+   updateOrder(order) {
+     return this.request({
+       url: Config.baseURL + '/order/' + order.order_id,
+       method: 'PUT',
+       body: order
+     })
 
    }
    readOrderItems(ordID) {
@@ -109,6 +108,26 @@ class OrderQueries extends Marty.Queries {
             case 200:
               console.log("Server receive:", res.body);
               this.dispatch(Constants.ORDERS_CREATE, res.body);
+              break;
+            case 401:
+              this.dispatch(Constants.LOGIN_REQUIRED);
+              break;
+            default:
+              throw new AppError("Failed to create order").getError();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.dispatch(Constants.REQUEST_FAILED, err)
+        });
+  }
+  updateOrder(order) {
+    return this.app.OrderAPI.updateOrder(order)
+      .then(res => {
+          switch (res.status) {
+            case 200:
+              console.log("Server receive:", res.body);
+              this.dispatch(Constants.ORDERS_UPDATE, res.body);
               break;
             case 401:
               this.dispatch(Constants.LOGIN_REQUIRED);
@@ -251,6 +270,7 @@ class OrderStore extends Marty.Store {
     this.handlers = {
       _ordersRead: Constants.ORDERS_READ,
       _ordersCreate: Constants.ORDERS_CREATE,
+      _ordersUpdate: Constants.ORDERS_UPDATE,
       _addItem: Constants.ORDER_ITEMS_CREATE,
       _readItem: Constants.ORDER_ITEMS_READ,
       _deleteItem: Constants.ORDER_ITEMS_DELETE,
@@ -273,6 +293,12 @@ class OrderStore extends Marty.Store {
   }
   
   _ordersCreate(order) {
+    this.state['orders'] = this.state['orders'].concat(new Order(order));
+    this.hasChanged();
+  }
+  
+  _ordersUpdate(order) {
+    this.state['orders'] = _.reject(this.state['orders'], function (o) { return order.order_id === o.order_id });
     this.state['orders'] = this.state['orders'].concat(new Order(order));
     this.hasChanged();
   }
@@ -302,7 +328,7 @@ class OrderStore extends Marty.Store {
   _updateItem(item) {
     var order = "order-" + item.order_id;
     this.state[order] = _.reject(this.state[order], function (i) { return item.order_item_id === i.order_item_id});
-    this.state[order] = this.state[order].concat(item);
+    this.state[order] = this.state[order].concat(new OrderItem(item));
     this.hasChanged();
   }
 

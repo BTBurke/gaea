@@ -11,6 +11,7 @@ var TopNav = require('../components/topnav');
 var SideMenu = require('../components/sidemenu');
 var OrderTable = require('../components/ordertable');
 var CurrentSales = require('../components/currentsales');
+var Loading = require('../components/loading');
 
 var Application = require('../stores/application');
 var { ApplicationContainer } = require('marty');
@@ -24,12 +25,12 @@ class Orders extends React.Component {
 
     this.menu = {'title': undefined,
         'items': [
-          {'key': 0, 'href': '/order/completed', 'text': 'View completed orders'},
+          {'key': 0, 'href': '/', 'text': 'Return to home'},
           ]
       };
     this.adminMenu = {'title': 'Admin Links',
         'items': [
-          {'key': 0, 'href': '/sale', 'text': 'Create a new sale'}
+          {'key': 0, 'href': '/sale', 'text': 'View sales'}
           ]
     }
     this.state = {
@@ -87,7 +88,10 @@ class Orders extends React.Component {
           </B.Col>
 
           <B.Col md={9} lg={9}>
-              <OrderTable title="Open Orders" orders={_.reject(this.props.orders, function(order) { return order.status === 'complete' })}/>
+              <OrderTable title="Open Orders"
+                orders={_.reject(this.props.orders, function(order) { return order.status === 'deliver' })}
+                sales={this.props.sales}
+              />
           </B.Col>
         </B.Row>
         <B.Row>
@@ -121,5 +125,10 @@ module.exports = Marty.createContainer(Orders, {
     sales: function() {
       return this.app.SaleStore.getSales();
     }
+  },
+  pending() {
+    return (
+      <Loading />
+      );
   }
 });

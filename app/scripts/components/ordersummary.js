@@ -10,18 +10,17 @@ class OrderSummary extends React.Component {
     }
     
     render() {
-        console.log('items', this.props.items);
         var items = _.map(this.props.items, function(item) {
             var currentItem = _.findWhere(this.props.inventory, {'inventory_id': item.inventory_id});
             var price = this.props.user.role === 'nonmember' ? currentItem.nonmem_price : currentItem.mem_price;
-            
+            var total = parseFloat(price) * item.qty;
             return (
                 <tr key={currentItem.supplier_id}>
                 <td>{currentItem.supplier_id}</td>
                 <td>{currentItem.name}</td>
-                <td>{price}<span className="os-rmb">RMB</span></td>
+                <td>${price}</td>
                 <td>{item.qty}</td>
-                <td>{price * item.qty}<span className="os-rmb">RMB</span></td>
+                <td>${total.toFixed(2)}</td>
                 </tr>
             );
         }.bind(this));
@@ -30,8 +29,8 @@ class OrderSummary extends React.Component {
             var currentItem = _.findWhere(this.props.inventory, {'inventory_id': item.inventory_id});
             var price = this.props.user.role === 'nonmember' ? currentItem.nonmem_price : currentItem.mem_price;
         
-            return item.qty * price + tot;
-        }.bind(this), 0);
+            return item.qty * parseFloat(price) + tot;
+        }.bind(this), 0.0);
         
         var noItemsMessage = function() {
             if (this.props.items.length === 0) {
@@ -64,11 +63,7 @@ class OrderSummary extends React.Component {
         <hr/>
         <div className="os-order-total">
             <span className="os-order-total-label">Total</span>
-            <span className="os-order-total-amount">{grandTotal}</span>
-            <span className="os-rmb">RMB</span>
-            <span className="os-order-total-divider">/</span>
-            <span className="os-order-total-usd">${(grandTotal/this.rate).toFixed(2)}</span>
-        
+            <span className="os-order-total-amount">${grandTotal.toFixed(2)}</span>
         </div>
         </div>
         );

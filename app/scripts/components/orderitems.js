@@ -10,7 +10,6 @@ class OrderItems extends React.Component {
     }
     
     onAddLocal(id) {
-        console.log("refs local", this.refs);
         this.props.onAdd(id, parseInt(this.refs['qty-'+id].getValue()));
     }
     
@@ -194,7 +193,6 @@ class OrderItems extends React.Component {
         }.bind(this);
         
         var items = _.map(this.props.inventory, function(item) { return makeItem(item) });
-        console.log('items', items);
         return (
             <div className="oi-all-items">
                 {items}

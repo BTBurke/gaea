@@ -21,9 +21,10 @@ class OrderTable extends React.Component {
       );
     }
 
-    var displayorders = _.map(orders, function(order, idx) {
+    var displayorders = _.map(orders, (order, idx) => {
 
-      var shortDate = new Date(order.status_date);
+      var sale = _.findWhere(this.props.sales, {'sale_id': order.sale_id});
+      var shortDate = new Date(sale.close_date);
 
 
       var actionButton = function(ord) {
@@ -39,7 +40,7 @@ class OrderTable extends React.Component {
             break;
           case 'submit':
             btn.text = "Pay for Order";
-            btn.href = "/#/pay/" + ord.order_id;
+            btn.href = "/#/order/" + ord.order_id +'/pay';
             break;
           default:
             btn.text = undefined;
@@ -61,11 +62,11 @@ class OrderTable extends React.Component {
           <td>{shortDate.toDateString()}</td>
           <td><span className={"ot-"+order.status}></span>{Utils.Capitalize(order.status)}</td>
           <td>{order.item_qty}</td>
-          <td>{order.amount_total}<span className="ot-rmb">RMB</span></td>
+          <td>${order.amount_total}</td>
           <td>{actionButton(order)}</td>
         </tr>
       );
-    });
+    })
     return (
       <B.Panel header={this.props.title}>
         <B.Table condensed>
@@ -73,7 +74,7 @@ class OrderTable extends React.Component {
             <tr>
               <th>Order#</th>
               <th>Order Type</th>
-              <th>Last Update</th>
+              <th>Sale Closes</th>
               <th>Status</th>
               <th>Item Qty</th>
               <th>Amount</th>
