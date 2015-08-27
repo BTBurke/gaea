@@ -5,37 +5,25 @@ var Marty = require('marty');
 var log = require('../services/logger');
 var TopNav = require('../components/topnav');
 
-class Login extends React.Component {
+class PwdReset extends React.Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-          'error': this.props.session.login_tries > 0 ? 'Username or password incorrect' : undefined
+        this.state ={
+          'error': undefined
         }
     }
 
-    login() {
-      log.Debug("trying login...");
+    reset() {
+      log.Debug("trying reset...");
       var user = this.refs.email.getValue()
-      var pwd = this.refs.pwd.getValue()
       if (user.length === 0) {
         this.setState({'error': 'Username cannot be empty'});
         return
       }
-      if (pwd.length === 0) {
-        this.setState({'error': 'Password cannot be empty'});
-        return
-      }
       this.setState({'error': undefined});
-      this.app.SessionActions.setAuthRedirect("home");
-      this.app.SessionQueries.login(user, pwd);
-    }
-
-    componentWillReceiveProps(newprops) {
-      log.Debug(newprops);
-      if (newprops.session.login_tries > 0) {
-        this.setState({'error': 'Username or password incorrect'});
-      }
+      this.app.SessionQueries.resetPassword(user);
+      this.setState({'error': 'Password reset requested'});
+      this.app.SessionActions.redirect("", 1000);
     }
 
     render() {
@@ -48,8 +36,7 @@ class Login extends React.Component {
                   <B.Col md={4} lg={4} mdOffset={4} lgOffset={4}>
                   <div className="login-container">
                   <B.Input type="text" label="Email Address" ref="email" />
-                  <B.Input type="password" label="Password" ref="pwd" />
-                  <B.Button bsStyle='info' onClick={this.login.bind(this)}>Login</B.Button>
+                  <B.Button bsStyle='info' onClick={this.login.bind(this)}>Send password reset instructions</B.Button>
                   </div>
                   {this.state.error ? <span className="login-error">{this.state.error}</span> : null}
                   </B.Col>

@@ -16,7 +16,8 @@ var SessionConstants = Marty.createConstants([
   'USER_MESSAGE_DISMISS',
   'ON_AUTH_REDIRECT',
   'SET_POPUP_CONTENT',
-  'DISMISS_POPUP_CONTENT'
+  'DISMISS_POPUP_CONTENT',
+  'REDIRECT'
 ]);
 
 ////////////////////////////////////////////////////////////////////////
@@ -75,6 +76,16 @@ class SessionActions extends Marty.ActionCreators {
 
     triggerLogin(msg) {
       this.dispatch(SessionConstants.LOGIN_REQUIRED, msg);
+    }
+
+    redirect(target, wait) {
+      if (wait === undefined) {
+        wait = 0;
+      }
+      var exec = () => {
+        this.dispatch(SessionConstants.REDIRECT, target);
+      }
+      setTimeout(exec, wait);    
     }
 }
 
@@ -141,7 +152,8 @@ class SessionStore extends Marty.Store {
       _handleLoginRequired: SessionConstants.LOGIN_REQUIRED,
       _handleSetAuthRedirect: SessionConstants.ON_AUTH_REDIRECT,
       _handleSetPopupContent: SessionConstants.SET_POPUP_CONTENT,
-      _handleDismissPopupContent: SessionConstants.DISMISS_POPUP_CONTENT
+      _handleDismissPopupContent: SessionConstants.DISMISS_POPUP_CONTENT,
+      _handleManualRedirect: SessionConstants.REDIRECT
     };
   }
 
@@ -164,9 +176,7 @@ class SessionStore extends Marty.Store {
   }
 
   _handleLoginFail(resp) {
-    if (resp.login_tries) {
-      this.setState({'login_tries': this.state.login_tries+1});
-    }
+    this.setState({'login_tries': this.state.login_tries+1});
     this._redirect('login');
     this.hasChanged();
   }
@@ -215,9 +225,13 @@ class SessionStore extends Marty.Store {
     this.hasChanged();
   }
 
+  _handleManualRedirect(target) {
+    this._redirect(target);
+  }
   _redirect(target) {
     log.Debug('redirecting to ' + target);
     window.location = config.homeURL + '/#/' + target;
+    this.setState({'auth_redirect': undefined});
   }
 
   // Methods

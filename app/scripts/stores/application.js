@@ -32,6 +32,7 @@ var { SaleStore, SaleQueries, SaleAPI } = require('./salestore');
 var SessionStore = require('./sessionstore').SessionStore;
 var SessionQueries = require('./sessionstore').SessionQueries;
 var SessionActions = require('./sessionstore').SessionActions;
+var SessionAPI = require('./sessionstore').SessionAPI;
 
 class Application extends Marty.Application {
     constructor(options) {
@@ -55,7 +56,8 @@ class Application extends Marty.Application {
 
         this.register('SessionStore', SessionStore);
         this.register('SessionQueries', SessionQueries);
-        this.register('SessionActions', SessionActions);     
+        this.register('SessionActions', SessionActions);
+        this.register('SessionAPI', SessionAPI);
 
     }
 }
