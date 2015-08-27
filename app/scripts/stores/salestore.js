@@ -18,8 +18,7 @@ var Constants = Marty.createConstants([
 
 class SaleAPI extends Marty.HttpStateSource {
    readSales() {
-     console.log("Going to read sales...");
-        return this.get(Config.baseURL + '/sale');
+     return this.get(Config.baseURL + '/sale');
    }
    createSale(sale) {
      return this.request({
@@ -32,7 +31,6 @@ class SaleAPI extends Marty.HttpStateSource {
 
    }
    updateSale(sale) {
-      console.log("Going to update sale...");
       return this.request({
       url: Config.baseURL + '/sale/' + sale.sale_id,
       method: 'PUT',

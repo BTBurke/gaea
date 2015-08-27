@@ -13,6 +13,7 @@ var Constants = Marty.createConstants([
   'ORDER_ITEMS_CREATE',
   'ORDER_ITEMS_UPDATE',
   'ORDER_ITEMS_DELETE',
+  'SALE_ALL_ORDERS_RECEIVE',
   'REQUEST_FAILED',
   'LOGIN_REQUIRED'
 ]);
@@ -67,6 +68,13 @@ class OrderAPI extends Marty.HttpStateSource {
      return this.request({
        url: Config.baseURL + '/order/' + item.order_id + /item/ + item.order_item_id,
        method: 'DELETE'
+     });
+   }
+   
+   getOrdersAndItemsForSale(saleID) {
+     return this.request({
+       url: Config.baseURL + '/sale/' + saleID + '/all',
+       method: 'GET'
      });
    }
 
@@ -226,6 +234,27 @@ class OrderQueries extends Marty.Queries {
         });
   }
   
+  getOrdersAndItemsForSale(saleID) {
+    return this.app.OrderAPI.getOrdersAndItemsForSale(saleID)
+      .then(res => {
+          switch (res.status) {
+            case 200:
+              console.log("Server receive:", res.body);
+              this.dispatch(Constants.SALE_ALL_ORDERS_RECEIVE, res.body);
+              break;
+            case 401:
+              this.dispatch(Constants.LOGIN_REQUIRED);
+              break;
+            default:
+              throw new AppError("Failed to get all orders for sale").getError();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.dispatch(Constants.REQUEST_FAILED, err)
+        });
+  }
+  
 }
 
 
@@ -274,7 +303,8 @@ class OrderStore extends Marty.Store {
       _addItem: Constants.ORDER_ITEMS_CREATE,
       _readItem: Constants.ORDER_ITEMS_READ,
       _deleteItem: Constants.ORDER_ITEMS_DELETE,
-      _updateItem: Constants.ORDER_ITEMS_UPDATE
+      _updateItem: Constants.ORDER_ITEMS_UPDATE,
+      _receiveSale: Constants.SALE_ALL_ORDERS_RECEIVE
 
     };
   }
@@ -332,6 +362,17 @@ class OrderStore extends Marty.Store {
     this.hasChanged();
   }
 
+  _receiveSale(res) {
+    // For the SaleOrders page, return a different data structure. Map contains two entries:
+    // orders: Array of all orders for this sale
+    // items: Map of arrays for each order, keys are "order-<id>"
+    var orders = _.map(res.orders, function (ord) { return new Order(ord)});
+    var items = _.groupBy(res.items, function (item) { return "order-" + item.order_id })
+    var users = _.indexBy(res.users, function (user) { return user.user_name });
+    
+    this.state['sale-' + res.sale_id] = {'orders': orders, 'items': items, 'users': users};
+    this.hasChanged();
+  }
 
 
   // Methods
@@ -347,6 +388,18 @@ class OrderStore extends Marty.Store {
     });
   }
   
+  getOrdersAndItemsForSale(sale) {
+    return this.fetch({
+        id: 'bysale',
+        locally: function() {
+          return this.state['sale-' + sale];
+        },
+        remotely: function() {
+          return this.app.OrderQueries.getOrdersAndItemsForSale(sale);
+        }
+    });
+  }
+  
   getItems(ord) {
     return this.fetch({
      id: 'items',
@@ -358,7 +411,6 @@ class OrderStore extends Marty.Store {
      }
     });
   }
-
 }
 
 module.exports.OrderStore = OrderStore;

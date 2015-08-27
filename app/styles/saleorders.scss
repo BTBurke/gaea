@@ -1,0 +1,59 @@
+.so-order-container {
+    margin-top: 10px;
+    .so-order-header {
+        background: #eee;
+        font-weight: bold;
+        padding-left: 5px;
+        margin-bottom: 5px;
+        cursor: pointer;
+        
+        .arrow-right {
+        	width: 0; 
+        	height: 0; 
+        	border-bottom: 5px solid transparent;  /* left arrow slant */
+        	border-top: 5px solid transparent; /* right arrow slant */
+        	border-left: 5px solid $base-orange; /* bottom, add background color here */
+        	font-size: 0;
+        	line-height: 0;
+        	display: inline-block;
+        }
+        
+        .arrow-down {
+        	width: 0; 
+        	height: 0; 
+        	border-left: 5px solid transparent;
+        	border-right: 5px solid transparent;
+        	border-top: 5px solid $base-orange;
+        	font-size: 0;
+        	line-height: 0;
+        	display: inline-block;
+        }
+        
+        .so-order-name {
+            width: 50%;
+            display: inline-block;
+            padding-left: 5px;
+        }
+        
+        .so-order-qty {
+            width: 20%;
+            display: inline-block;
+        }
+        
+        .so-order-total {
+            width: 20%;
+            display: inline-block;
+        }
+        
+        .so-data-orange {
+            color: $base-orange;
+        }
+    }
+    
+    .so-order-items {
+        padding-left: 15px;
+        padding-right: 15px;
+        margin-bottom: 15px;
+    }
+}
+
