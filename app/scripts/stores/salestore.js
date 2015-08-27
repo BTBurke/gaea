@@ -68,7 +68,7 @@ class SaleQueries extends Marty.Queries {
         this.dispatch(Constants.REQUEST_FAILED, err)
       });
   }
-  
+
   createSale(sale) {
     return this.app.SaleAPI.createSale(sale)
       .then(res => {
@@ -89,7 +89,7 @@ class SaleQueries extends Marty.Queries {
         this.dispatch(Constants.REQUEST_FAILED, err)
       });
   }
-  
+
   updateSale(sale) {
     return this.app.SaleAPI.updateSale(sale)
       .then(res => {
@@ -124,7 +124,9 @@ class Sale {
     this.open_date = props.open_date;
     this.close_date = props.close_date;
     this.sale_type = props.sale_type;
+    this.title = props.title;
     this.sales_copy = props.sales_copy;
+    this.require_final = props.require_final;
   }
 }
 
@@ -155,18 +157,18 @@ class SaleStore extends Marty.Store {
       this.hasChanged();
     }
   }
-  
+
   _updateSale(sale) {
     this.state['sales'] = _.reject(this.state.sales, function (i) { return sale.sale_id === i.sale_id});
     this.state['sales'] = this.state.sales.concat(new Sale(sale));
     this.hasChanged();
   }
-  
+
   _createSale(sale) {
     this.state['sales'] = this.state.sales.concat(new Sale(sale));
     this.hasChanged();
   }
-  
+
   // Methods
   getSales() {
     return this.fetch({

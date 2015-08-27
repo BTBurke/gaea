@@ -25,7 +25,9 @@ class EditSale extends React.Component {
       'open': new Date(thisSale.open_date),
       'close': new Date(thisSale.close_date),
       'sale_type': thisSale.sale_type,
-      'sales_copy': thisSale.sales_copy
+      'title': thisSale.title,
+      'sales_copy': thisSale.sales_copy,
+      'require_final': thisSale.require_final
     }
   }
 
@@ -51,13 +53,23 @@ class EditSale extends React.Component {
     this.setState({'sales_copy': this.refs.salescopy.getValue()});
   }
 
+  onSalesTitleChange() {
+    this.setState({'title': this.refs.title.getValue()});
+  }
+
+  onRequireFinalChange() {
+    this.setState({'require_final': this.refs.requirefinal.getValue() === 'required' ? true : false});
+  }
+
   onSaveChanges() {
     var update ={
       'sale_id': this.state.sale_id,
       'open_date': this.state.open,
       'close_date': this.state.close,
       'sale_type': this.state.sale_type,
-      'sales_copy': this.state.sales_copy
+      'title': this.state.title,
+      'sales_copy': this.state.sales_copy,
+      'require_final': this.state.require_final
     };
 
     this.app.SaleQueries.updateSale(update);
@@ -76,7 +88,9 @@ class EditSale extends React.Component {
       {'section': 'Open Date', 'text': 'Enter the date you want the sale to begin.  Members will get an email announcing the sale.'},
       {'section': 'Close Date', 'text': 'Enter the date you want the sale to close. No new orders will be accepted after this date. Members will start getting emails 5 days before close for them to submit their order.'},
       {'section': 'Sale Type', 'text': 'The type of sale cannot be changed.  Create a new sale if you need to edit this value.'},
-      {'section': 'Sales Copy', 'text': 'Write a description of the sale.  This text will appear as the body of the email announcing the sale and as an announcement on the homepage as long as the sale is open.'}
+      {'section': 'Require Finalization', 'text': 'If set to required, then the sale must be manually finalized before customers will get a bill and be invoiced.  This is useful for orders where some costs are variable and allows those to be split and added to the bill once known.'},
+      {'section': 'Sales Title', 'text': 'Write a snazzy one line description of the sale.  This will appear as the title announcing the sale.'},
+      {'section': 'Sales Copy', 'text': 'Write a description of the sale.  This text will appear as an announcement on the homepage as long as the sale is open.'}
     ];
 
     var textareasty = {
@@ -111,11 +125,16 @@ class EditSale extends React.Component {
                 <B.Input type="select" ref="saletype" label="Sale Type" placeholder="Choose sale type" value={this.state.sale_type} readOnly>
                   <option value={this.state.sale_type}>{Utils.Capitalize(this.state.sale_type)}</option>
                 </B.Input>
+
+                <B.Input type="select" ref="requirefinal" label="Require Finalization" placeholder="Choose Finalization Status" value={this.state.require_final ? 'required': 'notrequired'} onChange={this.onRequireFinalChange.bind(this)}>
+                  <option value="required">Required</option>
+                  <option value="notrequired">Not Required</option>
+                </B.Input>
             </B.Col>
             </B.Row>
             <B.Row>
             <B.Col md={6} lg={6} mdOffset={3} lgOffset={3}>
-
+                <B.Input type="text" label="Sales Title" ref="title" value={this.state.title} onChange={this.onSalesTitleChange.bind(this)} />
                 <B.Input type="textarea" style={textareasty} label="Sales Copy" ref="salescopy" value={this.state.sales_copy} onChange={this.onSalesCopyChange.bind(this)} />
             </B.Col>
             </B.Row>

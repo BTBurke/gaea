@@ -6,29 +6,37 @@ var Marty = require('marty');
 var log = require('../services/logger');
 var Loading = require('../components/loading');
 var TopNav = require('../components/topnav');
+var utils = require('../services/utils');
 
 class SaleOrders extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             'open': undefined
         }
     }
-    
+
+    finalize() {
+      // TODO: Need to implement finalization of the order, adding
+      // transactions for each, perhaps a popup that allows you to spread
+      // common charges equally or proportionally to each order
+      log.Debug("I would finalize");
+    }
     makeOpenLink(orderID) {
         return () => {
             if (this.state.open === orderID) {
                 this.setState({'open': undefined});
             } else {
                 this.setState({'open': orderID});
-            }        
+            }
         }
     }
-    
+
     render() {
-        log.Debug('all sale', this.props.sale);
-        
+        log.Debug('all sale details', this.props.sale);
+        log.Debug('all sales', this.props.allsales);
+
         var itemTable = (order) => {
             var thisOrderItems = this.props.sale.items["order-"+order.order_id];
             var items = _.map(thisOrderItems, (item) => {
@@ -45,7 +53,7 @@ class SaleOrders extends React.Component {
                     </tr>
                 );
             });
-            
+
             return (
                 <B.Table condensed>
                 <thead>
@@ -63,7 +71,7 @@ class SaleOrders extends React.Component {
                 </B.Table>
             );
         }
-        
+
         var allOrders = _.map(this.props.sale.orders, (ord) => {
             var thisUser = this.props.sale.users[ord.user_name];
             return (
@@ -83,11 +91,14 @@ class SaleOrders extends React.Component {
                     <div className="so-order-items">
                     {this.state.open === ord.order_id ? itemTable(ord) : null}
                     </div>
-                    
+
                 </div>
             );
         })
-        
+        var thisSale = _.findWhere(this.props.allsales, {'sale_id': parseInt(this.props.params.saleID)});
+        var saleTotal = _.reduce(this.props.sale.orders, (tot, ord) => {
+            return parseFloat(ord.amount_total) + tot
+        }, 0.0);
         return (
             <div>
             <TopNav user={this.props.user.fullName} />
@@ -95,9 +106,26 @@ class SaleOrders extends React.Component {
             <B.Row>
                 <B.Col md={3} lg={3}>
                 </B.Col>
-            
+
                 <B.Col md={9} lg={9}>
-                {allOrders}
+                <div className="so-sale-details">
+                  <div className="so-sale-details-leftcol">
+                    <p>Open: {new Date(thisSale.open_date).toDateString()}</p>
+                    <p>Close: {new Date(thisSale.close_date).toDateString()}</p>
+                    <p>Status: {utils.Capitalize(thisSale.status)}</p>
+                    {thisSale.require_final && this.status == "closed" ? <B.Button bsStyle='info' onClick={this.finalize.bind(this)}>Finalize Order</B.Button> : null}
+                  </div>
+                  <div className="so-sale-details-rightcol">
+                    <div className="so-sale-total-header">
+                      Sale Total
+                    </div>
+                    <div className="so-sale-total">
+                      ${saleTotal.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+                <hr />
+                {allOrders.length > 0 ? allOrders : "No orders"}
                 </B.Col>
             </B.Row>
             </B.Grid>
@@ -112,8 +140,11 @@ module.exports = Marty.createContainer(SaleOrders, {
     user: function() {
         return this.app.UserStore.getUser();
     },
+    allsales: function() {
+       return this.app.SaleStore.getSales();
+    },
     sale: function() {
-        return this.app.OrderStore.getOrdersAndItemsForSale(this.props.params.saleID);  
+        return this.app.OrderStore.getOrdersAndItemsForSale(this.props.params.saleID);
     },
     inventory: function() {
         return this.app.InventoryStore.getInventoryBySale(this.props.params.saleID);
