@@ -17,7 +17,8 @@ var SessionConstants = Marty.createConstants([
   'ON_AUTH_REDIRECT',
   'SET_POPUP_CONTENT',
   'DISMISS_POPUP_CONTENT',
-  'REDIRECT'
+  'REDIRECT',
+  'RESET_PASSWORD'
 ]);
 
 ////////////////////////////////////////////////////////////////////////
@@ -39,6 +40,16 @@ class SessionAPI extends Marty.HttpStateSource {
    logout(user) {
        return this.request({
            url: Config.baseURL + '/logout',
+           method: 'POST',
+           body: {
+               'user': user
+           }
+       });
+   }
+   
+   requestReset(user) {
+     return this.request({
+           url: Config.baseURL + '/reset',
            method: 'POST',
            body: {
                'user': user
@@ -117,6 +128,15 @@ class SessionQueries extends Marty.Queries {
   logout(user) {
     return this.app.SessionAPI.logout(pwd)
       .then(this.dispatch(SessionConstants.LOGOUT))
+      .catch(err => {
+        console.log(err);
+        this.dispatch(SessionConstants.REQUEST_FAILED, err)
+      });
+  }
+  
+  requestReset(user) {
+    return this.app.SessionAPI.requestReset(user)
+      .then(this.dispatch(SessionConstants.RESET_PASSWORD))
       .catch(err => {
         console.log(err);
         this.dispatch(SessionConstants.REQUEST_FAILED, err)

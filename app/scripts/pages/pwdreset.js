@@ -17,11 +17,11 @@ class PwdReset extends React.Component {
       log.Debug("trying reset...");
       var user = this.refs.email.getValue()
       if (user.length === 0) {
-        this.setState({'error': 'Username cannot be empty'});
+        this.setState({'error': 'Email cannot be empty'});
         return
       }
       this.setState({'error': undefined});
-      this.app.SessionQueries.resetPassword(user);
+      this.app.SessionQueries.requestReset(user);
       this.setState({'error': 'Password reset requested'});
       this.app.SessionActions.redirect("", 1000);
     }
@@ -34,9 +34,10 @@ class PwdReset extends React.Component {
             <B.Grid>
                 <B.Row>
                   <B.Col md={4} lg={4} mdOffset={4} lgOffset={4}>
+                  <h4>Reset your password via email</h4>
                   <div className="login-container">
                   <B.Input type="text" label="Email Address" ref="email" />
-                  <B.Button bsStyle='info' onClick={this.login.bind(this)}>Send password reset instructions</B.Button>
+                  <B.Button bsStyle='info' onClick={this.reset.bind(this)}>Send password reset instructions</B.Button>
                   </div>
                   {this.state.error ? <span className="login-error">{this.state.error}</span> : null}
                   </B.Col>
@@ -47,7 +48,7 @@ class PwdReset extends React.Component {
     }
 }
 
-module.exports = Marty.createContainer(Login, {
+module.exports = Marty.createContainer(PwdReset, {
   listenTo: ['SessionStore'],
   fetch: {
     session: function() {

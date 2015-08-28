@@ -15,6 +15,8 @@ var SessionTest = require('./test/session_test');
 var Pay = require('./pages/pay');
 var SaleOrders = require('./pages/saleorders');
 var Login = require('./pages/login');
+var PwdReset = require('./pages/pwdreset');
+var Account = require('./pages/account');
 
 
 // React-router
@@ -59,10 +61,12 @@ var External = React.createClass({
 var routes = (
   <Route name="external" path="/" handler={External}>
     <DefaultRoute handler={Landing}/>
-    <Route name="tos" path="tos" handler={Tos}/>
+    <Route name="tos" path="/tos" handler={Tos}/>
     <Route name="home" path="home" handler={Home}/>
-		<Route name="login" path="login" handler={Login} />
-    <Route name="order" path="order" handler={Orders}/>
+		<Route name="login" path="/login" handler={Login} />
+		<Route name="account" path="/account" handler={Account}/>
+		<Route name="reset" path="/reset" handler={PwdReset} />
+    <Route name="order" path="/order" handler={Orders}/>
     <Route name="editorder" path="/order/:orderID" handler={EditOrder}/>
     <Route name="checkout" path="/order/:orderID/checkout" handler={Checkout}/>
     <Route name="pay" path="/order/:orderID/pay" handler={Pay}/>
