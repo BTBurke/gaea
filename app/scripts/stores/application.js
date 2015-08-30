@@ -1,29 +1,30 @@
 var Marty = require('marty');
-
-var UserConstants = Marty.createConstants([
-  'LOGIN_REQUIRED',
-]);
-
+var localstorage = require('local-storage');
 
 Marty.HttpStateSource.addHook({
    id: 'JWT',
    priority: 1,
    before(req) {
-       req.headers['Authorization'] = 'QWRJKLFDJKSL.FJKLDJKLFDJKL.BURKE.HS256';
+       var jwt = localstorage.get('gaea_jwt');
+       if (jwt != null && jwt.length > 0) {
+         req.headers['Authorization'] = 'Bearer ' + jwt;
+       }
+       return req;
    }
 });
 
-// Marty.HttpStateSource.addHook({
-//    id: '401',
-//    priority: 2,
-//    after(res) {
-//       if (res.status == 401){
-//           console.log("Saw the 401");
-//           this.dispatch(UserConstants.LOGIN_REQUIRED);
-//           return res;
-//       }
-//    }
-// });
+Marty.HttpStateSource.addHook({
+   id: 'JWT2',
+   priority: 2,
+   after(res) {
+     console.log("res", res);
+      var jwt = res.headers.get('Authorization');
+      if (jwt != null && jwt.length > 0) {
+        localstorage.set('gaea_jwt', jwt.split(" ")[1]);
+      }
+      return res;
+   }
+});
 
 var { UserStore, UserQueries, UserAPI } = require('./userstore');
 var { OrderStore, OrderQueries, OrderAPI } = require('./orderstore');
