@@ -18,7 +18,7 @@ var SessionConstants = Marty.createConstants([
   'SET_POPUP_CONTENT',
   'DISMISS_POPUP_CONTENT',
   'REDIRECT',
-  'RESET_PASSWORD'
+  'RESET_PASSWORD_FAILED'
 ]);
 
 ////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ class SessionAPI extends Marty.HttpStateSource {
            }
        });
    }
-   
+
    requestReset(user) {
      return this.request({
            url: Config.baseURL + '/reset',
@@ -55,6 +55,15 @@ class SessionAPI extends Marty.HttpStateSource {
                'user': user
            }
        });
+   }
+   setPassword(pwd) {
+     return this.request({
+       url: Config.baseURL + '/password',
+       method: 'POST',
+       body: {
+         'pwd': pwd
+       }
+     });
    }
 
 
@@ -96,7 +105,7 @@ class SessionActions extends Marty.ActionCreators {
       var exec = () => {
         this.dispatch(SessionConstants.REDIRECT, target);
       }
-      setTimeout(exec, wait);    
+      setTimeout(exec, wait);
     }
 }
 
@@ -133,10 +142,30 @@ class SessionQueries extends Marty.Queries {
         this.dispatch(SessionConstants.REQUEST_FAILED, err)
       });
   }
-  
+
   requestReset(user) {
     return this.app.SessionAPI.requestReset(user)
       .then(this.dispatch(SessionConstants.RESET_PASSWORD))
+      .catch(err => {
+        console.log(err);
+        this.dispatch(SessionConstants.REQUEST_FAILED, err)
+      });
+  }
+
+  setPassword(pwd) {
+    return this.app.SessionAPI.login(pwd)
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            this.dispatch(SessionConstants.LOGIN_SUCCESS, res.body);
+            break;
+          case 401:
+            this.dispatch(SessionConstants.PASSWORD_RESET_FAILED, res.body);
+            break;
+          default:
+            throw new AppError("Password reset failed").getError();
+        }
+      })
       .catch(err => {
         console.log(err);
         this.dispatch(SessionConstants.REQUEST_FAILED, err)
@@ -160,7 +189,8 @@ class SessionStore extends Marty.Store {
         'login_message': undefined,
         'login_success': false,
         'login_tries': 0,
-        'popup_content': undefined
+        'popup_content': undefined,
+        'password_reset_fail': undefined
     };
     this.handlers = {
       _handleLogin: SessionConstants.LOGIN_SUCCESS,
@@ -173,7 +203,8 @@ class SessionStore extends Marty.Store {
       _handleSetAuthRedirect: SessionConstants.ON_AUTH_REDIRECT,
       _handleSetPopupContent: SessionConstants.SET_POPUP_CONTENT,
       _handleDismissPopupContent: SessionConstants.DISMISS_POPUP_CONTENT,
-      _handleManualRedirect: SessionConstants.REDIRECT
+      _handleManualRedirect: SessionConstants.REDIRECT,
+      _handlePasswordResetFailed: SessionConstants.PASSWORD_RESET_FAILED
     };
   }
 
@@ -222,6 +253,10 @@ class SessionStore extends Marty.Store {
   _handleRequestFailed(err) {
     this.setState({'error': err});
     this.hasChanged();
+  }
+
+  _handlePasswordResetFailed(resp) {
+    this.setState({'password_reset_fail': true});
   }
 
   _handleLoginRequired(msg) {
