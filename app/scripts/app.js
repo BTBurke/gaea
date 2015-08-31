@@ -49,18 +49,6 @@ var External = React.createClass({
   }
 });
 
-// Private views are rendered under the Internal component,
-// requires login. Every top-level view should extend either
-// the Private, Admin, or SuperAdmin classes to ensure that
-// logged-in states are checked via ComponentWillMount before
-// render.
-// var Internal = React.createClass({
-//   render: function() {
-//     // TODO
-//   }
-// })
-
-
 var routes = (
   <Route name="external" path="/" handler={External}>
     <DefaultRoute handler={Landing}/>

@@ -25,6 +25,10 @@ class SessionTest extends React.Component {
     this.app.SessionActions.triggerLogin("This is my custom login message");
   }
 
+  _triggerError() {
+    this.app.SessionActions.triggerError("Da bad shit done happened");
+  }
+
   render() {
     console.log('app', this.app);
     return (
@@ -44,6 +48,10 @@ class SessionTest extends React.Component {
         <h3>Test 3: Trigger a login</h3>
         <div>Clicking the button shows a login dialog</div>
         <B.Button onClick={this._triggerLogin.bind(this)}>Trigger Login Dialog</B.Button>
+
+        <h3>Test 4: Trigger an Error</h3>
+        <div>Clicking the button shows triggers an error</div>
+        <B.Button onClick={this._triggerError.bind(this)}>Trigger Error Dialog</B.Button>
 
       </B.Row>
     </B.Grid>

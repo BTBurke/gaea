@@ -4,7 +4,7 @@ class AppError {
     this.user = "testuser";
     this.error = error;
     this.dtg = new Date();
-    this.message = "The application encounted an error:\n\n" + this.error + "\n\nThis error has been reported.  Please try again later.";
+    this.message = error;
 
     //TODO: Add LogEntries logging here
   }

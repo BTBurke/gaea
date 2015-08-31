@@ -1,5 +1,6 @@
 var React = require('react');
 var B = require('react-bootstrap');
+var _ = require('underscore');
 
 var Marty = require('marty');
 var Application = require('../stores/application');
@@ -19,6 +20,10 @@ class Session extends React.Component {
     this.app.SessionActions.dismissMessage();
   }
 
+  _dismissError() {
+    this.app.SessionActions.dismissError();
+  }
+
   _closePopup() {
     this.app.SessionActions.dismissPopupContent();
   }
@@ -36,7 +41,7 @@ class Session extends React.Component {
     this.app.SessionActions.setAuthRedirect(window.location.origin);
     this.app.SessionQueries.login(email, pwd);
   }
-  
+
   notSuppressed() {
     var home = window.location.origin;
     var suppress = [home + '/#/', home + '/#/login', home + '/#/set', home + '/#/reset', home + '/#/account'];
@@ -63,6 +68,30 @@ class Session extends React.Component {
       );
     }
 
+    var displayErrors = () => {
+      return (
+      <B.Modal show={this.props.session.error != undefined} bsSize='large' onHide={this._dismissError.bind(this)}>
+        <B.Modal.Header closeButton>
+          <B.Modal.Title>Something Bad Happened</B.Modal.Title>
+        </B.Modal.Header>
+        <B.Modal.Body>
+        <B.Grid fluid={true}>
+          <B.Row>
+            <B.Col md={6} lg={6} sm={6}>
+              <img src={_.sample(['images/livinthedream.gif', 'images/nopoints.gif'])} />
+            </B.Col>
+            <B.Col md={6} lg={6} sm={6}>
+              Something really bad happened and the error is:
+              <div className="session-fail-msg">{this.props.session.error}</div>
+              You can probably try what you were doing again.  It might succeed, or it might not. <p />Best just to take the rest of the day off and try tomorrow.  If you are really concerned, let us know at <a href="mailto:help@guangzhouaea.org">help@guangzhouaea.org</a>.
+            </B.Col>
+          </B.Row>
+        </B.Grid>
+        </B.Modal.Body>
+      </B.Modal>
+      );
+    }
+
     var displayPopupContent = () => {
       log.Debug("showing modal content...");
       return (
@@ -83,7 +112,6 @@ class Session extends React.Component {
     var displayLoginBox = () => {
       return (
         <B.Modal show={this.props.session.login_required && this.notSuppressed.bind(this)}
-                onHide={this._improperLoginClose.bind(this)}
                 keyboard={false}
                 bsSize='medium'
                 backdrop='static'
@@ -109,7 +137,7 @@ class Session extends React.Component {
 
     return (
       <div className="session-container">
-        {this.props.session.errors ? displayErrors() : null}
+        {this.props.session.error ? displayErrors() : null}
         {this.props.session.user_message ? displayMessage() : null}
         {this.props.session.login_required ? displayLoginBox() : null}
         {this.props.session.popup_content ? displayPopupContent() : null}
