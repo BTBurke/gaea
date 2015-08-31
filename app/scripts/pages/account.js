@@ -30,6 +30,7 @@ class Account extends React.Component {
         }
         
         this.setState({'submit': true});
+        
     }
     
     backStyle() {

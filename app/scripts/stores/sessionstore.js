@@ -250,7 +250,7 @@ class SessionStore extends Marty.Store {
   }
   _redirect(target) {
     log.Debug('redirecting to ' + target);
-    window.location = config.homeURL + '/#/' + target;
+    window.location = window.location.origin + '/#/' + target;
     this.setState({'auth_redirect': undefined});
   }
 

@@ -10,6 +10,10 @@ var app = new Application();
 class Session extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      'error': undefined,
+      'submit': false
+    }
   }
   _dismissMessage() {
     this.app.SessionActions.dismissMessage();
@@ -19,12 +23,25 @@ class Session extends React.Component {
     this.app.SessionActions.dismissPopupContent();
   }
 
-  _improperLoginClose() {
-    log.Debug("Need to redirect on improper close...");
-  }
 
   _handleLogin() {
     log.Debug("going to login...");
+    var email = this.refs.email.getValue();
+    var pwd = this.refs.pwd.getValue();
+    if (email.length === 0 || pwd.length === 0) {
+      this.setState({'error': 'Username and password must be provided'});
+      return
+    }
+    this.setState({'submit': true});
+    this.app.SessionActions.setAuthRedirect(window.location.origin);
+    this.app.SessionQueries.login(email, pwd);
+  }
+  
+  notSuppressed() {
+    var home = window.location.origin;
+    var suppress = [home + '/#/', home + '/#/login', home + '/#/set', home + '/#/reset', home + '/#/account'];
+    var isSupressed = _.contains(suppress, window.location.href);
+    return !isSuppressed;
   }
 
   render() {
@@ -65,7 +82,7 @@ class Session extends React.Component {
 
     var displayLoginBox = () => {
       return (
-        <B.Modal show={this.props.session.login_required}
+        <B.Modal show={this.props.session.login_required && this.notSuppressed.bind(this)}
                 onHide={this._improperLoginClose.bind(this)}
                 keyboard={false}
                 bsSize='medium'
@@ -78,6 +95,8 @@ class Session extends React.Component {
             <div className="session-login-message">
             {this.props.session.login_message ? this.props.session.login_message : "This action requires you to be logged in.  Please log in and retry what you were doing."}
             </div>
+            <B.Input type='text' ref="email" label="Email Address" />
+            <B.Input type='password' ref='pwd' label='Password' />
           </B.Modal.Body>
           <B.Modal.Footer>
           <B.Button bsStyle='info' onClick={this._handleLogin.bind(this)}>Login</B.Button>

@@ -62,7 +62,7 @@ var routes = (
   <Route name="external" path="/" handler={External}>
     <DefaultRoute handler={Landing}/>
     <Route name="tos" path="/tos" handler={Tos}/>
-    <Route name="home" path="home" handler={Home}/>
+    <Route name="home" path="/home" handler={Home}/>
 		<Route name="login" path="/login" handler={Login} />
 		<Route name="account" path="/account" handler={Account}/>
 		<Route name="reset" path="/reset" handler={PwdReset} />
