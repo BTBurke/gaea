@@ -23,6 +23,7 @@ class Users extends React.Component {
                 {userStats}
               </div>
               <div className="users-table">
+
               </div>
             </B.Col>
           <B.Row>
