@@ -22,7 +22,7 @@ class PwdReset extends React.Component {
       }
       this.setState({'error': undefined});
       this.app.SessionQueries.requestReset(user);
-      this.setState({'error': 'Password reset requested'});
+      this.setState({'error': 'Password reset requested.  Check your email.'});
       this.app.SessionActions.redirect("", 1000);
     }
 
