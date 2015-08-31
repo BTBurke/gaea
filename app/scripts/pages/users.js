@@ -26,7 +26,7 @@ class Users extends React.Component {
 
               </div>
             </B.Col>
-          <B.Row>
+          </B.Row>
         </B.Grid>
       </div>
     );
