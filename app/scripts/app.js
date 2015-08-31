@@ -16,6 +16,7 @@ var Pay = require('./pages/pay');
 var SaleOrders = require('./pages/saleorders');
 var Login = require('./pages/login');
 var PwdReset = require('./pages/pwdreset');
+var PwdSet = require('./pages/pwdset');
 var Account = require('./pages/account');
 
 
@@ -30,6 +31,7 @@ var Router = require('react-router'),
 var { ApplicationContainer } = require('marty');
 var Application = require('./stores/application');
 var app = new Application();
+var Session = require('./components/session');
 
 //For testing
 window.Marty = require('marty');
@@ -40,6 +42,7 @@ var External = React.createClass({
   render: function () {
     return (
       <ApplicationContainer app={app} router={this.context.router}>
+        <Session />
         <RouteHandler/>
       </ApplicationContainer>
     );
@@ -66,6 +69,7 @@ var routes = (
 		<Route name="login" path="/login" handler={Login} />
 		<Route name="account" path="/account" handler={Account}/>
 		<Route name="reset" path="/reset" handler={PwdReset} />
+		<Route name="set" path="/set/:token" handler={PwdSet} />
     <Route name="order" path="/order" handler={Orders}/>
     <Route name="editorder" path="/order/:orderID" handler={EditOrder}/>
     <Route name="checkout" path="/order/:orderID/checkout" handler={Checkout}/>

@@ -18,7 +18,8 @@ var SessionConstants = Marty.createConstants([
   'SET_POPUP_CONTENT',
   'DISMISS_POPUP_CONTENT',
   'REDIRECT',
-  'RESET_PASSWORD_FAILED'
+  'RESET_PASSWORD',
+  'PASSWORD_RESET_FAILED'
 ]);
 
 ////////////////////////////////////////////////////////////////////////
@@ -56,12 +57,16 @@ class SessionAPI extends Marty.HttpStateSource {
            }
        });
    }
-   setPassword(pwd) {
+   setPassword(pwd, token) {
      return this.request({
-       url: Config.baseURL + '/password',
+       url: Config.baseURL + '/set',
        method: 'POST',
+       header: {
+         'Authorization': 'Bearer ' + token
+       },
        body: {
-         'pwd': pwd
+         'pwd': pwd,
+         'token': token
        }
      });
    }
@@ -99,13 +104,7 @@ class SessionActions extends Marty.ActionCreators {
     }
 
     redirect(target, wait) {
-      if (wait === undefined) {
-        wait = 0;
-      }
-      var exec = () => {
-        this.dispatch(SessionConstants.REDIRECT, target);
-      }
-      setTimeout(exec, wait);
+      this.dispatch(SessionConstants.REDIRECT, target, wait);
     }
 }
 
@@ -152,8 +151,8 @@ class SessionQueries extends Marty.Queries {
       });
   }
 
-  setPassword(pwd) {
-    return this.app.SessionAPI.login(pwd)
+  setPassword(pwd, token) {
+    return this.app.SessionAPI.setPassword(pwd, token)
       .then(res => {
         switch (res.status) {
           case 200:
@@ -204,6 +203,7 @@ class SessionStore extends Marty.Store {
       _handleSetPopupContent: SessionConstants.SET_POPUP_CONTENT,
       _handleDismissPopupContent: SessionConstants.DISMISS_POPUP_CONTENT,
       _handleManualRedirect: SessionConstants.REDIRECT,
+      _handleResetPasswordRequest: SessionConstants.RESET_PASSWORD,
       _handlePasswordResetFailed: SessionConstants.PASSWORD_RESET_FAILED
     };
   }
@@ -215,7 +215,8 @@ class SessionStore extends Marty.Store {
     localstorage.set('gaea_user', resp.user);
     this.setState({'login_success': true,
                    'login_tries': 0,
-                   'login_required': false
+                   'login_required': false,
+                   'password_reset_fail': false
                   });
     if (resp.redirect) {
       this._redirect(resp.redirect);
@@ -231,7 +232,7 @@ class SessionStore extends Marty.Store {
     this._redirect('login');
     this.hasChanged();
   }
-
+  
   _handleLogout(resp) {
     localstorage.delete('gaea_jwt');
     localstorage.delete('gaea_user');
@@ -253,6 +254,10 @@ class SessionStore extends Marty.Store {
   _handleRequestFailed(err) {
     this.setState({'error': err});
     this.hasChanged();
+  }
+  
+  _handleResetPasswordRequest() {
+    log.Debug("Requesting password reset...");
   }
 
   _handlePasswordResetFailed(resp) {
@@ -280,9 +285,16 @@ class SessionStore extends Marty.Store {
     this.hasChanged();
   }
 
-  _handleManualRedirect(target) {
-    this._redirect(target);
+  _handleManualRedirect(target, wait) {
+    if (wait === undefined) {
+        wait = 0;
+    }
+    var exec = () => {
+        this._redirect(target);
+    }
+    setTimeout(exec, wait);
   }
+  
   _redirect(target) {
     log.Debug('redirecting to ' + target);
     window.location = window.location.origin + '/#/' + target;

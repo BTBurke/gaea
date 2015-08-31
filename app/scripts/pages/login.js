@@ -18,8 +18,8 @@ class Login extends React.Component {
 
     login() {
       log.Debug("trying login...");
-      var user = this.refs.email.getValue()
-      var pwd = this.refs.pwd.getValue()
+      var user = this.refs.email.getValue();
+      var pwd = this.refs.pwd.getValue();
       if (user.length === 0) {
         this.setState({'error': 'Username cannot be empty'});
         return
@@ -38,7 +38,9 @@ class Login extends React.Component {
     componentWillReceiveProps(newprops) {
       log.Debug(newprops);
       if (newprops.session.login_tries > 0) {
-        this.setState({'error': 'Username or password incorrect'});
+        this.setState({'error': 'Username or password incorrect',
+          'submit': false
+        });
       }
     }
 

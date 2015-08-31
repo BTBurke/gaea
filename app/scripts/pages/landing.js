@@ -16,7 +16,7 @@ var React = require('react'),
 var Marty = require('marty');
 var UserStore = require('../stores/userstore');
 
-var AjaxLoginButton = require("../components/ajaxbutton");
+
 
 var Link = require('react-router').Link;
 
@@ -28,7 +28,7 @@ class Landing extends React.Component {
       "pw": '',
       "height": 0,
       "img": '',
-      "loginBtn": '',
+      "submit": false,
     }
   }
 
@@ -63,10 +63,10 @@ class Landing extends React.Component {
     })
   }
 
-  handleSubmit() {
-    this.setState({"loginBtn": "fetch"});
-    this.props.login(this.state.user, this.state.pw);
-    console.log(this.state.user, this.state.pw);
+  handleLogin() {
+    this.setState({"submit": true});
+    this.app.SessionActions.setAuthRedirect("home");
+    this.app.SessionQueries.Login(this.state.user, this.state.pwd);
   }
 
   render() {
@@ -87,7 +87,7 @@ class Landing extends React.Component {
             <Col xs={10} xsOffset={1} md={7} mdOffset={4} lg={5} lgOffset={6}>
               <div className={"landing-login-box"}>
               <h1>Members Login</h1>
-                <form onSubmit={this.handleSubmit.bind(this)}>
+                <form onSubmit={this.handleLogin.bind(this)}>
                 <Input
                 type='text'
                 value={this.state.user}
@@ -107,8 +107,11 @@ class Landing extends React.Component {
                 ref='password'
                 onChange={this.handleChange.bind(this)}
                 />
-              <AjaxLoginButton status={this.state.loginBtn} onClick={this.handleSubmit.bind(this)}></AjaxLoginButton>
+              <B.Button bsStyle='info' block onClick={this.handleLogin.bind(this)}>Login{this.state.submit ? <Spinner /> : null}</B.Button>
               </form>
+              <div className="landing-account">
+              <a href='/#/account'>Need an account?</a>
+              </div>
               </div>
             </Col>
           </Row>
@@ -154,10 +157,11 @@ class Landing extends React.Component {
 }
 
 module.exports = Marty.createContainer(Landing, {
-  listenTo: UserStore,
+  listenTo: ['SessionStore'],
   fetch: {
-    login() {
-      return UserStore.login;
+    session: function() {
+      var sess = this.app.SessionStore.getSession();
+      return sess;
     }
   }
 });

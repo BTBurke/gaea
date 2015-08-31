@@ -30,7 +30,7 @@
 }
 
 .landing-login-box {
-  height: auto;
+
   background: #ecf0f1;
   margin-top: 25%;
   max-width: 350px;
@@ -40,7 +40,7 @@
     margin-top: 0;
     margin-bottom: 0;
   }
-  padding: 10px 10px 10px 10px;
+  padding: 10px 10px 20px 10px;
 }
 
 .landing-before-sale {
@@ -110,5 +110,14 @@
     margin-left: auto;
     margin-right: auto;
     background-color: #ffffff;
+  }
+}
+
+.landing-account {
+  font-size: 12px;
+  padding-top: 5px;
+  float: right;
+  a {
+    font-style: italic;
   }
 }
