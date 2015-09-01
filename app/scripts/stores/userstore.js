@@ -5,6 +5,7 @@ var Config = require("../config");
 var UserConstants = Marty.createConstants([
   'USER_RECEIVE',
   'USER_UPDATE',
+  'ALL_USERS_RECEIVE',
   'REQUEST_FAILED',
   'LOGIN_REQUIRED'
 ]);
@@ -16,6 +17,10 @@ var UserConstants = Marty.createConstants([
 class UserAPI extends Marty.HttpStateSource {
    getUser() {
         return this.get(Config.baseURL + '/user');
+   }
+   
+   getAllUsers() {
+     return this.get(Config.baseURL + '/users');
    }
 }
 
@@ -38,7 +43,27 @@ class UserQueries extends Marty.Queries {
             this.dispatch(UserConstants.LOGIN_REQUIRED);
             break;
           default:
-            throw new AppError("Some shit really fucked up").getError();
+            throw new AppError("Could not get the current user").getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(UserConstants.REQUEST_FAILED, err)
+      });
+  }
+  
+  getAllUsers() {
+    return this.app.UserAPI.getAllUsers()
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            this.dispatch(UserConstants.ALL_USERS_RECEIVE, res.body);
+            break;
+          case 401:
+            this.dispatch(UserConstants.LOGIN_REQUIRED);
+            break;
+          default:
+            throw new AppError("Could not get list of all users").getError();
         }
       })
       .catch(err => {
@@ -75,6 +100,7 @@ class UserStore extends Marty.Store {
     this.state = {};
     this.handlers = {
       _handleReceive: UserConstants.USER_RECEIVE,
+      _handleAllReceive: UserConstants.ALL_USERS_RECEIVE
     };
   }
 
@@ -82,6 +108,15 @@ class UserStore extends Marty.Store {
   _handleReceive(user) {
     console.log("handling user receive...");
     this.state['user'] = new User(user);
+    this.hasChanged();
+  }
+  
+  _handleAllReceive(res) {
+    if (res.qty === 0) {
+      this.state['users'] = [];
+    } else {
+      this.state['users'] = res.users;
+    }
     this.hasChanged();
   }
 
@@ -95,6 +130,18 @@ class UserStore extends Marty.Store {
       },
       remotely: function() {
         return this.app.UserQueries.getUser();
+      }
+    });
+  }
+  
+  getAllUsers() {
+    return this.fetch({
+      id: 'users',
+      locally: function() {
+        return this.state['users'];
+      },
+      remotely: function() {
+        return this.app.UserQueries.getAllUsers();
       }
     });
 

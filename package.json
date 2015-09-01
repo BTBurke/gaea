@@ -36,7 +36,6 @@
     "react-router": "^0.13.2",
     "react-spinkit": "^1.0.2",
     "react-sticky": "^2.3.0",
-    "react-tools": "latest",
     "reactify": "latest",
     "strip-debug": "^1.0.1",
     "underscore": "^1.8.2",

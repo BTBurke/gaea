@@ -20,7 +20,10 @@ Marty.HttpStateSource.addHook({
      console.log("res", res);
       var jwt = res.headers.get('Authorization');
       if (jwt != null && jwt.length > 0) {
+        console.log("Setting new jwt...");
+        console.log("old jwt", localstorage.get('gaea_jwt'));
         localstorage.set('gaea_jwt', jwt.split(" ")[1]);
+        console.log("new jwt", localstorage.get('gaea_jwt'));
       }
       return res;
    }

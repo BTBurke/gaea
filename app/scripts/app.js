@@ -18,6 +18,7 @@ var Login = require('./pages/login');
 var PwdReset = require('./pages/pwdreset');
 var PwdSet = require('./pages/pwdset');
 var Account = require('./pages/account');
+var Users = require('./pages/users');
 
 
 // React-router
@@ -68,6 +69,7 @@ var routes = (
     <Route name="invedit" path="/sale/:saleID/inventory" handler={EditInventory}/>
     <Route name="saleorder" path="sale/:saleID/orders" handler={SaleOrders}/>
     <Route name="saleedit" path="/sale/:saleID" handler={EditSale}/>
+    <Route name="users" path="/users" handler={Users}/>
 
     <Route name="sessiontest" path="/test/session" handler={SessionTest}/>
   </Route>
