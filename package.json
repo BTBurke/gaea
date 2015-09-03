@@ -29,7 +29,7 @@
     "jest-cli": "latest",
     "local-storage": "^1.4.2",
     "marty": "^0.10.1",
-    "react": "latest",
+    "react": "~0.13.3",
     "react-bootstrap": "^0.24.5",
     "react-mixin": "^1.5.0",
     "react-notification": "^1.3.0",

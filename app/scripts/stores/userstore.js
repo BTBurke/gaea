@@ -5,6 +5,7 @@ var Config = require("../config");
 var UserConstants = Marty.createConstants([
   'USER_RECEIVE',
   'USER_UPDATE',
+  'USER_CREATE',
   'ALL_USERS_RECEIVE',
   'REQUEST_FAILED',
   'LOGIN_REQUIRED'
@@ -22,6 +23,14 @@ class UserAPI extends Marty.HttpStateSource {
    getAllUsers() {
      return this.get(Config.baseURL + '/users');
    }
+
+	createUser(user) {
+		return this.request({
+		'url': Config.baseURL + '/users',
+		'method': 'POST',
+		'body': user
+		});
+	}
 }
 
 
@@ -71,6 +80,28 @@ class UserQueries extends Marty.Queries {
         this.dispatch(UserConstants.REQUEST_FAILED, err)
       });
   }
+  
+  
+  createUser(user) {
+    return this.app.UserAPI.createUser(user)
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            this.dispatch(UserConstants.USER_CREATE, res.body);
+            break;
+          case 401:
+            this.dispatch(UserConstants.LOGIN_REQUIRED);
+            break;
+          default:
+            throw new AppError("Could not get list of all users").getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(UserConstants.REQUEST_FAILED, err)
+      });
+  }
+
 }
 
 
@@ -100,7 +131,8 @@ class UserStore extends Marty.Store {
     this.state = {};
     this.handlers = {
       _handleReceive: UserConstants.USER_RECEIVE,
-      _handleAllReceive: UserConstants.ALL_USERS_RECEIVE
+      _handleAllReceive: UserConstants.ALL_USERS_RECEIVE,
+	_handleCreate: UserConstants.USER_CREATE
     };
   }
 
@@ -118,6 +150,11 @@ class UserStore extends Marty.Store {
       this.state['users'] = res.users;
     }
     this.hasChanged();
+  }
+
+  _handleCreate(user) {
+	this.state['users'] = this.state['users'].concat(user);
+	this.hasChanged();
   }
 
 
