@@ -15,6 +15,7 @@ var React = require('react'),
 
 var Marty = require('marty');
 var UserStore = require('../stores/userstore');
+var Spinner = require('../components/spinner');
 
 
 
@@ -66,7 +67,7 @@ class Landing extends React.Component {
   handleLogin() {
     this.setState({"submit": true});
     this.app.SessionActions.setAuthRedirect("home");
-    this.app.SessionQueries.Login(this.state.user, this.state.pwd);
+    this.app.SessionQueries.login(this.state.user, this.state.pwd);
   }
 
   render() {

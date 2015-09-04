@@ -7,6 +7,8 @@ var B = require('react-bootstrap');
 
 var TopNav = require('../components/topnav');
 var SideMenu = require('../components/sidemenu');
+var Loading = require('../components/loading');
+var SalesHome = require('../components/saleshome');
 
 var Application = require('../stores/application');
 var { ApplicationContainer } = require('marty');
@@ -52,13 +54,7 @@ class Home extends React.Component {
           </B.Col>
 
           <B.Col md={9} lg={9}>
-
-            <B.Panel header='Use your duty-free liquor benefit'>
-              <p>The next duty-free liquor sale is open for orders.  Choose from over 500 items including wine, beer, and spirits.  Orders should be delivered by Thanksgiving!</p>
-              <B.Button bsStyle='success' bsSize='small' href='/#/order'>Order booze</B.Button>
-              <div className="home-posted-on">Posted on 25-August-2015</div>
-
-            </B.Panel>
+            <SalesHome sales={this.props.sales} />
           </B.Col>
         </B.Row>
       </B.Grid>
@@ -70,10 +66,18 @@ class Home extends React.Component {
 
 
 module.exports = Marty.createContainer(Home, {
-  listenTo: 'UserStore',
+  listenTo: ['UserStore', 'SaleStore'],
   fetch: {
-    user() {
+    user: function() {
       return this.app.UserStore.getUser();
+    }, 
+    sales: function() {
+      return this.app.SaleStore.getSales();
     }
+  },
+  pending() {
+    return (
+      <Loading />
+      );
   }
 });

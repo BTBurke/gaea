@@ -70,7 +70,7 @@ class Session extends React.Component {
 
     var displayErrors = () => {
       return (
-      <B.Modal show={this.props.session.error != undefined} bsSize='large' onHide={this._dismissError.bind(this)}>
+      <B.Modal show={this.props.session.error != undefined && this.notSuppressed.bind(this)} bsSize='large' onHide={this._dismissError.bind(this)}>
         <B.Modal.Header closeButton>
           <B.Modal.Title>Something Bad Happened</B.Modal.Title>
         </B.Modal.Header>
