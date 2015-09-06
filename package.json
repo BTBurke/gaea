@@ -1,6 +1,12 @@
 {
   "name": "gaea",
-  "version": "0.0.1",
+  "version": "0.1.0",
+  "description": "The website for the Guangzhou American Employees Association",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BTBurke/gaea"
+  },
   "dependencies": {},
   "devDependencies": {
     "babelify": "^6.0.1",
