@@ -6,7 +6,7 @@ Marty.HttpStateSource.addHook({
    priority: 1,
    before(req) {
        var jwt = localstorage.get('gaea_jwt');
-       if (jwt != null && jwt.length > 0) {
+       if (jwt !== null && jwt.length > 0) {
          req.headers['Authorization'] = 'Bearer ' + jwt;
        }
        return req;
@@ -19,7 +19,7 @@ Marty.HttpStateSource.addHook({
    after(res) {
      console.log("res", res);
       var jwt = res.headers.get('Authorization');
-      if (jwt != null && jwt.length > 0) {
+      if (jwt !== null && jwt.length > 0) {
         console.log("Setting new jwt...");
         console.log("old jwt", localstorage.get('gaea_jwt'));
         localstorage.set('gaea_jwt', jwt.split(" ")[1]);
@@ -37,6 +37,9 @@ var SessionStore = require('./sessionstore').SessionStore;
 var SessionQueries = require('./sessionstore').SessionQueries;
 var SessionActions = require('./sessionstore').SessionActions;
 var SessionAPI = require('./sessionstore').SessionAPI;
+var AnnouncementStore = require('./announcementstore').AnnouncementStore;
+var AnnouncementQueries = require('./announcementstore').AnnouncementQueries;
+var AnnouncementAPI = require('./announcementstore').AnnouncementAPI;
 
 class Application extends Marty.Application {
     constructor(options) {
@@ -62,6 +65,11 @@ class Application extends Marty.Application {
         this.register('SessionQueries', SessionQueries);
         this.register('SessionActions', SessionActions);
         this.register('SessionAPI', SessionAPI);
+
+        this.register('AnnouncementStore', AnnouncementStore);
+        this.register('AnnouncementQueries', AnnouncementQueries);
+        this.register('AnnouncementAPI', AnnouncementAPI);
+
 
     }
 }
