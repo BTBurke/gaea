@@ -15,3 +15,23 @@
   font-size: 25px;
   color: #18BC9C;
 }
+
+.announcements {
+  .ann-header {
+    font-size: 20px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #eee;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .ann-single-header {
+    font-size: 18px;
+    color: $base-orange;
+    margin-bottom: 5px;
+  }
+  .ann-single-body {
+    margin-bottom: 20px;
+  }
+
+}

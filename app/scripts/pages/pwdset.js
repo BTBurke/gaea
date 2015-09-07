@@ -12,7 +12,7 @@ class PwdSet extends React.Component {
         this.state ={
           'error': undefined,
           'submit': false
-        }
+        };
     }
 
     set() {
@@ -20,7 +20,7 @@ class PwdSet extends React.Component {
       var pwd2 = this.refs.pwd2.getValue();
       if (pwd1.length === 0 || pwd1 !== pwd2) {
         this.setState({'error': 'Passwords must be the same.'});
-        return
+        return;
       }
       this.setState({'error': undefined, 'submit': true});
       this.app.SessionActions.setAuthRedirect("home");
