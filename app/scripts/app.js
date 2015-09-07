@@ -1,4 +1,3 @@
-// Release v0.1.0
 var React = require('react');
 var Landing = require("./pages/landing");
 var Tos = require("./pages/tos");
