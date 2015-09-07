@@ -6,7 +6,7 @@ var Constants = Marty.createConstants([
   'ANNOUNCEMENT_RECEIVE',
   'ANNOUNCEMENT_UPDATE',
   'ANNOUNCEMENT_CREATE',
-  'ANNOUNCEMENT_DELETE'
+  'ANNOUNCEMENT_DELETE',
   'REQUEST_FAILED',
   'LOGIN_REQUIRED'
 ]);
@@ -17,12 +17,12 @@ var Constants = Marty.createConstants([
 
 class AnnouncementAPI extends Marty.HttpStateSource {
    getAnnouncements() {
-        return this.get(Config.baseURL + '/announcements');
+        return this.get(Config.baseURL + '/announcement');
    }
 
 	createAnnouncement(ann) {
 		return this.request({
-		'url': Config.baseURL + '/announcements',
+		'url': Config.baseURL + '/announcement',
 		'method': 'POST',
 		'body': ann
 		});
@@ -30,7 +30,7 @@ class AnnouncementAPI extends Marty.HttpStateSource {
 
   updateAnnouncement(ann) {
     return this.request({
-		'url': Config.baseURL + '/announcements/' + ann.announcement_id,
+		'url': Config.baseURL + '/announcement/' + ann.announcement_id,
 		'method': 'PUT',
 		'body': ann
 		});
@@ -38,7 +38,7 @@ class AnnouncementAPI extends Marty.HttpStateSource {
 
   deleteAnnouncement(ann_id) {
     return this.request({
-		'url': Config.baseURL + '/announcements/' + ann_id,
+		'url': Config.baseURL + '/announcement/' + ann_id,
 		'method': 'DELETE'
 		});
   }
@@ -57,10 +57,10 @@ class AnnouncementQueries extends Marty.Queries {
       .then(res => {
         switch (res.status) {
           case 200:
-            this.dispatch(UserConstants.ANNOUNCEMENT_RECEIVE, res.body);
+            this.dispatch(Constants.ANNOUNCEMENT_RECEIVE, res.body);
             break;
           case 401:
-            this.dispatch(UserConstants.LOGIN_REQUIRED);
+            this.dispatch(Constants.LOGIN_REQUIRED);
             break;
           default:
             throw new AppError("Could not get the current announcements").getError();
@@ -68,7 +68,7 @@ class AnnouncementQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(UserConstants.REQUEST_FAILED, err)
+        this.dispatch(Constants.REQUEST_FAILED, err);
       });
   }
 
@@ -77,10 +77,10 @@ class AnnouncementQueries extends Marty.Queries {
       .then(res => {
         switch (res.status) {
           case 200:
-            this.dispatch(UserConstants.ANNOUNCEMENT_CREATE, res.body);
+            this.dispatch(Constants.ANNOUNCEMENT_CREATE, res.body);
             break;
           case 401:
-            this.dispatch(UserConstants.LOGIN_REQUIRED);
+            this.dispatch(Constants.LOGIN_REQUIRED);
             break;
           default:
             throw new AppError("Could not create announcement").getError();
@@ -88,7 +88,7 @@ class AnnouncementQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(UserConstants.REQUEST_FAILED, err)
+        this.dispatch(Constants.REQUEST_FAILED, err);
       });
   }
 
@@ -98,10 +98,10 @@ class AnnouncementQueries extends Marty.Queries {
       .then(res => {
         switch (res.status) {
           case 200:
-            this.dispatch(UserConstants.ANNOUNCEMENT_UPDATE, res.body);
+            this.dispatch(Constants.ANNOUNCEMENT_UPDATE, res.body);
             break;
           case 401:
-            this.dispatch(UserConstants.LOGIN_REQUIRED);
+            this.dispatch(Constants.LOGIN_REQUIRED);
             break;
           default:
             throw new AppError("Could not update announcement").getError();
@@ -109,7 +109,7 @@ class AnnouncementQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(UserConstants.REQUEST_FAILED, err)
+        this.dispatch(Constants.REQUEST_FAILED, err);
       });
   }
 
@@ -118,10 +118,10 @@ class AnnouncementQueries extends Marty.Queries {
       .then(res => {
         switch (res.status) {
           case 200:
-            this.dispatch(UserConstants.ANNOUNCEMENT_DELETE, res.body);
+            this.dispatch(Constants.ANNOUNCEMENT_DELETE, res.body);
             break;
           case 401:
-            this.dispatch(UserConstants.LOGIN_REQUIRED);
+            this.dispatch(Constants.LOGIN_REQUIRED);
             break;
           default:
             throw new AppError("Could not get list of all users").getError();
@@ -129,7 +129,7 @@ class AnnouncementQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(UserConstants.REQUEST_FAILED, err)
+        this.dispatch(Constants.REQUEST_FAILED, err);
       });
   }
 

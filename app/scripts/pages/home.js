@@ -47,14 +47,14 @@ class Home extends React.Component {
       }
     };
 
-    var announcements = _.map(this.announcements, (ann, idx) => {
+    var announcements = _.map(this.props.announcements, (ann, idx) => {
       return (
         <div className="ann-single" key={idx}>
         <div className="ann-single-header">
           {ann.title}
         </div>
         <div className="ann-single-body">
-          <ReactMarkdown source={ann.body} skipHtml={false} />
+          <ReactMarkdown source={ann.markdown} skipHtml={false} />
         </div>
         </div>
       );
@@ -87,13 +87,16 @@ class Home extends React.Component {
 
 
 module.exports = Marty.createContainer(Home, {
-  listenTo: ['UserStore', 'SaleStore'],
+  listenTo: ['UserStore', 'SaleStore', 'AnnouncementStore'],
   fetch: {
     user: function() {
       return this.app.UserStore.getUser();
     },
     sales: function() {
       return this.app.SaleStore.getSales();
+    },
+    announcements: function() {
+      return this.app.AnnouncementStore.getAnnouncements();
     }
   },
   pending() {
