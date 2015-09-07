@@ -21,4 +21,12 @@ var Config = {
 // 	'inventory_required': ['supplier_id', 'name', 'nonmem_price', 'mem_price', 'types']
 // }
 
+// for production
+var Config = {
+  'baseURL': 'https://guangzhouaea.org/api/v1',
+  'homeURL': 'https://guangzhouaea.org',
+  'logLevel': 'debug',
+  'inventory_required': ['supplier_id', 'name', 'nonmem_price', 'mem_price', 'types']
+}
+
 module.exports = Config;
