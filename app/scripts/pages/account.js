@@ -10,39 +10,39 @@ class Account extends React.Component {
         this.state = {
             'submit': false,
             'error': undefined
-        }
+        };
     }
-    
+
     createAccount() {
         log.Debug("creating account...");
         var first_name = this.refs.firstname.getValue();
         var last_name = this.refs.lastname.getValue();
         var email = this.refs.email.getValue();
-        
+
         if (first_name.length === 0 || last_name.length === 0) {
             this.setState({'error': 'Name cannot be blank'});
-            return
+            return;
         }
-        
+
         if (!email.endsWith('.gov')) {
-            this.setState({'error': 'To sign up for an account from this page, you must use your .gov email address.  You can change it later.'})
-            return
+            this.setState({'error': 'To sign up for an account from this page, you must use your .gov email address.  You can change it later.'});
+            return;
         }
-        
+
         this.setState({'submit': true});
-        
+
     }
-    
+
     backStyle() {
         return {
             'height': $(window).height()/2
-        }
+        };
     }
-    
+
     fullHeight() {
         return {
             'height': $(window).height()
-        }
+        };
     }
 
     render() {
@@ -69,7 +69,7 @@ class Account extends React.Component {
                     </div>
                     {this.state.error ? <div className="account-error-box">{this.state.error}</div> : null}
                 </div>
-                
+
                 <div className="account-callout-container">
                     <div className="callout-left">
                         <div className="callout-header">Who is eligible?</div>
@@ -77,7 +77,7 @@ class Account extends React.Component {
                     </div>
                     <div className="callout-right">
                         <div className="callout-header">What are the benefits?</div>
-                        The association exists to serve the interests of its members.  Enjoy benefits such as discounts at local establishments, duty-free liquor imports, discounts on events, and more.  
+                        The association exists to serve the interests of its members.  Enjoy benefits such as discounts at local establishments, duty-free liquor imports, discounts on events, and more.
                     </div>
                 </div>
             </div>
