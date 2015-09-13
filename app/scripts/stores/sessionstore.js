@@ -138,7 +138,7 @@ class SessionQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(SessionConstants.REQUEST_FAILED, err)
+        this.dispatch(SessionConstants.REQUEST_FAILED, err);
       });
   }
 
@@ -147,7 +147,7 @@ class SessionQueries extends Marty.Queries {
       .then(this.dispatch(SessionConstants.LOGOUT))
       .catch(err => {
         console.log(err);
-        this.dispatch(SessionConstants.REQUEST_FAILED, err)
+        this.dispatch(SessionConstants.REQUEST_FAILED, err);
       });
   }
 
@@ -156,7 +156,7 @@ class SessionQueries extends Marty.Queries {
       .then(this.dispatch(SessionConstants.RESET_PASSWORD))
       .catch(err => {
         console.log(err);
-        this.dispatch(SessionConstants.REQUEST_FAILED, err)
+        this.dispatch(SessionConstants.REQUEST_FAILED, err);
       });
   }
 
@@ -176,7 +176,7 @@ class SessionQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(SessionConstants.REQUEST_FAILED, err)
+        this.dispatch(SessionConstants.REQUEST_FAILED, err);
       });
   }
 }
@@ -305,7 +305,7 @@ class SessionStore extends Marty.Store {
     }
     var exec = () => {
         this._redirect(target);
-    }
+    };
     setTimeout(exec, wait);
   }
 

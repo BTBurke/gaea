@@ -27,6 +27,15 @@ class PwdSet extends React.Component {
       this.app.SessionQueries.setPassword(pwd1, this.props.params.token);
     }
 
+    componentWillReceiveProps(newprops) {
+      if (newprops.password_reset_fail) {
+        this.setState({
+          'error': 'Password reset failed.  Your password reset token is probably expired.  Visit https://guangzhouaea.org/#/reset for a new token.',
+          'submit': false
+        });
+      }
+    }
+
     render() {
         return (
           <div>
