@@ -39,7 +39,7 @@ class OrderAPI extends Marty.HttpStateSource {
        url: Config.baseURL + '/order/' + order.order_id,
        method: 'PUT',
        body: order
-     })
+     });
 
    }
    readOrderItems(ordID) {
@@ -49,7 +49,7 @@ class OrderAPI extends Marty.HttpStateSource {
    updateOrderItem(item) {
     console.log("Going to update order item...");
     return this.request({
-      url: Config.baseURL + '/order/' + item.order_id + '/item/' + item.order_item_id,
+      url: Config.baseURL + '/order/' + item.order_id + '/item/' + item.orderitem_id,
       method: 'PUT',
       body: item
     });
@@ -66,11 +66,11 @@ class OrderAPI extends Marty.HttpStateSource {
    deleteOrderItem(item) {
      console.log("Going to delete order item...");
      return this.request({
-       url: Config.baseURL + '/order/' + item.order_id + /item/ + item.order_item_id,
+       url: Config.baseURL + '/order/' + item.order_id + '/item/' + item.orderitem_id,
        method: 'DELETE'
      });
    }
-   
+
    getOrdersAndItemsForSale(saleID) {
      return this.request({
        url: Config.baseURL + '/sale/' + saleID + '/all',
@@ -105,10 +105,10 @@ class OrderQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(Constants.REQUEST_FAILED, err)
+        this.dispatch(Constants.REQUEST_FAILED, err);
       });
   }
-  
+
   createOrder(order) {
     return this.app.OrderAPI.createOrder(order)
       .then(res => {
@@ -126,7 +126,7 @@ class OrderQueries extends Marty.Queries {
         })
         .catch(err => {
           console.log(err);
-          this.dispatch(Constants.REQUEST_FAILED, err)
+          this.dispatch(Constants.REQUEST_FAILED, err);
         });
   }
   updateOrder(order) {
@@ -146,10 +146,10 @@ class OrderQueries extends Marty.Queries {
         })
         .catch(err => {
           console.log(err);
-          this.dispatch(Constants.REQUEST_FAILED, err)
+          this.dispatch(Constants.REQUEST_FAILED, err);
         });
   }
-  
+
   createOrderItem(item) {
     return this.app.OrderAPI.createOrderItem(item)
       .then(res => {
@@ -167,7 +167,7 @@ class OrderQueries extends Marty.Queries {
         })
         .catch(err => {
           console.log(err);
-          this.dispatch(Constants.REQUEST_FAILED, err)
+          this.dispatch(Constants.REQUEST_FAILED, err);
         });
   }
 
@@ -188,10 +188,10 @@ class OrderQueries extends Marty.Queries {
         })
         .catch(err => {
           console.log(err);
-          this.dispatch(Constants.REQUEST_FAILED, err)
+          this.dispatch(Constants.REQUEST_FAILED, err);
         });
   }
-  
+
   readOrderItems(ord) {
     return this.app.OrderAPI.readOrderItems(ord)
       .then(res => {
@@ -209,10 +209,10 @@ class OrderQueries extends Marty.Queries {
         })
         .catch(err => {
           console.log(err);
-          this.dispatch(Constants.REQUEST_FAILED, err)
+          this.dispatch(Constants.REQUEST_FAILED, err);
         });
   }
-  
+
   deleteOrderItem(ord) {
     return this.app.OrderAPI.deleteOrderItem(ord)
       .then(res => {
@@ -230,10 +230,10 @@ class OrderQueries extends Marty.Queries {
         })
         .catch(err => {
           console.log(err);
-          this.dispatch(Constants.REQUEST_FAILED, err)
+          this.dispatch(Constants.REQUEST_FAILED, err);
         });
   }
-  
+
   getOrdersAndItemsForSale(saleID) {
     return this.app.OrderAPI.getOrdersAndItemsForSale(saleID)
       .then(res => {
@@ -251,10 +251,10 @@ class OrderQueries extends Marty.Queries {
         })
         .catch(err => {
           console.log(err);
-          this.dispatch(Constants.REQUEST_FAILED, err)
+          this.dispatch(Constants.REQUEST_FAILED, err);
         });
   }
-  
+
 }
 
 
@@ -321,18 +321,18 @@ class OrderStore extends Marty.Store {
       this.hasChanged();
     }
   }
-  
+
   _ordersCreate(order) {
     this.state['orders'] = this.state['orders'].concat(new Order(order));
     this.hasChanged();
   }
-  
+
   _ordersUpdate(order) {
     this.state['orders'] = _.reject(this.state['orders'], function (o) { return order.order_id === o.order_id });
     this.state['orders'] = this.state['orders'].concat(new Order(order));
     this.hasChanged();
   }
-  
+
   _addItem(item) {
     var order = "order-" + item.order_id;
     this.state[order] = this.state[order].concat(new OrderItem(item));
@@ -348,16 +348,16 @@ class OrderStore extends Marty.Store {
     }
     this.hasChanged();
   }
-  
+
   _deleteItem(item) {
     var order = "order-" + item.order_id;
-    this.state[order] = _.reject(this.state[order], function (i) { return item.order_item_id === i.order_item_id});
+    this.state[order] = _.reject(this.state[order], function (i) { return item.orderitem_id === i.orderitem_id});
     this.hasChanged();
   }
-  
+
   _updateItem(item) {
     var order = "order-" + item.order_id;
-    this.state[order] = _.reject(this.state[order], function (i) { return item.order_item_id === i.order_item_id});
+    this.state[order] = _.reject(this.state[order], function (i) { return item.orderitem_id === i.orderitem_id});
     this.state[order] = this.state[order].concat(new OrderItem(item));
     this.hasChanged();
   }
@@ -369,7 +369,7 @@ class OrderStore extends Marty.Store {
     var orders = _.map(res.orders, function (ord) { return new Order(ord)});
     var items = _.groupBy(res.items, function (item) { return "order-" + item.order_id })
     var users = _.indexBy(res.users, function (user) { return user.user_name });
-    
+
     this.state['sale-' + res.sale_id] = {'orders': orders, 'items': items, 'users': users};
     this.hasChanged();
   }
@@ -387,7 +387,7 @@ class OrderStore extends Marty.Store {
       }
     });
   }
-  
+
   getOrdersAndItemsForSale(sale) {
     return this.fetch({
         id: 'bysale',
@@ -399,7 +399,7 @@ class OrderStore extends Marty.Store {
         }
     });
   }
-  
+
   getItems(ord) {
     return this.fetch({
      id: 'items',

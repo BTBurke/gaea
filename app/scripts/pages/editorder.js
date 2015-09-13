@@ -25,67 +25,67 @@ class EditOrder extends React.Component {
             'search': undefined,
             'sort': 'type',
             'message': ''
-        }
-        
+        };
+
     }
-    
+
     message(msg) {
         this.setState({'message': msg});
         setTimeout(() => {
-            this.setState({'message': ''})
+            this.setState({'message': ''});
         }, 1000);
     }
-    
+
     clearMessage() {
         this.setState({'message': ''});
     }
-    
+
     onFilterClick(e) {
         e.preventDefault();
         var filt = e.currentTarget.innerText;
         this.setState({'filter': this.state.filter.concat(filt)});
 
     }
-    
+
     onOriginClick(e) {
         e.preventDefault();
         var filt = e.currentTarget.innerText;
         this.setState({'origin': this.state.origin.concat(filt)});
 
     }
-    
+
     onClearFilter() {
         this.setState({'filter': []});
     }
-    
+
     onClearOrigin() {
         this.setState({'origin': []});
     }
-    
+
     onAdd(id, qty) {
         console.log('add id', id);
         if (qty === 0) {
-            return
+            return;
         }
         var item = {
             'inventory_id': id,
             'qty': qty,
             'order_id': parseInt(this.props.params.orderID),
             'user_name': this.props.user.userName
-        }
-        
+        };
+
         var thisItem = _.findWhere(this.props.inventory, {'inventory_id': id});
         this.message("Adding " + thisItem.name + " to your cart");
         this.app.OrderQueries.createOrderItem(item);
     }
-    
+
     onUpdate(id, qty) {
         var item = _.findWhere(this.props.items, {'inventory_id': id});
         var thisItem = _.findWhere(this.props.inventory, {'inventory_id': id});
 
         if (!item) {
-            log.Warn("Could not find item in inventory to update.")
-            return
+            log.Warn("Could not find item in inventory to update.");
+            return;
         }
         switch(qty) {
             case 0:
@@ -93,7 +93,7 @@ class EditOrder extends React.Component {
                 this.app.OrderQueries.deleteOrderItem(item);
                 break;
             case item.qty:
-                log.Debug("Order quantity did not change, no op.")
+                log.Debug("Order quantity did not change, no op.");
                 break;
             default:
                 this.message("Changing quantity of " + thisItem.name + " in your cart");
@@ -101,12 +101,12 @@ class EditOrder extends React.Component {
                 this.app.OrderQueries.updateOrderItem(item);
         }
     }
-    
+
     filterInventory(inventory) {
-        
+
         var filters = this.state.filter;
         var origins = this.state.origin;
-        
+
         var checkAll = function(item, filters) {
             if (filters.length === 0) {
                 return true;
@@ -114,9 +114,9 @@ class EditOrder extends React.Component {
                 var checks = _.map(filters, function(f1) { return _.contains(item, f1) });
                 return _.every(checks, function(c) { return c === true });
             }
-                
+
         }
-        
+
         return _.filter(inventory, function(item) {
             if (checkAll(item.types, filters) && checkAll(item.origin, origins)) {
                 return true;
@@ -125,7 +125,7 @@ class EditOrder extends React.Component {
             }
         });
     }
-    
+
     sortBy(method) {
         var sorts = {
             'type': function(inv) { return inv.types[0] },
@@ -133,14 +133,14 @@ class EditOrder extends React.Component {
         }
         return sorts[method];
     }
-    
+
     render() {
         log.Debug('page receives inventory', this.props.inventory);
         var sortedInventory = _.sortBy(this.props.inventory, this.sortBy(this.state.sort));
         return (
             <div>
             <TopNav user={this.props.user.fullName}/>
-            
+
             <B.Grid>
             <B.Row>
                 <B.Col md={3} lg={3}>
@@ -152,7 +152,7 @@ class EditOrder extends React.Component {
                     onClearFilter={this.onClearFilter.bind(this)}
                     onClearOrigin={this.onClearOrigin.bind(this)}
                     />
-                    
+
                     <TotalBar user={this.props.user}
                         inventory={this.props.inventory}
                         items={this.props.items}
@@ -171,7 +171,7 @@ class EditOrder extends React.Component {
             </B.Grid>
             <Notifier message={this.state.message}/>
             </div>
-            
+
             );
     }
 }
@@ -186,7 +186,7 @@ module.exports = Marty.createContainer(EditOrder, {
         return this.app.OrderStore.getItems(this.props.params.orderID);
     },
     inventory: function() {
-        return this.app.InventoryStore.getInventoryByOrder(this.props.params.orderID);
+        return this.app.InventoryStore.getInventoryByOrder(this.props.params.orderID, 'USD');
     },
   },
   pending() {
