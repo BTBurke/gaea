@@ -20,20 +20,27 @@ var Constants = Marty.createConstants([
 ////////////////////////////////////////////////////////////////////////////
 
 class InventoryAPI extends Marty.HttpStateSource {
-   readInventoryByOrder(orderID) {
-     console.log("API receive:", orderID);
-     console.log("Going to read inventory for " + orderID + "...");
-     //TODO: need to allow search along the lines of http://api.gzaea.org/v1/inventory?order=xxxxxx
-      return this.get(Config.baseURL + '/inventory?order=' + orderID);
-   }
+   readInventoryByOrder(orderID, currency) {
+      return this.request({
+        url: Config.baseURL + '/inventory',
+        params: {
+          'order': orderID,
+          'currency': currency
+        },
+      });
+  }
 
-   readInventoryBySale(saleID) {
-     log.Debug("Going to read inventory for " + saleID + "...");
-     //TODO: need to allow search by sale http://api.gzaea.org/v1/inventory?sale=xxxxxx
-     return this.get(Config.baseURL + '/inventory?sale=' + saleID);
+   readInventoryBySale(saleID, currency) {
+     return this.request({
+       url: Config.baseURL + '/inventory',
+       params: {
+         'sale': saleID,
+         'currency': currency
+       },
+     });
    }
    uploadInventoryCSV(csvtext) {
-     log.Debug("Posting inventory CSV text...")
+     log.Debug("Posting inventory CSV text...");
      return this.request({
       url: Config.baseURL + '/inventory/csv',
       method: 'POST',
@@ -59,7 +66,7 @@ class InventoryAPI extends Marty.HttpStateSource {
    }
 
    getInventoryEffects(inventory_id) {
-     return this.get(Config.baseURL + '/inventory/' + inventory_id + '/effects')
+     return this.get(Config.baseURL + '/inventory/' + inventory_id + '/effects');
    }
 }
 
@@ -69,9 +76,8 @@ class InventoryAPI extends Marty.HttpStateSource {
 //////////////////////////////////
 
 class InventoryQueries extends Marty.Queries {
-  readInventoryByOrder(orderID) {
-    console.log("query receive:", orderID);
-    return this.app.InventoryAPI.readInventoryByOrder(orderID)
+  readInventoryByOrder(orderID, currency) {
+    return this.app.InventoryAPI.readInventoryByOrder(orderID, currency)
       .then(res => {
         switch (res.status) {
           case 200:
@@ -87,12 +93,12 @@ class InventoryQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(Constants.REQUEST_FAILED, err)
+        this.dispatch(Constants.REQUEST_FAILED, err);
       });
   }
 
-  readInventoryBySale(saleID) {
-    return this.app.InventoryAPI.readInventoryBySale(saleID)
+  readInventoryBySale(saleID, currency) {
+    return this.app.InventoryAPI.readInventoryBySale(saleID, currency)
       .then(res => {
         switch (res.status) {
           case 200:
@@ -108,7 +114,7 @@ class InventoryQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(Constants.REQUEST_FAILED, err)
+        this.dispatch(Constants.REQUEST_FAILED, err);
       });
   }
 
@@ -129,7 +135,7 @@ class InventoryQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(Constants.REQUEST_FAILED, err)
+        this.dispatch(Constants.REQUEST_FAILED, err);
       });
   }
 
@@ -150,7 +156,7 @@ class InventoryQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(Constants.REQUEST_FAILED, err)
+        this.dispatch(Constants.REQUEST_FAILED, err);
       });
   }
 
@@ -171,7 +177,7 @@ class InventoryQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(Constants.REQUEST_FAILED, err)
+        this.dispatch(Constants.REQUEST_FAILED, err);
       });
   }
   getInventoryEffects(inventory_id) {
@@ -191,7 +197,7 @@ class InventoryQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(Constants.REQUEST_FAILED, err)
+        this.dispatch(Constants.REQUEST_FAILED, err);
       });
   }
 
@@ -217,6 +223,10 @@ class Inventory {
       this.nonmem_price = props.nonmem_price;
       this.mem_price = props.mem_price;
       this.in_stock = props.in_stock;
+      this.use_case_pricing = props.use_case_pricing;
+      this.case_size = props.case_size;
+      this.split_case_penalty_per_item_pct = props.split_case_penalty_per_item_pct;
+      this.currency = props.currency;
 
       if (typeof(props.types) === 'string') {
         this.types = props.types.split(">");
@@ -251,6 +261,10 @@ class Inventory {
       this.types = undefined;
       this.origin = undefined;
       this.changelog = undefined;
+      this.use_case_pricing = undefined;
+      this.case_size = undefined;
+      this.split_case_penalty_per_item_pct = undefined;
+      this.currency = undefined;
     }
 
   }
@@ -262,7 +276,7 @@ class Inventory {
       'desc': this.desc,
       'types': this.types,
       'origin': this.origin
-    }
+    };
 
     }
 
@@ -282,7 +296,11 @@ class Inventory {
       'types': this.types,
       'origin': this.origin,
       'changelog': this.changelog,
-      'in_stock': this.in_stock
+      'in_stock': this.in_stock,
+      'use_case_pricing': this.use_case_pricing,
+      'case_size': this.case_size,
+      'split_case_penalty_per_item_pct': this.split_case_penalty_per_item_pct,
+      'currency': this.currency
     });
   }
 
@@ -347,27 +365,26 @@ class InventoryStore extends Marty.Store {
   }
 
   // Methods
-  getInventoryByOrder(orderID) {
-    console.log("i received orderid in store:", orderID);
+  getInventoryByOrder(orderID, currency) {
     return this.fetch({
       id: 'inventory',
       locally: function() {
         return this.state['order-'+orderID];
       },
       remotely: function() {
-        return this.app.InventoryQueries.readInventoryByOrder(orderID);
+        return this.app.InventoryQueries.readInventoryByOrder(orderID, currency);
       }
     });
   }
 
-  getInventoryBySale(saleID) {
+  getInventoryBySale(saleID, currency) {
     return this.fetch({
       id: 'inventory',
       locally: function() {
         return this.state['sale-'+saleID];
       },
       remotely: function() {
-        return this.app.InventoryQueries.readInventoryBySale(saleID);
+        return this.app.InventoryQueries.readInventoryBySale(saleID, currency);
       }
     });
   }

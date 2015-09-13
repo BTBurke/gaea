@@ -4,7 +4,7 @@ var Config = {
   'homeURL': 'http://127.0.0.1:8081',
   'logLevel': 'debug',
   'inventory_required': ['supplier_id', 'name', 'nonmem_price', 'mem_price', 'types']
-}
+};
 
 // For c9 development
 //var Config = {
@@ -22,11 +22,11 @@ var Config = {
 // }
 
 // for production
-var Config = {
-  'baseURL': 'https://guangzhouaea.org/api/v1',
-  'homeURL': 'https://guangzhouaea.org',
-  'logLevel': 'debug',
-  'inventory_required': ['supplier_id', 'name', 'nonmem_price', 'mem_price', 'types']
-}
+// var Config = {
+//   'baseURL': 'https://guangzhouaea.org/api/v1',
+//   'homeURL': 'https://guangzhouaea.org',
+//   'logLevel': 'debug',
+//   'inventory_required': ['supplier_id', 'name', 'nonmem_price', 'mem_price', 'types']
+// }
 
 module.exports = Config;
