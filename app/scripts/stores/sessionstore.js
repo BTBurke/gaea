@@ -40,6 +40,7 @@ class SessionAPI extends Marty.HttpStateSource {
    }
 
    logout(user) {
+     console.log("now to logout request...");
        return this.request({
            url: Config.baseURL + '/logout',
            method: 'POST',
@@ -143,8 +144,11 @@ class SessionQueries extends Marty.Queries {
   }
 
   logout(user) {
-    return this.app.SessionAPI.logout(pwd)
-      .then(this.dispatch(SessionConstants.LOGOUT))
+    console.log("calling logout function...");
+    return this.app.SessionAPI.logout(user)
+      .then(res => {
+        this.dispatch(SessionConstants.LOGOUT);
+      })
       .catch(err => {
         console.log(err);
         this.dispatch(SessionConstants.REQUEST_FAILED, err);
@@ -244,11 +248,13 @@ class SessionStore extends Marty.Store {
   }
 
   _handleLogout(resp) {
-    localstorage.delete('gaea_jwt');
-    localstorage.delete('gaea_user');
+    var removeSuccess = localstorage.remove('gaea_jwt');
+    localstorage.remove('gaea_user');
+    if (!removeSuccess) {
+      console.log("Warning: failed ot remove JWT");
+    }
     this.setState({'login_success': false});
     this.hasChanged();
-    this._redirect('logout');
   }
 
   _handleSetMessage(msg) {

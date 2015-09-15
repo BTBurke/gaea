@@ -13,7 +13,7 @@ class Login extends React.Component {
         this.state = {
           'error': this.props.session.login_tries > 0 ? 'Username or password incorrect' : undefined,
           'submit': false
-        }
+        };
     }
 
     login() {
@@ -22,11 +22,11 @@ class Login extends React.Component {
       var pwd = this.refs.pwd.getValue();
       if (user.length === 0) {
         this.setState({'error': 'Username cannot be empty'});
-        return
+        return;
       }
       if (pwd.length === 0) {
         this.setState({'error': 'Password cannot be empty'});
-        return
+        return;
       }
       this.setState({'error': undefined,
                     'submit': true
