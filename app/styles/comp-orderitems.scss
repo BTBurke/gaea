@@ -29,7 +29,7 @@
     min-height: 40px;
     padding-left: 10px;
     position: relative;
-    
+
     .oi-item-price-non-header, .oi-item-price-mem-header, .oi-item-status-header {
         font-size: 15px;
         font-weight: bold;
@@ -37,7 +37,7 @@
         padding-right: auto;
         text-align: center;
     }
-    
+
     .oi-item-price-non, .oi-item-price-mem {
         padding-left: auto;
         padding-right: auto;
@@ -46,7 +46,7 @@
         font-size: 24px;
         text-align: center;
     }
-    
+
     .oi-item-status {
         padding-left: auto;
         padding-right: auto;
@@ -55,15 +55,15 @@
         text-align: center;
         font-style: bold;
     }
-    
+
     .oi-item-status-instock {
         color: green;
     }
-    
+
     .oi-item-status-outstock {
         color: red;
     }
-    
+
     .oi-item-btn {
         padding-top: 27px;
     }
@@ -81,14 +81,14 @@
     padding-left: 10px;
     padding-top: 10px;
     position: relative;
-    
-   
-    
+
+
+
     .oi-item-cart-glyph {
         font-size: 24px;
         color: #2C3E50;
     }
-    
+
     .oi-item-cart-qty-header {
         font-size: 8px;
     }
@@ -107,4 +107,13 @@
     padding-left: 4px;
     font-size: 10px;
     position: relative;
+}
+
+.oi-notes {
+  h2 {
+    color: $base-orange;
+    padding-top: 0px;
+    margin-top: 0px;
+  }
+  
 }

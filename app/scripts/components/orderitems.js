@@ -6,8 +6,15 @@ var calc = require('../services/calc');
 class OrderItems extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+          'showNotes': true
+        };
 
         this.itemsByID = _.indexBy(this.props.items, 'inventory_id');
+    }
+
+    hideNotes() {
+      this.setState({'showNotes': false});
     }
 
     onAddLocal(id) {
@@ -210,11 +217,29 @@ class OrderItems extends React.Component {
         }.bind(this);
 
         var items = _.map(this.props.inventory, function(item) { return makeItem(item) });
-        return (
-            <div className="oi-all-items">
-                {items}
-            </div>
-        );
+        switch (this.state.showNotes) {
+          case true:
+            return (
+              <div className="oi-notes">
+              <B.Well>
+                <h2>Notes about this sale</h2>
+                <h3>This vendor sells wine by the case</h3>
+                <p>The vendor we are using for this order only sells wine by the case.  The prices shown are per bottle for a whole case.  You can still order less than a full case, however, your per bottle price will be about 20% higher than the case price.  The total cost in your cart reflects the actual price you will pay for the number of bottles that you have ordered, including any additional cost for the split case.</p>
+                <h3>Prices may fluctuate due to exchange rates</h3>
+                <p>This vendor prices their items in Australian dollars.  When you shop, the current exchange rate is used to convert prices to USD.  When the order is finalized with the vendor, we will lock in an exchange rate and you will be billed at that rate.</p>
+                <B.Button bsStyle='info' onClick={this.hideNotes.bind(this)}>Ok, I got it.  Let me shop.</B.Button>
+              </B.Well>
+              </div>
+            );
+          default:
+            return (
+                <div className="oi-all-items">
+                    {items}
+                </div>
+            );
+
+        }
+
     }
 }
 
