@@ -350,8 +350,14 @@ class OrderStore extends Marty.Store {
   }
 
   _deleteItem(item) {
+    console.log("deleting item", item);
     var order = "order-" + item.order_id;
-    this.state[order] = _.reject(this.state[order], function (i) { return item.orderitem_id === i.orderitem_id});
+    this.state[order] = _.reject(this.state[order], function (i) {
+      console.log("got", i.orderitem_id);
+      console.log("do they equate", i.orderitem_id === parseInt(item.orderitem_id));
+      return parseInt(item.orderitem_id) === i.orderitem_id;
+    });
+    console.log("state delete", this.state);
     this.hasChanged();
   }
 

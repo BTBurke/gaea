@@ -1,44 +1,45 @@
 var React = require('react');
 var B = require('react-bootstrap');
 var _ = require('underscore');
+var calc = require('../services/calc');
 
 class OrderItems extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.itemsByID = _.indexBy(this.props.items, 'inventory_id');
     }
-    
+
     onAddLocal(id) {
         this.props.onAdd(id, parseInt(this.refs['qty-'+id].getValue()));
     }
-    
+
     onUpdateLocal(id) {
         this.props.onUpdate(id, parseInt(this.refs['qty-'+id].getValue()));
     }
-    
+
     render() {
-        
+
         var makeItem = function(item) {
             var addItemFunc = this.onAddLocal.bind(this);
             var updateItemFunc = this.onUpdateLocal.bind(this);
             var _handleAdd = function(id) {
                 return function() {
                     addItemFunc(id);
-                }
+                };
             }.bind(this);
             var _handleUpdate =function(id) {
                 return function() {
                     updateItemFunc(id);
-                }
-            }
-        
+                };
+            };
+
             var addOrUpdateBtn = function(id) {
                 var item = _.findWhere(this.props.items, {'inventory_id': id});
                 if (item) {
                     return (
                             <div className="oi-item-btn">
-                                <B.Button bsStyle='default' 
+                                <B.Button bsStyle='default'
                                     onClick={_handleUpdate(id)}>
                                 Update Cart
                                 </B.Button>
@@ -47,7 +48,7 @@ class OrderItems extends React.Component {
                 } else {
                     return (
                     <div className="oi-item-btn">
-                        <B.Button bsStyle='info' 
+                        <B.Button bsStyle='info'
                             onClick={_handleAdd(id)}>
                             Add to Cart
                         </B.Button>
@@ -55,17 +56,18 @@ class OrderItems extends React.Component {
                     );
                 }
             }.bind(this);
-        
+
             var cartArea = function(id) {
                 var item = _.findWhere(this.props.items, {'inventory_id': id});
                 var inv = _.findWhere(this.props.inventory, {'inventory_id': id});
-                
 
-                
                 if (item) {
-                    var memPrice = item.qty*parseFloat(inv.mem_price);
-                    var nonmemPrice = item.qty*parseFloat(inv.nonmem_price);
-                    
+                    // var memPrice = item.qty*parseFloat(inv.mem_price);
+                    // var nonmemPrice = item.qty*parseFloat(inv.nonmem_price);
+                    var memPrice = calc.ItemTotal(inv, item.qty, 'member');
+                    var nonmemPrice = calc.ItemTotal(inv, item.qty, 'nonmember');
+
+
                     return (
                         <div>
                         <div className="oi-item-cart-header">In Cart</div>
@@ -91,14 +93,49 @@ class OrderItems extends React.Component {
                                 <div className="oi-item-cart-total">
                                     ${this.props.member ? memPrice.toFixed(2) : nonmemPrice.toFixed(2)}
                                 </div>
+
                                 </B.Col>
+
+                            </B.Row>
+                            <B.Row>
+                            <B.Col md={10} mdOffset={2} lg={10} lgOffset={2}>
+                            <div className="oi-item-split-case">
+                            {calc.IsSplitCase(item.qty, inv) ? <span><B.Glyphicon glyph="warning-sign"/>   Split Case</span> : null}
+                            </div>
+                            </B.Col>
                             </B.Row>
                         </div>
                         </div>
                     );
                 }
             }.bind(this);
-            
+
+            var makeOptions = function(numOptions, caseSize, useCasePricing) {
+              if (!useCasePricing) {
+                var out = [];
+                for (var i=0; i<=numOptions; i++) {
+                  out = out.concat(<option value={i}>{i}</option>);
+                }
+                return out;
+              } else {
+                var out2 = [];
+                for (var j=0; j<=numOptions; j++) {
+                switch(j % caseSize) {
+                  case 0:
+                    if (j===0) {
+                      out2 = out2.concat(<option value={j}>{j}</option>);
+                      break;
+                    }
+                    out2 = out2.concat(<option value={j}>{j} (Full Case)</option>);
+                    break;
+                  default:
+                    out2 = out2.concat(<option value={j}>{j}</option>);
+                  }
+                }
+                return out2;
+              }
+            };
+
             return (
                 <div className="oi-item" key={item.supplier_id}>
                 <B.Row>
@@ -138,13 +175,13 @@ class OrderItems extends React.Component {
                         <div className="oi-item-price">
                         <B.Row>
                             <B.Col md={3} lg={3}>
-                            <div className="oi-item-price-mem-header">Non-Member Price</div>
+                            <div className="oi-item-price-mem-header">Non-Member<br/>Price</div>
                             <div className="oi-item-price-mem">
                                 ${parseFloat(item.nonmem_price).toFixed(2)}
                             </div>
                             </B.Col>
                             <B.Col md={3} lg={3}>
-                            <div className="oi-item-price-non-header">Member Price</div>
+                            <div className="oi-item-price-non-header">Member<br/>Price</div>
                             <div className="oi-item-price-non">
                                 ${parseFloat(item.mem_price).toFixed(2)}
                             </div>
@@ -153,27 +190,7 @@ class OrderItems extends React.Component {
                             <div className="oi-item-select">
                             <form>
                                 <B.Input type='select' ref={'qty-'+item.inventory_id} bsSize='small' label='Quantity' placeholder='0'>
-                                  <option value='0'>0</option>
-                                  <option value='1'>1</option>
-                                  <option value='2'>2</option>
-                                  <option value='3'>3</option>
-                                  <option value='4'>4</option>
-                                  <option value='5'>5</option>
-                                  <option value='6'>6</option>
-                                  <option value='7'>7</option>
-                                  <option value='8'>8</option>
-                                  <option value='9'>9</option>
-                                  <option value='10'>10</option>
-                                  <option value='11'>11</option>
-                                  <option value='12'>12</option>
-                                  <option value='13'>13</option>
-                                  <option value='14'>14</option>
-                                  <option value='15'>15</option>
-                                  <option value='16'>16</option>
-                                  <option value='17'>17</option>
-                                  <option value='18'>18</option>
-                                  <option value='19'>19</option>
-                                  <option value='20'>20</option>
+                                  {makeOptions(20, item.case_size, item.use_case_pricing)}
                                 </B.Input>
                             </form>
                             </div>
@@ -191,7 +208,7 @@ class OrderItems extends React.Component {
                 </div>
             );
         }.bind(this);
-        
+
         var items = _.map(this.props.inventory, function(item) { return makeItem(item) });
         return (
             <div className="oi-all-items">

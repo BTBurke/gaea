@@ -21,23 +21,27 @@ var Constants = Marty.createConstants([
 
 class InventoryAPI extends Marty.HttpStateSource {
    readInventoryByOrder(orderID, currency) {
-      return this.request({
-        url: Config.baseURL + '/inventory',
-        params: {
-          'order': orderID,
-          'currency': currency
-        },
-      });
+     if (currency) {
+       return this.request({
+         url: Config.baseURL + '/inventory?order=' + orderID + '&currency=' + currency
+       });
+     } else {
+       return this.request({
+         url: Config.baseURL + '/inventory?order=' + orderID
+       });
+     }
   }
 
    readInventoryBySale(saleID, currency) {
-     return this.request({
-       url: Config.baseURL + '/inventory',
-       params: {
-         'sale': saleID,
-         'currency': currency
-       },
-     });
+     if (currency) {
+       return this.request({
+         url: Config.baseURL + '/inventory?sale=' + saleID + '&currency=' + currency
+       });
+     } else {
+       return this.request({
+         url: Config.baseURL + '/inventory?sale=' + saleID
+       });
+     }
    }
    uploadInventoryCSV(csvtext) {
      log.Debug("Posting inventory CSV text...");

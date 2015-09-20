@@ -9,7 +9,8 @@ class Account extends React.Component {
     constructor(props) {
         this.state = {
             'submit': false,
-            'error': undefined
+            'error': undefined,
+            'success': undefined
         };
     }
 
@@ -18,6 +19,7 @@ class Account extends React.Component {
         var first_name = this.refs.firstname.getValue();
         var last_name = this.refs.lastname.getValue();
         var email = this.refs.email.getValue();
+        var role = this.refs.role.getValue();
 
         if (first_name.length === 0 || last_name.length === 0) {
             this.setState({'error': 'Name cannot be blank'});
@@ -29,8 +31,37 @@ class Account extends React.Component {
             return;
         }
 
-        this.setState({'submit': true});
+        if (role !== "member" && role !== "nonmember") {
+          this.setState({'error': 'You must pick a member status.  If you joined at any time in the past, you are still a member.'});
+          return;
+        }
 
+
+        this.setState({'submit': true});
+        this.app.UserQueries.createUserExternal({
+          "first_name": first_name,
+          "last_name": last_name,
+          "email": email,
+          "role": role
+        });
+
+    }
+
+    componentWillReceiveProps(newprops) {
+      log.Debug("new props", newprops);
+      if (newprops.status === true) {
+        this.setState({
+          "submit": false,
+          "success": "Account created successfully, check your email to set your password."
+        });
+        return;
+      }
+      if (newprops.status === false) {
+        this.setState({
+          "submit": false,
+          "error": "Account creation failed.  Make sure you filled out all parts of the form and used your .gov email address."
+        });
+      }
     }
 
     backStyle() {
@@ -46,6 +77,36 @@ class Account extends React.Component {
     }
 
     render() {
+        var renderOnSuccess = () => {
+          if (this.state.success) {
+            return (
+              <B.Alert bsStyle='success'>{this.state.success}</B.Alert>
+            );
+          }
+          return (
+            <div>
+            <div className="box-name-container">
+                <div className="box-name-left">
+                <B.Input type="text" label="First Name" ref="firstname" />
+                </div>
+                <div className="box-name-right">
+                <B.Input type="text" label="Last Name" ref="lastname" />
+                </div>
+            </div>
+            <B.Input type="text" label="Enter a .gov email address" ref="email" />
+            <B.Input type="select" label="Are you a member?" ref="role">
+              <option value=""></option>
+              <option value="member">Yes, I'm a member already</option>
+              <option value="nonmember">I'm not a member yet</option>
+            </B.Input>
+            <B.Button bsSize="large" bsStyle='info' block onClick={this.createAccount.bind(this)}>Create Account{this.state.submit ? <Spinner /> : null}</B.Button>
+            <div className="box-fine-print">
+            We use your .gov email address to verify your account eligibility.  After that, we recommend you use your personal email with the GAEA website.
+            </div>
+            </div>
+          );
+        };
+
         return (
             <div className="account-all" style={this.fullHeight()}>
             <div className="landing-header"><img className={"logo"} src={"images/gaea.png"}></img>Guangzhou American Employees Association</div>
@@ -54,19 +115,7 @@ class Account extends React.Component {
                     <div className="box-header">
                     Create a new account
                     </div>
-                    <div className="box-name-container">
-                        <div className="box-name-left">
-                        <B.Input type="text" label="First Name" ref="firstname" />
-                        </div>
-                        <div className="box-name-right">
-                        <B.Input type="text" label="Last Name" ref="lastname" />
-                        </div>
-                    </div>
-                    <B.Input type="text" label="Enter a .gov email address" ref="email" />
-                    <B.Button bsSize="large" bsStyle='info' block onClick={this.createAccount.bind(this)}>Create Account{this.state.submit ? <Spinner /> : null}</B.Button>
-                    <div className="box-fine-print">
-                    We use your .gov email address to verify your account eligibility.  After that, we recommend you use your personal email with the GAEA website.
-                    </div>
+                    {renderOnSuccess()}
                     {this.state.error ? <div className="account-error-box">{this.state.error}</div> : null}
                 </div>
 
@@ -86,11 +135,14 @@ class Account extends React.Component {
 }
 
 module.exports = Marty.createContainer(Account, {
-  listenTo: ['SessionStore'],
+  listenTo: ['SessionStore', 'UserStore'],
   fetch: {
     session: function() {
       var sess = this.app.SessionStore.getSession();
       return sess;
+    },
+    status: function() {
+      return this.app.UserStore.getCreateStatus();
     }
   }
 });

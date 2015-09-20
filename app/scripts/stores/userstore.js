@@ -8,7 +8,9 @@ var UserConstants = Marty.createConstants([
   'USER_CREATE',
   'ALL_USERS_RECEIVE',
   'REQUEST_FAILED',
-  'LOGIN_REQUIRED'
+  'LOGIN_REQUIRED',
+  'USER_CREATE_EXTERNAL',
+  'USER_CREATE_EXTERNAL_FAILED'
 ]);
 
 //////////////////////////////////////////////////////////////////
@@ -19,7 +21,7 @@ class UserAPI extends Marty.HttpStateSource {
    getUser() {
         return this.get(Config.baseURL + '/user');
    }
-   
+
    getAllUsers() {
      return this.get(Config.baseURL + '/users');
    }
@@ -30,7 +32,14 @@ class UserAPI extends Marty.HttpStateSource {
 		'method': 'POST',
 		'body': user
 		});
-	}
+  }
+  createUserExternal(user) {
+    return this.request({
+      'url': Config.baseURL + '/create',
+      'method': 'POST',
+      'body': user
+    });
+  }
 }
 
 
@@ -57,10 +66,10 @@ class UserQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(UserConstants.REQUEST_FAILED, err)
+        this.dispatch(UserConstants.REQUEST_FAILED, err);
       });
   }
-  
+
   getAllUsers() {
     return this.app.UserAPI.getAllUsers()
       .then(res => {
@@ -77,11 +86,11 @@ class UserQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(UserConstants.REQUEST_FAILED, err)
+        this.dispatch(UserConstants.REQUEST_FAILED, err);
       });
   }
-  
-  
+
+
   createUser(user) {
     return this.app.UserAPI.createUser(user)
       .then(res => {
@@ -98,7 +107,27 @@ class UserQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(UserConstants.REQUEST_FAILED, err)
+        this.dispatch(UserConstants.REQUEST_FAILED, err);
+      });
+  }
+
+  createUserExternal(user) {
+    return this.app.UserAPI.createUserExternal(user)
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            this.dispatch(UserConstants.USER_CREATE_EXTERNAL, res.body);
+            break;
+          case 422:
+            this.dispatch(UserConstants.USER_CREATE_EXTERNAL_FAILED);
+            break;
+          default:
+            throw new AppError("Could not create user").getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(UserConstants.REQUEST_FAILED, err);
       });
   }
 
@@ -128,11 +157,15 @@ class User {
 class UserStore extends Marty.Store {
   constructor(options) {
     super(options);
-    this.state = {};
+    this.state = {
+      'createOK': undefined
+    };
     this.handlers = {
       _handleReceive: UserConstants.USER_RECEIVE,
       _handleAllReceive: UserConstants.ALL_USERS_RECEIVE,
-	_handleCreate: UserConstants.USER_CREATE
+	    _handleCreate: UserConstants.USER_CREATE,
+      _handleCreateExternal: UserConstants.USER_CREATE_EXTERNAL,
+      _handleCreateExternalFail: UserConstants.USER_CREATE_EXTERNAL_FAILED
     };
   }
 
@@ -142,7 +175,7 @@ class UserStore extends Marty.Store {
     this.state['user'] = new User(user);
     this.hasChanged();
   }
-  
+
   _handleAllReceive(res) {
     if (res.qty === 0) {
       this.state['users'] = [];
@@ -155,6 +188,13 @@ class UserStore extends Marty.Store {
   _handleCreate(user) {
 	this.state['users'] = this.state['users'].concat(user);
 	this.hasChanged();
+  }
+
+  _handleCreateExternal(res) {
+    this.setState({'createOK': true});
+  }
+  _handleCreateExternalFail() {
+    this.setState({'createOK': false});
   }
 
 
@@ -170,7 +210,7 @@ class UserStore extends Marty.Store {
       }
     });
   }
-  
+
   getAllUsers() {
     return this.fetch({
       id: 'users',
@@ -181,7 +221,10 @@ class UserStore extends Marty.Store {
         return this.app.UserQueries.getAllUsers();
       }
     });
+  }
 
+  getCreateStatus() {
+    return this.state.createOK;
   }
 
 }
