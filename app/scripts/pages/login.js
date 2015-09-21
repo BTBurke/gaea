@@ -14,6 +14,12 @@ class Login extends React.Component {
           'error': this.props.session.login_tries > 0 ? 'Username or password incorrect' : undefined,
           'submit': false
         };
+        if (this.props.session.login_required) {
+          this.state = {
+            'error': 'You must be logged in to do that.',
+            'submit': false
+          };
+        }
     }
 
     login() {
