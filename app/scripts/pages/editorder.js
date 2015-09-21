@@ -165,7 +165,7 @@ class EditOrder extends React.Component {
                   </B.Col>
                   <B.Col md={8} lg={8}>
                   <div className="eo-showing">
-                  Showing {sortedInventory.length} items
+                  Showing {this.filterInventory(sortedInventory).length} items
                   </div>
                   </B.Col>
                   </B.Row>
