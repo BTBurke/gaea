@@ -11,7 +11,7 @@ class FilterMenu extends React.Component {
 
     render() {
 
-        
+
         var listOfTypes = _.uniq(_.pluck(this.props.inventory, 'types'));
 
         var listOfOrigins = _.uniq(_.pluck(this.props.inventory, 'origin'));
@@ -21,13 +21,13 @@ class FilterMenu extends React.Component {
                 <div className="fm-menu-item" key={item} onClick={this.props.onFilterClick}>{item}</div>
             );
         }.bind(this);
-        
+
         var makeItemOrigin = function(item) {
             return (
                 <div className="fm-menu-item" key={item} onClick={this.props.onOriginClick}>{item}</div>
             );
         }.bind(this);
-        
+
         if (this.props.filter.length == 0) {
             // return first item in lists only
 
@@ -46,12 +46,12 @@ class FilterMenu extends React.Component {
             });
             displayTypes = _.uniq(_.filter(displayTypes, (dt) => { return dt != undefined }), false, function(dt) { return dt.key })
         }
-        
+
         if (this.props.origin.length == 0) {
             // return first item in lists only
             var displayOrigins = _.map(listOfOrigins, function(t) {
                 return makeItemOrigin(t[0])
-                
+
             });
             displayOrigins = _.uniq(_.filter(displayOrigins, (dt) => { return dt != undefined }), false, function(dt) { return dt.key })
         } else {
@@ -66,9 +66,9 @@ class FilterMenu extends React.Component {
             });
             displayOrigins = _.uniq(_.filter(displayOrigins, (dt) => { return dt != undefined }), false, function(dt) { return dt.key })
         }
-        
+
         var clearFilter = () => {
-            
+
             if (this.props.filter.length === 0) {
                 return null;
             }
@@ -76,6 +76,7 @@ class FilterMenu extends React.Component {
                 <div className="fm-filter-clear">
                 <div className="fm-filter-clear-values">
                     {this.props.filter.slice(0).join(" > ")}
+                      <span className="fm-filter-clear-last"><a onClick={this.props.onClearFilterLast}>x</a></span>
                 </div>
                     <div className="fm-filter-clear-btn">
                         <a onClick={this.props.onClearFilter}>Clear Filter</a>
@@ -83,9 +84,9 @@ class FilterMenu extends React.Component {
                 </div>
             );
         }
-        
+
         var clearOrigin = () => {
-            
+
             if (this.props.origin.length === 0) {
                 return null;
             }
@@ -102,7 +103,7 @@ class FilterMenu extends React.Component {
         }
         log.Debug('displayTypes', displayTypes);
         return (
-            
+
             <div className="fm-menu">
                 <div className="fm-menu-header">Filters</div>
                 <div className="fm-menu-title">By Type</div>
@@ -119,7 +120,7 @@ class FilterMenu extends React.Component {
             </div>
         );
     }
-    
+
 }
 
 module.exports = FilterMenu;

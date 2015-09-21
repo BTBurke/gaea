@@ -155,6 +155,7 @@ class OrderItems extends React.Component {
                                 <th>Id</th>
                                 <th>Type</th>
                                 <th>Origin</th>
+                                <th>Case Size</th>
                                 <th>Year</th>
                                 <th>ABV</th>
                                 <th>Size</th>
@@ -163,8 +164,9 @@ class OrderItems extends React.Component {
                         <tbody>
                             <tr>
                                 <td width="15%">{item.supplier_id}</td>
-                                <td width="25%">{_.last(item.types)}</td>
-                                <td width="25%">{item.origin.slice(0).reverse().join(", ")}</td>
+                                <td width="20%">{_.last(item.types)}</td>
+                                <td width="20%">{item.origin.slice(0).reverse().join(", ")}</td>
+                                <td width="10%">{item.case_size}</td>
                                 <td width="10%">{item.year}</td>
                                 <td width="10%">{item.abv + "%"}</td>
                                 <td width="10%">{item.size}</td>

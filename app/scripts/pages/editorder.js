@@ -58,6 +58,10 @@ class EditOrder extends React.Component {
         this.setState({'filter': []});
     }
 
+    onClearFilterLast() {
+      this.setState({'filter': _.initial(this.state.filter)});
+    }
+
     onClearOrigin() {
         this.setState({'origin': []});
     }
@@ -151,6 +155,7 @@ class EditOrder extends React.Component {
                     onOriginClick={this.onOriginClick.bind(this)}
                     onClearFilter={this.onClearFilter.bind(this)}
                     onClearOrigin={this.onClearOrigin.bind(this)}
+                    onClearFilterLast={this.onClearFilterLast.bind(this)}
                     />
 
                     <TotalBar user={this.props.user}
