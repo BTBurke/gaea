@@ -133,9 +133,15 @@ class EditOrder extends React.Component {
     sortBy(method) {
         var sorts = {
             'type': function(inv) { return inv.types[0] },
+            'name': function(inv) { return inv.name },
             'price': function(inv) { return parseFloat(inv.mem_price) }
         }
         return sorts[method];
+    }
+
+    onSortChange() {
+      var sortBy = this.refs.sort.getValue();
+      this.setState({'sort': sortBy});
     }
 
     render() {
@@ -144,6 +150,29 @@ class EditOrder extends React.Component {
         return (
             <div>
             <TopNav user={this.props.user.fullName}/>
+            <div className="eo-sort">
+              <B.Grid>
+              <B.Row>
+                <B.Col md={9} lg={9} mdOffset={3} lgOffset={3}>
+                  <B.Row>
+                  <B.Col md={4} lg={4}>
+                  <B.Input type="select" label="Sort" ref="sort" onChange={this.onSortChange.bind(this)}>
+
+                    <option value="type">By type</option>
+                    <option value="name">By name (alphabetical)</option>
+                    <option value="price">By price (ascending)</option>
+                  </B.Input>
+                  </B.Col>
+                  <B.Col md={8} lg={8}>
+                  <div className="eo-showing">
+                  Showing {sortedInventory.length} items
+                  </div>
+                  </B.Col>
+                  </B.Row>
+                </B.Col>
+              </B.Row>
+            </B.Grid>
+            </div>
 
             <B.Grid>
             <B.Row>
