@@ -6,6 +6,7 @@ var UserConstants = Marty.createConstants([
   'USER_RECEIVE',
   'USER_UPDATE',
   'USER_CREATE',
+  'USER_EXISTS',
   'ALL_USERS_RECEIVE',
   'REQUEST_FAILED',
   'LOGIN_REQUIRED',
@@ -101,6 +102,9 @@ class UserQueries extends Marty.Queries {
           case 401:
             this.dispatch(UserConstants.LOGIN_REQUIRED);
             break;
+          case 409:
+            this.dispatch(UserConstants.USER_EXISTS);
+            break;
           default:
             throw new AppError("Could not get list of all users").getError();
         }
@@ -117,6 +121,9 @@ class UserQueries extends Marty.Queries {
         switch (res.status) {
           case 200:
             this.dispatch(UserConstants.USER_CREATE_EXTERNAL, res.body);
+            break;
+          case 409:
+            this.dispatch(UserConstants.USER_EXISTS);
             break;
           case 422:
             this.dispatch(UserConstants.USER_CREATE_EXTERNAL_FAILED);
@@ -158,14 +165,16 @@ class UserStore extends Marty.Store {
   constructor(options) {
     super(options);
     this.state = {
-      'createOK': undefined
+      'createOK': undefined,
+      'user_exists': undefined
     };
     this.handlers = {
       _handleReceive: UserConstants.USER_RECEIVE,
       _handleAllReceive: UserConstants.ALL_USERS_RECEIVE,
 	    _handleCreate: UserConstants.USER_CREATE,
       _handleCreateExternal: UserConstants.USER_CREATE_EXTERNAL,
-      _handleCreateExternalFail: UserConstants.USER_CREATE_EXTERNAL_FAILED
+      _handleCreateExternalFail: UserConstants.USER_CREATE_EXTERNAL_FAILED,
+      _handleUserExists: UserConstants.USER_EXISTS
     };
   }
 
@@ -194,7 +203,10 @@ class UserStore extends Marty.Store {
     this.setState({'createOK': true});
   }
   _handleCreateExternalFail() {
-    this.setState({'createOK': false});
+    this.setState({'createOK': false, 'user_exists': false});
+  }
+  _handleUserExists() {
+    this.setState({'createOK': false, 'user_exists': true})
   }
 
 
@@ -224,7 +236,7 @@ class UserStore extends Marty.Store {
   }
 
   getCreateStatus() {
-    return this.state.createOK;
+    return this.state;
   }
 
 }
