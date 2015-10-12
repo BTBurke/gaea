@@ -10,7 +10,8 @@ class Account extends React.Component {
         this.state = {
             'submit': false,
             'error': undefined,
-            'success': undefined
+            'success': undefined,
+            'warning': undefined
         };
     }
 
@@ -60,7 +61,7 @@ class Account extends React.Component {
         if (newprops.status.user_exists) {
           this.setState({
             'submit': false,
-            'error': 'A user with this email address already exists.  Try logging in from the homepage or visit https://guangzhouaea.org/#/reset to reset your password.'
+            'warning': 'A user with this email address already exists.  Go to the login page or reset your password using the buttons below.'
           });
         } else {
         this.setState({
@@ -88,6 +89,15 @@ class Account extends React.Component {
           if (this.state.success) {
             return (
               <B.Alert bsStyle='success'>{this.state.success}</B.Alert>
+            );
+          }
+          if (this.state.warning) {
+            return (
+              <div>
+              <B.Alert bsStyle='warning'>{this.state.warning}</B.Alert>
+              <B.Button href='/#/login' bsStyle='info' block>Go to Login page</B.Button>
+              <B.Button href='/#/reset' block>Reset my password</B.Button>
+              </div>
             );
           }
           return (
