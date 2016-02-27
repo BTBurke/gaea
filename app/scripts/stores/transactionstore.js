@@ -215,31 +215,53 @@ class TransactionStore extends Marty.Store {
   }
 
   _handleUpdate(trans) {
-  	this.state[trans.query] = _.reject(this.state[trans.query], (trans1) => { trans1.announcement_id === trans.announcement_id });
+  	this.state[trans.query] = _.reject(this.state[trans.query], (trans1) => { trans1.transaction_id === trans.transaction.transaction_id });
     this.state[trans.query] = this.state[trans.query].concat(trans);
   	this.hasChanged();
   }
 
-  _handleDelete(ann) {
-    this.state['ann'] = _.reject(this.state['ann'], (ann1) => {ann1.announcement_id === ann.announcement_id });
+  _handleDelete(trans) {
+    this.state[trans.query] = _.reject(this.state[trans.query], (trans1) => {trans1.transaction_id === trans.transaction.transaction_id });
     this.hasChanged();
   }
 
 
   // Methods
-  getAnnouncements() {
+  getTransactionsBySaleId(saleID) {
     return this.fetch({
-      id: 'announcements',
+      id: 'transactions',
       locally: function() {
-        return this.state['ann'];
+        return this.state['sale-'+saleID];
       },
       remotely: function() {
-        return this.app.AnnouncementQueries.getAnnouncements();
+        return this.app.TransactionQueries.getTransactionsBySaleId(saleID);
+      }
+    });
+  }
+  getTransactionsByOrderId(orderID) {
+    return this.fetch({
+      id: 'transactions',
+      locally: function() {
+        return this.state['order-'+orderID];
+      },
+      remotely: function() {
+        return this.app.TransactionQueries.getTransactionsByOrderId(orderID);
+      }
+    });
+  }
+  getTransactionsByUser(name) {
+    return this.fetch({
+      id: 'transactions',
+      locally: function() {
+        return this.state['user-'+name];
+      },
+      remotely: function() {
+        return this.app.TransactionQueries.getTransactionsUser(name);
       }
     });
   }
 }
 
-module.exports.AnnouncementStore = AnnouncementStore;
-module.exports.AnnouncementQueries = AnnouncementQueries;
-module.exports.AnnouncementAPI = AnnouncementAPI;
+module.exports.TransactionStore = TransactionStore;
+module.exports.TransactionQueries = TransactionQueries;
+module.exports.TransactionAPI = TransactionAPI;
