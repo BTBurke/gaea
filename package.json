@@ -14,6 +14,7 @@
     "browserify-shim": "^3.8.0",
     "csv-parse": "^0.1.3",
     "del": "~0.1.3",
+    "eslint": "^1.4.1",
     "flummox": "^3.5.0",
     "full-text-search-light": "0.0.11",
     "gulp": "^3.9.0",

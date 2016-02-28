@@ -1,10 +1,9 @@
 var Marty = require("marty");
 var AppError = require("../services/apperror.js");
-var Config = require("../config");
 
 var localstorage = require('local-storage');
 var log = require('../services/logger');
-var config = require('../config');
+var config = require('../config.js');
 
 var SessionConstants = Marty.createConstants([
   'REQUEST_FAILED',
@@ -29,8 +28,9 @@ var SessionConstants = Marty.createConstants([
 
 class SessionAPI extends Marty.HttpStateSource {
    login(user, pwd) {
+      console.log("getting ", config.baseURL+'/login');
         return this.request({
-            url: Config.baseURL + '/login',
+            url: config.baseURL + '/login',
             method: 'POST',
             body: {
                 'user': user,
@@ -40,8 +40,9 @@ class SessionAPI extends Marty.HttpStateSource {
    }
 
    logout(user) {
+     console.log("now to logout request...");
        return this.request({
-           url: Config.baseURL + '/logout',
+           url: config.baseURL + '/logout',
            method: 'POST',
            body: {
                'user': user
@@ -51,7 +52,7 @@ class SessionAPI extends Marty.HttpStateSource {
 
    requestReset(user) {
      return this.request({
-           url: Config.baseURL + '/reset',
+           url: config.baseURL + '/reset',
            method: 'POST',
            body: {
                'user': user
@@ -60,7 +61,7 @@ class SessionAPI extends Marty.HttpStateSource {
    }
    setPassword(pwd, token) {
      return this.request({
-       url: Config.baseURL + '/set',
+       url: config.baseURL + '/set',
        method: 'POST',
        header: {
          'Authorization': 'Bearer ' + token
@@ -138,16 +139,19 @@ class SessionQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(SessionConstants.REQUEST_FAILED, err)
+        this.dispatch(SessionConstants.REQUEST_FAILED, err);
       });
   }
 
   logout(user) {
-    return this.app.SessionAPI.logout(pwd)
-      .then(this.dispatch(SessionConstants.LOGOUT))
+    console.log("calling logout function...");
+    return this.app.SessionAPI.logout(user)
+      .then(res => {
+        this.dispatch(SessionConstants.LOGOUT);
+      })
       .catch(err => {
         console.log(err);
-        this.dispatch(SessionConstants.REQUEST_FAILED, err)
+        this.dispatch(SessionConstants.REQUEST_FAILED, err);
       });
   }
 
@@ -156,7 +160,7 @@ class SessionQueries extends Marty.Queries {
       .then(this.dispatch(SessionConstants.RESET_PASSWORD))
       .catch(err => {
         console.log(err);
-        this.dispatch(SessionConstants.REQUEST_FAILED, err)
+        this.dispatch(SessionConstants.REQUEST_FAILED, err);
       });
   }
 
@@ -176,7 +180,7 @@ class SessionQueries extends Marty.Queries {
       })
       .catch(err => {
         console.log(err);
-        this.dispatch(SessionConstants.REQUEST_FAILED, err)
+        this.dispatch(SessionConstants.REQUEST_FAILED, err);
       });
   }
 }
@@ -244,11 +248,13 @@ class SessionStore extends Marty.Store {
   }
 
   _handleLogout(resp) {
-    localstorage.delete('gaea_jwt');
-    localstorage.delete('gaea_user');
+    var removeSuccess = localstorage.remove('gaea_jwt');
+    localstorage.remove('gaea_user');
+    if (!removeSuccess) {
+      console.log("Warning: failed ot remove JWT");
+    }
     this.setState({'login_success': false});
     this.hasChanged();
-    this._redirect('logout');
   }
 
   _handleSetMessage(msg) {
@@ -305,7 +311,7 @@ class SessionStore extends Marty.Store {
     }
     var exec = () => {
         this._redirect(target);
-    }
+    };
     setTimeout(exec, wait);
   }
 

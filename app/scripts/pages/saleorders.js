@@ -7,6 +7,7 @@ var log = require('../services/logger');
 var Loading = require('../components/loading');
 var TopNav = require('../components/topnav');
 var utils = require('../services/utils');
+var calc = require('../services/calc');
 
 class SaleOrders extends React.Component {
     constructor(props) {
@@ -30,7 +31,7 @@ class SaleOrders extends React.Component {
             } else {
                 this.setState({'open': orderID});
             }
-        }
+        };
     }
 
     render() {
@@ -42,13 +43,15 @@ class SaleOrders extends React.Component {
             var items = _.map(thisOrderItems, (item) => {
                var currentItem = _.findWhere(this.props.inventory, {'inventory_id': item.inventory_id});
                var price = this.props.sale.users[order.user_name].role === 'nonmember' ? currentItem.nonmem_price : currentItem.mem_price;
-               var total = item.qty * parseFloat(price);
+              //  var total = item.qty * parseFloat(price);
+               var total = calc.ItemTotal(currentItem, item.qty, this.props.sale.users[order.user_name].role);
+               var isSplit = calc.IsSplitCase(item.qty, currentItem);
                return (
                     <tr key={currentItem.supplier_id}>
                     <td>{currentItem.supplier_id}</td>
                     <td>{currentItem.name}</td>
                     <td>${price}</td>
-                    <td>{item.qty}</td>
+                    <td>{item.qty}{isSplit ? <B.Glyphicon glyph="warning-sign"/> : null}</td>
                     <td>${total.toFixed(2)}</td>
                     </tr>
                 );
