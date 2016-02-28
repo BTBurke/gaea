@@ -1,5 +1,3 @@
-'use strict';
-
 var React = require('react'),
     B = require('react-bootstrap'),
     _ = require('underscore'),
@@ -26,11 +24,11 @@ class Landing extends React.Component {
     super(props);
     this.state ={
       "user": '',
-      "pw": '',
+      "pwd": '',
       "height": 0,
       "img": '',
       "submit": false,
-    }
+    };
   }
 
   componentWillMount() {
@@ -60,8 +58,8 @@ class Landing extends React.Component {
   handleChange() {
     this.setState({
       "user": this.refs.username.getValue(),
-      "pw": this.refs.password.getValue()
-    })
+      "pwd": this.refs.password.getValue()
+    });
   }
 
   handleLogin() {
@@ -74,9 +72,9 @@ class Landing extends React.Component {
 
 
     var style = {
-      "background-image": "url(\"" + this.state.img + "\")",
+      "backgroundImage": "url(\"" + this.state.img + "\")",
       "height": this.state.height
-    }
+    };
 
     return (
 

@@ -49,6 +49,12 @@ class Session extends React.Component {
     return !isSuppressed;
   }
 
+  componentWillReceiveProps(newprops) {
+    if (newprops.session.login_required) {
+      this.app.SessionActions.redirect('login');
+    }
+  }
+
   render() {
 
     var displayMessage = () => {
@@ -66,11 +72,11 @@ class Session extends React.Component {
           </B.Grid>
         </div>
       );
-    }
+    };
 
     var displayErrors = () => {
       return (
-      <B.Modal show={this.props.session.error != undefined && this.notSuppressed.bind(this)} bsSize='large' onHide={this._dismissError.bind(this)}>
+      <B.Modal show={this.props.session.error !== undefined && this.notSuppressed.bind(this)} bsSize='large' onHide={this._dismissError.bind(this)}>
         <B.Modal.Header closeButton>
           <B.Modal.Title>Something Bad Happened</B.Modal.Title>
         </B.Modal.Header>
@@ -90,12 +96,12 @@ class Session extends React.Component {
         </B.Modal.Body>
       </B.Modal>
       );
-    }
+    };
 
     var displayPopupContent = () => {
       log.Debug("showing modal content...");
       return (
-      <B.Modal show={this.props.session.popup_content != undefined} onHide={this._closePopup.bind(this)}>
+      <B.Modal show={this.props.session.popup_content !== undefined} onHide={this._closePopup.bind(this)}>
         <B.Modal.Header closeButton>
           <B.Modal.Title>Test Title</B.Modal.Title>
         </B.Modal.Header>
@@ -107,31 +113,31 @@ class Session extends React.Component {
         </B.Modal.Footer>
       </B.Modal>
       );
-    }
+    };
 
-    var displayLoginBox = () => {
-      return (
-        <B.Modal show={this.props.session.login_required && this.notSuppressed.bind(this)}
-                keyboard={false}
-                bsSize='medium'
-                backdrop='static'
-                >
-          <B.Modal.Header>
-            <B.Modal.Title>Login Required</B.Modal.Title>
-          </B.Modal.Header>
-          <B.Modal.Body>
-            <div className="session-login-message">
-            {this.props.session.login_message ? this.props.session.login_message : "This action requires you to be logged in.  Please log in and retry what you were doing."}
-            </div>
-            <B.Input type='text' ref="email" label="Email Address" />
-            <B.Input type='password' ref='pwd' label='Password' />
-          </B.Modal.Body>
-          <B.Modal.Footer>
-          <B.Button bsStyle='info' onClick={this._handleLogin.bind(this)}>Login</B.Button>
-          </B.Modal.Footer>
-        </B.Modal>
-      );
-    }
+    // var displayLoginBox = () => {
+    //   return (
+    //     <B.Modal show={this.props.session.login_required && this.notSuppressed.bind(this)}
+    //             keyboard={false}
+    //             bsSize='medium'
+    //             backdrop='static'
+    //             >
+    //       <B.Modal.Header>
+    //         <B.Modal.Title>Login Required</B.Modal.Title>
+    //       </B.Modal.Header>
+    //       <B.Modal.Body>
+    //         <div className="session-login-message">
+    //         {this.props.session.login_message ? this.props.session.login_message : "This action requires you to be logged in.  Please log in and retry what you were doing."}
+    //         </div>
+    //         <B.Input type='text' ref="email" label="Email Address" />
+    //         <B.Input type='password' ref='pwd' label='Password' />
+    //       </B.Modal.Body>
+    //       <B.Modal.Footer>
+    //       <B.Button bsStyle='info' onClick={this._handleLogin.bind(this)}>Login</B.Button>
+    //       </B.Modal.Footer>
+    //     </B.Modal>
+    //   );
+    // }
 
     log.Debug('app from session', this.app);
 
@@ -139,7 +145,6 @@ class Session extends React.Component {
       <div className="session-container">
         {this.props.session.error ? displayErrors() : null}
         {this.props.session.user_message ? displayMessage() : null}
-        {this.props.session.login_required ? displayLoginBox() : null}
         {this.props.session.popup_content ? displayPopupContent() : null}
       </div>
     );

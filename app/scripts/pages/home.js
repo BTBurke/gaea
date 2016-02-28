@@ -31,10 +31,6 @@ class Home extends React.Component {
           {'key': 2, 'href': '/users', 'text': "Manage Users"}
           ]
     };
-    this.announcements = [
-      {'title': 'Test Announcement', 'body': "Test body with a [link](/#/home)"},
-      {'title': 'Second test announcement', 'body': "<img style='float: left;' src='http://www.animationmagazine.net/images/articles/homer_simpson_hs_150.gif'> This is a second test announcement that includes a picture for testing purposes.  Need a much longer string to see how things wrap."}
-    ];
   }
 
   render() {

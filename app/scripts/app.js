@@ -18,6 +18,7 @@ var PwdReset = require('./pages/pwdreset');
 var PwdSet = require('./pages/pwdset');
 var Account = require('./pages/account');
 var Users = require('./pages/users');
+var Logout = require('./pages/logout');
 
 
 // React-router
@@ -55,6 +56,7 @@ var routes = (
     <Route name="tos" path="/tos" handler={Tos}/>
     <Route name="home" path="/home" handler={Home}/>
 		<Route name="login" path="/login" handler={Login} />
+		<Route name="logout" page="/logout" handler={Logout} />
 		<Route name="account" path="/account" handler={Account}/>
 		<Route name="reset" path="/reset" handler={PwdReset} />
 		<Route name="set" path="/set/:token" handler={PwdSet} />

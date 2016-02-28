@@ -42,13 +42,9 @@ module.exports = Marty.createContainer(Pay, {
     user: function() {
       return this.app.UserStore.getUser();
     },
-    orders: function() {
-      var ord = this.app.OrderStore.getOrders();
-      console.log('page receive:', ord);
-      return ord;
-    },
-    sales: function() {
-      return this.app.SaleStore.getSales();
+    transactions: function() {
+      var orderID = this.props.params.orderID;
+      return this.app.TransactionStore.getTransactionsByOrderId(orderID);
     }
   },
   pending() {

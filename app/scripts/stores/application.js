@@ -40,6 +40,9 @@ var SessionAPI = require('./sessionstore').SessionAPI;
 var AnnouncementStore = require('./announcementstore').AnnouncementStore;
 var AnnouncementQueries = require('./announcementstore').AnnouncementQueries;
 var AnnouncementAPI = require('./announcementstore').AnnouncementAPI;
+var TransactionStore = require('./transactionstore').TransactionStore;
+var TransactionQueries = require('./transactionstore').TransactionQueries;
+var TransactionAPI = require('./transactionstore').TransactionAPI;
 
 class Application extends Marty.Application {
     constructor(options) {
@@ -69,7 +72,10 @@ class Application extends Marty.Application {
         this.register('AnnouncementStore', AnnouncementStore);
         this.register('AnnouncementQueries', AnnouncementQueries);
         this.register('AnnouncementAPI', AnnouncementAPI);
-
+        
+        this.register('TransactionStore', TransactionStore);
+        this.register('TransactionQueries', TransactionQueries);
+        this.register('TransactionAPI', TransactionAPI);
 
     }
 }

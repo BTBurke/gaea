@@ -18,7 +18,7 @@ var app = new Application();
 class EditInventory extends React.Component {
     constructor(props) {
         super(props);
-        
+
         this.search = new fulltextsearchlight();
         this.menu = {'title': undefined,
           'items': [
@@ -32,7 +32,7 @@ class EditInventory extends React.Component {
         };
         this.state = {
           'search_string': ''
-        }
+        };
     }
 
     upload(csv) {
@@ -44,7 +44,7 @@ class EditInventory extends React.Component {
         };
         this.app.InventoryQueries.uploadInventoryCSV(payload);
     }
-    
+
     componentWillMount() {
       log.Debug("adding inventory to search", this.props.inventory);
       if (this.props.inventory.length > 0) {
@@ -53,24 +53,24 @@ class EditInventory extends React.Component {
         }.bind(this));
       }
     }
-    
+
     // On a inventory property change, updates the full text search
     componentWillReceiveProps(newprops) {
       log.Debug("new props", newprops);
-      
+
       if (this.props.inventory.length > 0) {
         _.map(this.props.inventory, function(inv) {
             this.search.remove(inv.asSearchObject());
         }.bind(this));
       }
-      
+
       if (newprops.inventory.length > 0) {
         _.map(newprops.inventory, function(inv) {
           this.search.add(inv.asSearchObject());
         }.bind(this));
       }
     }
-    
+
     // reponsible for updating the displayed inventory items in response
     // to a full text search
     searchFilter(inv) {
@@ -78,14 +78,14 @@ class EditInventory extends React.Component {
         return inv;
       } else {
         log.Debug('this search', this.search);
-        
+
         var results = this.search.search(this.state.search_string);
         log.Debug('search results', results);
         // convert from search object back to Inventory model
         return _.map(results, function(result) { return _.findWhere(inv, {'supplier_id': result.supplier_id}); });
       }
     }
-    
+
     updateSearch(search_string) {
       log.Debug('Received search string: ', search_string);
       this.setState({'search_string': search_string});

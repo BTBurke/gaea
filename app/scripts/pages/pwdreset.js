@@ -10,15 +10,15 @@ class PwdReset extends React.Component {
         super(props);
         this.state ={
           'error': undefined
-        }
+        };
     }
 
     reset() {
       log.Debug("trying reset...");
-      var user = this.refs.email.getValue()
+      var user = this.refs.email.getValue();
       if (user.length === 0) {
         this.setState({'error': 'Email cannot be empty'});
-        return
+        return;
       }
       this.setState({'error': undefined});
       this.app.SessionQueries.requestReset(user);
