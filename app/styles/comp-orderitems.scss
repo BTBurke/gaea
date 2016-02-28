@@ -109,7 +109,6 @@
     position: relative;
 }
 
-<<<<<<< HEAD
 .card__master {
     margin: 10px;
 }
@@ -137,7 +136,7 @@
          background: blue;
     }
 }
-=======
+
 .oi-notes {
   h2 {
     color: $base-orange;
@@ -146,4 +145,9 @@
   }
   
 }
->>>>>>> 8793000e9192b648ba820a1de9983a0d3c4fca9c
+
+.oi-pagination {
+    width: 50%;
+    margin: auto;
+}
+

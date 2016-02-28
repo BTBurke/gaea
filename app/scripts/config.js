@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 // For local development
 // var Config = {
 //   'baseURL': 'http://127.0.0.1:8080',
@@ -32,4 +30,3 @@ var Config = {
 // };
 
 module.exports = Config;
->>>>>>> 8793000e9192b648ba820a1de9983a0d3c4fca9c

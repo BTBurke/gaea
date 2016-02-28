@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 var React = require('react');
 var B = require('react-bootstrap');
 var _ = require('underscore');
@@ -151,6 +149,10 @@ class OrderItems extends React.Component {
                 <B.Col md={12} lg={12}>
                 <div className="oi-item-header">{item.name}</div>
                 <div className="oi-item-table">
+                    <B.Row>
+                    <B.Col md={3} lg={3}>
+                    </B.Col>
+                    <B.Col md={9} lg={9}>
                     <B.Table condensed responsive>
                         <thead>
                             <tr>
@@ -175,6 +177,8 @@ class OrderItems extends React.Component {
                             </tr>
                         </tbody>
                     </B.Table>
+                    </B.Col>
+                    </B.Row>
                     <div className="oi-item-desc">
                         {item.desc}
                     </div>
@@ -248,4 +252,3 @@ class OrderItems extends React.Component {
 }
 
 module.exports = OrderItems;
->>>>>>> 8793000e9192b648ba820a1de9983a0d3c4fca9c
