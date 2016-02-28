@@ -2,6 +2,7 @@ var React = require('react');
 var B = require('react-bootstrap');
 var _ = require('underscore');
 var calc = require('../services/calc');
+var ProductImage = require('./productimage');
 
 class OrderItems extends React.Component {
     constructor(props) {
@@ -145,14 +146,17 @@ class OrderItems extends React.Component {
 
             return (
                 <div className="oi-item" key={item.supplier_id}>
+                <div className="oi-item-header">{item.name}</div>
+                <B.Row>
+                <B.Col md={2} lg={2}>
+                <ProductImage item={item.supplier_id} />
+                </B.Col>
+                
+                <B.Col md={10} lg={10}>
                 <B.Row>
                 <B.Col md={12} lg={12}>
-                <div className="oi-item-header">{item.name}</div>
+                
                 <div className="oi-item-table">
-                    <B.Row>
-                    <B.Col md={3} lg={3}>
-                    </B.Col>
-                    <B.Col md={9} lg={9}>
                     <B.Table condensed responsive>
                         <thead>
                             <tr>
@@ -177,8 +181,6 @@ class OrderItems extends React.Component {
                             </tr>
                         </tbody>
                     </B.Table>
-                    </B.Col>
-                    </B.Row>
                     <div className="oi-item-desc">
                         {item.desc}
                     </div>
@@ -219,6 +221,8 @@ class OrderItems extends React.Component {
                     <B.Col md={3} lg={3}>
                         {cartArea(item.inventory_id)}
                     </B.Col>
+                </B.Row>
+                </B.Col>
                 </B.Row>
                 </div>
             );

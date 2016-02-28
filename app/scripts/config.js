@@ -11,6 +11,7 @@ var Config = {
     'baseURL': 'https://gserver-btburke75.c9users.io',
     'homeURL': 'https://gaea-btburke75.c9users.io',
     'logLevel': 'debug',
+    'imgURL': 'https://productimg-btburke75.c9users.io',
     'inventory_required': ['supplier_id', 'name', 'nonmem_price', 'mem_price', 'types']
 }
 
