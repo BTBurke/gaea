@@ -108,3 +108,31 @@
     font-size: 10px;
     position: relative;
 }
+
+.card__master {
+    margin: 10px;
+}
+
+.card {
+    .card_image {
+        height: 20rem;
+        background: #ddd;
+    }
+    .card_title {
+        font-size: 1rem;
+        font-weight: bold;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    .card_details {
+        font_size: .75rem;
+    }
+    .card_price {
+         font-size: 1rem;
+         font-weight: bold;
+    }
+    .card_cart {
+         font-size: .75 rem;
+         background: blue;
+    }
+}
