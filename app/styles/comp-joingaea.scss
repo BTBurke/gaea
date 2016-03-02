@@ -1,0 +1,22 @@
+.join-container {
+    height: 50px;
+    background: #f39c12;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    .join-text {
+        width: 60%;
+        margin: auto;
+    }
+    .join-button {
+        margin-left: 15px;
+    }
+}
+
+.joined-container {
+    text-align: center;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    background:  #18BC9C;
+}

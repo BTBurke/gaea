@@ -29,7 +29,7 @@ class Notifier extends React.Component {
             this.refs.notification.show();
             setTimeout(function() {
                 this.refs.notification.hide();
-            }.bind(this), 2000);
+            }.bind(this), 8000);
         }
     }
     
