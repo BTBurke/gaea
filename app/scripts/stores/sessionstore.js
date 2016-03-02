@@ -130,11 +130,8 @@ class SessionQueries extends Marty.Queries {
           case 200:
             this.dispatch(SessionConstants.LOGIN_SUCCESS, res.body);
             break;
-          case 401:
-            this.dispatch(SessionConstants.LOGIN_FAILED, res.body);
-            break;
           default:
-            throw new AppError("Login failed").getError();
+            this.dispatch(SessionConstants.LOGIN_FAILED, res.body);
         }
       })
       .catch(err => {
@@ -171,11 +168,8 @@ class SessionQueries extends Marty.Queries {
           case 200:
             this.dispatch(SessionConstants.LOGIN_SUCCESS, res.body);
             break;
-          case 401:
-            this.dispatch(SessionConstants.PASSWORD_RESET_FAILED, res.body);
-            break;
           default:
-            throw new AppError("Password reset failed").getError();
+            this.dispatch(SessionConstants.PASSWORD_RESET_FAILED, res.body);
         }
       })
       .catch(err => {
@@ -254,6 +248,7 @@ class SessionStore extends Marty.Store {
       console.log("Warning: failed ot remove JWT");
     }
     this.setState({'login_success': false});
+    this._redirect('login');
     this.hasChanged();
   }
 
@@ -318,6 +313,7 @@ class SessionStore extends Marty.Store {
   _redirect(target) {
     log.Debug('redirecting to ' + target);
     window.location = window.location.origin + '/#/' + target;
+    location.reload();
     this.setState({'auth_redirect': undefined});
   }
 

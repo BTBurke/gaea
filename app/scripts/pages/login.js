@@ -48,6 +48,9 @@ class Login extends React.Component {
           'submit': false
         });
       }
+      if (!newprops.session.login_required) {
+        this.app.SessionActions.redirect("home");
+      }
     }
 
     render() {

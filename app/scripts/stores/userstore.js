@@ -7,6 +7,7 @@ var UserConstants = Marty.createConstants([
   'USER_UPDATE',
   'USER_CREATE',
   'USER_EXISTS',
+  'UPGRADE_MEMBERSHIP',
   'ALL_USERS_RECEIVE',
   'REQUEST_FAILED',
   'LOGIN_REQUIRED',
@@ -41,6 +42,15 @@ class UserAPI extends Marty.HttpStateSource {
       'body': user
     });
   }
+  updateMembership(username) {
+    return this.request({
+      'url': Config.baseURL + '/user/membership',
+      'method': 'POST',
+      'body': {
+        'user_name': username
+      }
+    })
+  }
 }
 
 
@@ -53,6 +63,27 @@ class UserAPI extends Marty.HttpStateSource {
 class UserQueries extends Marty.Queries {
   getUser() {
     return this.app.UserAPI.getUser()
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            this.dispatch(UserConstants.USER_RECEIVE, res.body);
+            break;
+          case 401:
+            this.dispatch(UserConstants.LOGIN_REQUIRED);
+            break;
+          default:
+            throw new AppError("Could not get the current user").getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(UserConstants.REQUEST_FAILED, err);
+      });
+  }
+
+  updateMembership(username) {
+    alert('Time to update in store');
+    return this.app.UserAPI.updateMembership(username)
       .then(res => {
         switch (res.status) {
           case 200:
@@ -193,6 +224,19 @@ class UserStore extends Marty.Store {
     }
     this.hasChanged();
   }
+  
+  _handleUpgrade() {
+    var newProps = {
+      'user_name': this.state['user'].userName,
+      'first_name': this.state['user'].firstName,
+      'last_name': this.state['user'].lastName,
+      'role': 'member',
+      'email': this.state['user'].email
+    }
+    this.state['user'] = new User(newProps);
+    this.hasChanged();
+    console.log('upgrade: ', this.state['user']);
+  }
 
   _handleCreate(user) {
 	this.state['users'] = this.state['users'].concat(user);
@@ -245,3 +289,4 @@ class UserStore extends Marty.Store {
 module.exports.UserStore = UserStore;
 module.exports.UserQueries = UserQueries;
 module.exports.UserAPI = UserAPI;
+module.exports.UserActions = UserActions;

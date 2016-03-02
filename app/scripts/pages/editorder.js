@@ -9,6 +9,7 @@ var OrderItems = require('../components/orderitems');
 var Notifier = require('../components/notifier');
 var TotalBar = require('../components/totalbar');
 var Loading = require('../components/loading');
+var JoinGAEA = require('../components/joingaea');
 var log = require('../services/logger');
 
 var Application = require('../stores/application');
@@ -30,7 +31,12 @@ class EditOrder extends React.Component {
         };
 
     }
-
+    
+    upgradeMembership() {
+        alert("time to upgrade");
+        this.app.UserQueries.upgradeMembership(this.props.user.userName);
+    }
+    
     message(msg) {
         this.setState({'message': msg});
         setTimeout(() => {
@@ -124,7 +130,7 @@ class EditOrder extends React.Component {
         }
 
         return _.filter(inventory, function(item) {
-            if (checkAll(item.types, filters) && checkAll(item.origin, origins)) {
+            if (checkAll(item.types, filters) && checkAll(item.origin, origins) && !checkAll(item.types, ['Membership'])) {
                 return true;
             } else {
                 return false;
@@ -163,6 +169,10 @@ class EditOrder extends React.Component {
         return (
             <div>
             <TopNav user={this.props.user.fullName}/>
+            <JoinGAEA inventory={this.props.inventory}
+                      onAdd={this.onAdd.bind(this)}
+                      upgrade={this.upgradeMembership.bind(this)}
+            />
             <div className="eo-sort">
               <B.Grid>
               <B.Row>
