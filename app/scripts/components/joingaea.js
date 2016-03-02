@@ -1,6 +1,7 @@
 var React = require('react');
 var _ = require('underscore');
 var B = require('react-bootstrap');
+var Marty = require('marty');
 
 class JoinGAEA extends React.Component {
     constructor(props) {
@@ -14,7 +15,7 @@ class JoinGAEA extends React.Component {
         console.log("found membership", this.state.membership_item);
         var id = this.state.membership_item.inventory_id;
         this.props.onAdd(id, 1);
-        this.props.upgrade();
+        this.app.UserQueries.updateMembership(this.props.user.userName);
     }
     
     render() {
@@ -28,4 +29,11 @@ class JoinGAEA extends React.Component {
     }
 }
 
-module.exports = JoinGAEA;
+module.exports = Marty.createContainer(JoinGAEA, {
+  listenTo: ['UserStore'],
+  fetch: {
+    user: function() {
+        return this.app.UserStore.getUser();
+    }
+  }
+});

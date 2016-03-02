@@ -82,7 +82,7 @@ class UserQueries extends Marty.Queries {
   }
 
   updateMembership(username) {
-    alert('Time to update in store');
+    alert('Time to update in store for ', username);
     return this.app.UserAPI.updateMembership(username)
       .then(res => {
         switch (res.status) {
@@ -289,4 +289,3 @@ class UserStore extends Marty.Store {
 module.exports.UserStore = UserStore;
 module.exports.UserQueries = UserQueries;
 module.exports.UserAPI = UserAPI;
-module.exports.UserActions = UserActions;

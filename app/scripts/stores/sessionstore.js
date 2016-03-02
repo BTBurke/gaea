@@ -241,14 +241,16 @@ class SessionStore extends Marty.Store {
     this.hasChanged();
   }
 
-  _handleLogout(resp) {
+  _handleLogout(redirectLocation) {
     var removeSuccess = localstorage.remove('gaea_jwt');
     localstorage.remove('gaea_user');
     if (!removeSuccess) {
       console.log("Warning: failed ot remove JWT");
     }
     this.setState({'login_success': false});
-    this._redirect('login');
+    if (redirectLocation) {
+      this._redirect(redirectLocation);
+    }
     this.hasChanged();
   }
 
@@ -311,9 +313,16 @@ class SessionStore extends Marty.Store {
   }
 
   _redirect(target) {
+    
     log.Debug('redirecting to ' + target);
-    window.location = window.location.origin + '/#/' + target;
-    location.reload();
+    var loc = window.location.origin + '/#/' + target;
+    
+    if (target === 'login')
+    {
+      this._handleLogout();
+    }
+    window.location.assign(loc);
+    
     this.setState({'auth_redirect': undefined});
   }
 

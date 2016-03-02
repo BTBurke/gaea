@@ -171,7 +171,6 @@ class EditOrder extends React.Component {
             <TopNav user={this.props.user.fullName}/>
             <JoinGAEA inventory={this.props.inventory}
                       onAdd={this.onAdd.bind(this)}
-                      upgrade={this.upgradeMembership.bind(this)}
             />
             <div className="eo-sort">
               <B.Grid>

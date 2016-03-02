@@ -13,7 +13,8 @@ class Session extends React.Component {
     super(props);
     this.state = {
       'error': undefined,
-      'submit': false
+      'submit': false,
+      'loginRedirected': false
     }
   }
   _dismissMessage() {
@@ -50,8 +51,9 @@ class Session extends React.Component {
   }
 
   componentWillReceiveProps(newprops) {
-    if (newprops.session.login_required) {
-      this.app.SessionActions.redirect('login');
+    if (newprops.session.login_required && !this.state.loginRedirected) {
+        this.setState({'loginRedirected': true});
+        this.app.SessionActions.redirect('login');
     }
   }
 
