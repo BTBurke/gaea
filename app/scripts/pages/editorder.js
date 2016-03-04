@@ -9,6 +9,7 @@ var OrderItems = require('../components/orderitems');
 var Notifier = require('../components/notifier');
 var TotalBar = require('../components/totalbar');
 var Loading = require('../components/loading');
+var JoinGAEA = require('../components/joingaea');
 var log = require('../services/logger');
 
 var Application = require('../stores/application');
@@ -24,11 +25,18 @@ class EditOrder extends React.Component {
             'origin': [],
             'search': undefined,
             'sort': 'type',
-            'message': ''
+            'message': '',
+            'items_to_show': 30,
+            'current_page': 1
         };
 
     }
-
+    
+    upgradeMembership() {
+        alert("time to upgrade");
+        this.app.UserQueries.upgradeMembership(this.props.user.userName);
+    }
+    
     message(msg) {
         this.setState({'message': msg});
         setTimeout(() => {
@@ -43,27 +51,27 @@ class EditOrder extends React.Component {
     onFilterClick(e) {
         e.preventDefault();
         var filt = e.currentTarget.innerText;
-        this.setState({'filter': this.state.filter.concat(filt)});
+        this.setState({'filter': this.state.filter.concat(filt), 'current_page': 1});
 
     }
 
     onOriginClick(e) {
         e.preventDefault();
         var filt = e.currentTarget.innerText;
-        this.setState({'origin': this.state.origin.concat(filt)});
+        this.setState({'origin': this.state.origin.concat(filt), 'current_page': 1});
 
     }
 
     onClearFilter() {
-        this.setState({'filter': []});
+        this.setState({'filter': [], 'current_page': 1});
     }
 
     onClearFilterLast() {
-      this.setState({'filter': _.initial(this.state.filter)});
+      this.setState({'filter': _.initial(this.state.filter), 'current_page': 1});
     }
 
     onClearOrigin() {
-        this.setState({'origin': []});
+        this.setState({'origin': [], 'current_page': 1});
     }
 
     onAdd(id, qty) {
@@ -122,7 +130,7 @@ class EditOrder extends React.Component {
         }
 
         return _.filter(inventory, function(item) {
-            if (checkAll(item.types, filters) && checkAll(item.origin, origins)) {
+            if (checkAll(item.types, filters) && checkAll(item.origin, origins) && !checkAll(item.types, ['Membership'])) {
                 return true;
             } else {
                 return false;
@@ -141,15 +149,30 @@ class EditOrder extends React.Component {
 
     onSortChange() {
       var sortBy = this.refs.sort.getValue();
-      this.setState({'sort': sortBy});
+      this.setState({'sort': sortBy, 'current_page': 1});
+    }
+    
+    handlePageSelect(event, selectedEvent) {
+        window.scroll(0,0);
+        this.setState({
+            'current_page': selectedEvent.eventKey
+        });
     }
 
     render() {
         log.Debug('page receives inventory', this.props.inventory);
         var sortedInventory = _.sortBy(this.props.inventory, this.sortBy(this.state.sort));
+        var from = (this.state.current_page-1)*this.state.items_to_show;
+        var inv = this.filterInventory(sortedInventory);
+        var to = this.state.current_page*this.state.items_to_show;
+        var numpages = Math.ceil(inv.length/this.state.items_to_show);
         return (
             <div>
-            <TopNav user={this.props.user.fullName}/>
+            <TopNav user={this.props.user}/>
+            <JoinGAEA inventory={this.props.inventory}
+                      onAdd={this.onAdd.bind(this)}
+                      items={this.props.items}
+            />
             <div className="eo-sort">
               <B.Grid>
               <B.Row>
@@ -165,7 +188,7 @@ class EditOrder extends React.Component {
                   </B.Col>
                   <B.Col md={8} lg={8}>
                   <div className="eo-showing">
-                  Showing {this.filterInventory(sortedInventory).length} items
+                  Showing {from+1}-{Math.min(to, inv.length)} of {inv.length} items
                   </div>
                   </B.Col>
                   </B.Row> 
@@ -177,7 +200,7 @@ class EditOrder extends React.Component {
             <B.Grid>
             <B.Row>
                 <B.Col md={3} lg={3}>
-                    <FilterMenu inventory={this.filterInventory(sortedInventory)}
+                    <FilterMenu inventory={inv}
                     filter={this.state.filter}
                     origin={this.state.origin}
                     onFilterClick={this.onFilterClick.bind(this)}
@@ -194,13 +217,31 @@ class EditOrder extends React.Component {
                     />
                 </B.Col>
                 <B.Col md={9} lg={9}>
-                    <OrderItems inventory={this.filterInventory(sortedInventory)}
+                    <OrderItems inventory={inv.slice(from, to)}
                         onAdd={this.onAdd.bind(this)}
                         onUpdate={this.onUpdate.bind(this)}
                         items={this.props.items}
                         member={this.props.user.role === 'nonmember' ? false : true}
                     />
                 </B.Col>
+            </B.Row>
+            <B.Row>
+            <B.Col md={9} lg={9} mdOffset={3} lgOffset={3}>
+            <div className="oi-pagination">
+            <B.Pagination
+                prev
+                next
+                first
+                last
+                ellipsis
+                boundaryLinks
+                items={numpages}
+                maxButtons={5}
+                activePage={this.state.current_page}
+                bsStyle='info'
+                onSelect={this.handlePageSelect.bind(this)} />
+            </div>
+            </B.Col>
             </B.Row>
             </B.Grid>
             <Notifier message={this.state.message}/>

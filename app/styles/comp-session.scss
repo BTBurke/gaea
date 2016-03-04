@@ -13,3 +13,23 @@
   float: left;
   padding: 15px;
 }
+
+.session-message-error {
+  height: 60px;
+  background: #E74C3C;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 60px;
+  
+  .session-message-error-text {
+    margin: auto;
+    width: 70%;
+    height: 18px;
+    
+    a {
+      text-decoration: none;
+      color: white;
+    }
+  }
+}

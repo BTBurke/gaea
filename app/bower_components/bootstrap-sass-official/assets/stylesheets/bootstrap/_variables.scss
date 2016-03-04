@@ -354,7 +354,7 @@ $container-lg:                 $container-large-desktop;
 // Basics of a navbar
 $navbar-height:                    60px;
 $navbar-margin-bottom:             $line-height-computed;
-$navbar-border-radius:             $border-radius-base;
+$navbar-border-radius:             0;
 $navbar-padding-horizontal:        floor(($grid-gutter-width / 2));
 $navbar-padding-vertical:          (($navbar-height - $line-height-computed) / 2);
 $navbar-collapse-max-height:       340px;
@@ -442,20 +442,20 @@ $nav-pills-active-link-hover-color:         $component-active-color;
 //
 //##
 
-$pagination-color:                     #fff;
-$pagination-bg:                        $brand-success;
+$pagination-color:                     #333;
+$pagination-bg:                        $gray-light;
 $pagination-border:                    transparent;
 
-$pagination-hover-color:               #fff;
-$pagination-hover-bg:                  darken($brand-success, 15%);
+$pagination-hover-color:               #333;
+$pagination-hover-bg:                  darken($gray-light, 15%);
 $pagination-hover-border:              transparent;
 
-$pagination-active-color:              #fff;
-$pagination-active-bg:                 darken($brand-success, 15%);
+$pagination-active-color:              #333;
+$pagination-active-bg:                 darken($gray-light, 15%);
 $pagination-active-border:             transparent;
 
-$pagination-disabled-color:            $gray-lighter;
-$pagination-disabled-bg:               lighten($brand-success, 15%);
+$pagination-disabled-color:            #333;
+$pagination-disabled-bg:               $gray-light;
 $pagination-disabled-border:           transparent;
 
 

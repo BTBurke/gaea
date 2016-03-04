@@ -2,12 +2,14 @@ var React = require('react');
 var B = require('react-bootstrap');
 var _ = require('underscore');
 var calc = require('../services/calc');
+var ProductImage = require('./productimage');
 
 class OrderItems extends React.Component {
     constructor(props) {
         super(props);
+        
         this.state = {
-          'showNotes': true
+          'showNotes': _.some(this.props.items, function (item) {item.use_case_pricing === true})
         };
 
         this.itemsByID = _.indexBy(this.props.items, 'inventory_id');
@@ -26,6 +28,10 @@ class OrderItems extends React.Component {
     }
 
     render() {
+        
+        var lineout = {
+            'textDecoration': 'line-through'
+        }
 
         var makeItem = function(item) {
             var addItemFunc = this.onAddLocal.bind(this);
@@ -77,14 +83,9 @@ class OrderItems extends React.Component {
 
                     return (
                         <div>
-                        <div className="oi-item-cart-header">In Cart</div>
+                        <div className="oi-item-cart-header"><span className="oi-item-cart-glyph"><B.Glyphicon glyph="shopping-cart"/></span> In Cart</div>
                         <div className="oi-item-cart">
                             <B.Row>
-                                <B.Col md={2} lg={2}>
-                                <div className="oi-item-cart-glyph">
-                                    <B.Glyphicon glyph="shopping-cart"/>
-                                </div>
-                                </B.Col>
                                 <B.Col md={3} lg={3}>
                                 <div className="oi-item-cart-qty-header">
                                     Qty
@@ -93,7 +94,7 @@ class OrderItems extends React.Component {
                                     {item.qty}
                                 </div>
                                 </B.Col>
-                                <B.Col md={7} lg={7}>
+                                <B.Col md={9} lg={9}>
                                 <div className="oi-item-cart-total-header">
                                     Total
                                 </div>
@@ -145,9 +146,16 @@ class OrderItems extends React.Component {
 
             return (
                 <div className="oi-item" key={item.supplier_id}>
+                <div className="oi-item-header">{item.name}</div>
+                <B.Row>
+                <B.Col md={2} lg={2}>
+                <ProductImage item={item.supplier_id} />
+                </B.Col>
+                
+                <B.Col md={10} lg={10}>
                 <B.Row>
                 <B.Col md={12} lg={12}>
-                <div className="oi-item-header">{item.name}</div>
+                
                 <div className="oi-item-table">
                     <B.Table condensed responsive>
                         <thead>
@@ -166,7 +174,7 @@ class OrderItems extends React.Component {
                                 <td width="15%">{item.supplier_id}</td>
                                 <td width="20%">{_.last(item.types)}</td>
                                 <td width="20%">{item.origin.slice(0).reverse().join(", ")}</td>
-                                <td width="10%">{item.case_size}</td>
+                                {item.case_size > 1 ? <td width="10%">{item.case_size}</td> : null}
                                 <td width="10%">{item.year}</td>
                                 <td width="10%">{item.abv + "%"}</td>
                                 <td width="10%">{item.size}</td>
@@ -185,7 +193,7 @@ class OrderItems extends React.Component {
                         <B.Row>
                             <B.Col md={3} lg={3}>
                             <div className="oi-item-price-mem-header">Non-Member<br/>Price</div>
-                            <div className="oi-item-price-mem">
+                            <div className="oi-item-price-mem" style={this.props.member ? lineout : null}>
                                 ${parseFloat(item.nonmem_price).toFixed(2)}
                             </div>
                             </B.Col>
@@ -213,6 +221,8 @@ class OrderItems extends React.Component {
                     <B.Col md={3} lg={3}>
                         {cartArea(item.inventory_id)}
                     </B.Col>
+                </B.Row>
+                </B.Col>
                 </B.Row>
                 </div>
             );

@@ -65,7 +65,7 @@ class OrderTable extends React.Component {
           <td>{shortDate.toDateString()}</td>
           <td><span className={"ot-"+order.status}></span>{Utils.Capitalize(order.status)}</td>
           <td>{order.item_qty}</td>
-          <td>${order.amount_total}</td>
+          <td>${parseFloat(order.amount_total).toFixed(2)}</td>
           <td>{actionButton(order)}</td>
         </tr>
       );

@@ -18,7 +18,7 @@ class OrderSummary extends React.Component {
                 <tr key={currentItem.supplier_id}>
                 <td>{currentItem.supplier_id}</td>
                 <td>{currentItem.name}</td>
-                <td>${price}</td>
+                <td>${parseFloat(price).toFixed(2)}</td>
                 <td>{item.qty}</td>
                 <td>${total.toFixed(2)}</td>
                 </tr>

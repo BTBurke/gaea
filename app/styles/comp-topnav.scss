@@ -1,3 +1,37 @@
 .topnav-brand {
   font-family: enriqueta, sans-serif;
 }
+
+.topnav-member {
+    font-size: 10px;
+    background: $brand-success;
+    line-height: 16px;
+    height: 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-bottom: 3px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin-left: 4px;
+    color: #fff;
+    cursor: default;
+}
+
+.topnav-nonmember {
+    font-size: 10px;
+    background: $brand-warning;
+    line-height: 16px;
+    height: 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-bottom: 3px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    margin-left: 4px;
+    color: #fff;
+    cursor: default;
+}

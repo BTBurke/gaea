@@ -29,7 +29,9 @@ Marty.HttpStateSource.addHook({
    }
 });
 
-var { UserStore, UserQueries, UserAPI } = require('./userstore');
+var UserStore = require('./userstore').UserStore;
+var UserAPI = require('./userstore').UserAPI;
+var UserQueries = require('./userstore').UserQueries;
 var { OrderStore, OrderQueries, OrderAPI } = require('./orderstore');
 var { InventoryStore, InventoryQueries, InventoryAPI } = require('./inventorystore');
 var { SaleStore, SaleQueries, SaleAPI } = require('./salestore');
