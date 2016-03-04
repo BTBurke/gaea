@@ -1,5 +1,6 @@
 var React = require('react');
 var B=require('react-bootstrap');
+var utils = require('../services/utils');
 
 class TopNav extends React.Component {
   constructor(props) {
@@ -7,6 +8,13 @@ class TopNav extends React.Component {
   }
 
   render() {
+    
+    var ddBtn = function (user) {
+      return (
+      <span>{user.fullName}<span className={user.role === 'nonmember' ? "topnav-nonmember" : "topnav-member"}>{user.role === 'nonmember' ? utils.Capitalize("Non-member") : utils.Capitalize(user.role)}</span></span>
+      );
+      
+    }
 
     var showUser = () => {
         return (
@@ -14,7 +22,7 @@ class TopNav extends React.Component {
             <B.NavItem eventKey={1} href="/#/home">Home</B.NavItem>
             <B.NavItem eventKey={2} href='/#/order'>Orders</B.NavItem>
             <B.NavItem divider />
-            <B.DropdownButton eventKey={3} title={this.props.user}>
+            <B.DropdownButton eventKey={3} title={ddBtn(this.props.user)}>
               <B.MenuItem eventKey='1' href="/#/logout">Logout</B.MenuItem>
             </B.DropdownButton>
           </B.Nav>

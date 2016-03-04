@@ -28,6 +28,10 @@ class OrderItems extends React.Component {
     }
 
     render() {
+        
+        var lineout = {
+            'textDecoration': 'line-through'
+        }
 
         var makeItem = function(item) {
             var addItemFunc = this.onAddLocal.bind(this);
@@ -189,7 +193,7 @@ class OrderItems extends React.Component {
                         <B.Row>
                             <B.Col md={3} lg={3}>
                             <div className="oi-item-price-mem-header">Non-Member<br/>Price</div>
-                            <div className="oi-item-price-mem">
+                            <div className="oi-item-price-mem" style={this.props.member ? lineout : null}>
                                 ${parseFloat(item.nonmem_price).toFixed(2)}
                             </div>
                             </B.Col>

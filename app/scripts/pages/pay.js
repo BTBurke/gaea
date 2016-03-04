@@ -15,7 +15,7 @@ class Pay extends React.Component {
     render() {
       return (
         <div>
-        <TopNav user={this.props.user.fullName} />
+        <TopNav user={this.props.user} />
         <B.Grid>
         <B.Row>
           <B.Col md={8} lg={6} mdOffset={2} lgOffset={3}>
@@ -41,10 +41,6 @@ module.exports = Marty.createContainer(Pay, {
   fetch: {
     user: function() {
       return this.app.UserStore.getUser();
-    },
-    transactions: function() {
-      var orderID = this.props.params.orderID;
-      return this.app.TransactionStore.getTransactionsByOrderId(orderID);
     }
   },
   pending() {

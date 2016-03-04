@@ -5,12 +5,16 @@
     font-size: 16px;
     font-weight: bold;
     .join-text {
-        width: 60%;
+        width: 80%;
         margin: auto;
+        line-height: 50px;
     }
     .join-button {
+        margin: auto;
         margin-left: 15px;
+        font-weight: bold;
     }
+    margin-top: -21px;
 }
 
 .joined-container {
@@ -19,4 +23,8 @@
     font-size: 16px;
     font-weight: bold;
     background:  #18BC9C;
+    height: 50px;
+    line-height: 50px;
+    margin-bottom: 0px;
+    margin-top: -21px;
 }

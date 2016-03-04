@@ -26,7 +26,8 @@ class NewSale extends React.Component {
       'close': new Date(),
       'sales_copy': '',
       'title': '',
-      'require_final': true
+      'require_final': true,
+      'transition_pending': false
     }
   }
 
@@ -34,10 +35,11 @@ class NewSale extends React.Component {
     console.log("old props", this.props);
     console.log("new props", newprops);
 
-    if (this.transitionPending) {
+    if (this.state.transition_pending) {
        var newSale = _.difference(newprops.sale, this.props.sale)[0];
        log.Debug("Found new sale", newSale);
-       window.location = Config.homeURL + '/#/sale/' + newSale.sale_id + '/inventory';
+       var loc = 'sale/' + newSale.sale_id + '/inventory';
+       this.app.SessionActions.redirect(loc);
     }
   }
 
@@ -99,6 +101,7 @@ class NewSale extends React.Component {
     }
 
     log.Debug('Adding new sale', sale);
+    this.setState({'transition_pending': true});
     this.app.SaleQueries.createSale(sale);
 
   }
@@ -121,7 +124,7 @@ class NewSale extends React.Component {
 
     return (
       <div>
-      <TopNav user={this.props.user.fullName}/>
+      <TopNav user={this.props.user}/>
       <B.Grid>
         <B.Row>
           <B.Col md={8} lg={8} mdOffset={2} lgOffset={2}>

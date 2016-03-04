@@ -127,7 +127,7 @@ class Users extends React.Component {
     return (
       <div>
 	{addUserPopup()}
-        <TopNav user={this.props.user.fullName} />
+        <TopNav user={this.props.user} />
         <B.Grid>
           <B.Row>
             <B.Col md={3} lg={3}>

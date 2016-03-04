@@ -11,6 +11,7 @@ var SideMenu = require('../components/sidemenu');
 var SearchBox = require('../components/searchbox');
 var log = require('../services/logger');
 var InventoryItems = require('../components/inventoryitems');
+var Loading = require('../components/loading');
 
 var Application = require('../stores/application');
 var app = new Application();
@@ -95,7 +96,7 @@ class EditInventory extends React.Component {
       if (this.props.inventory.length === 0) {
         return (
           <div>
-          <TopNav user={this.props.user.fullName} />
+          <TopNav user={this.props.user} />
           <B.Grid>
             <B.Row>
               <B.Col md={3} lg={3}>
@@ -111,7 +112,7 @@ class EditInventory extends React.Component {
       } else {
         return (
           <div>
-          <TopNav user={this.props.user.fullName} />
+          <TopNav user={this.props.user} />
           <B.Grid>
             <B.Row>
               <B.Col md={3} lg={3}>
@@ -144,6 +145,11 @@ module.exports = Marty.createContainer(EditInventory, {
       var sales = this.app.SaleStore.getSales();
       console.log('page receive sales:', sales);
       return _.findWhere(sales, {'sale_id': this.props.params.saleID});
-    }
+    },
+  },
+  pending() {
+    return (
+      <Loading />
+      );
   }
 });

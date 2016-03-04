@@ -168,7 +168,7 @@ class EditOrder extends React.Component {
         var numpages = Math.ceil(inv.length/this.state.items_to_show);
         return (
             <div>
-            <TopNav user={this.props.user.fullName}/>
+            <TopNav user={this.props.user}/>
             <JoinGAEA inventory={this.props.inventory}
                       onAdd={this.onAdd.bind(this)}
                       items={this.props.items}

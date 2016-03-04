@@ -99,7 +99,7 @@ class EditSale extends React.Component {
 
     return (
       <div>
-      <TopNav user={this.props.user.fullName}/>
+      <TopNav user={this.props.user}/>
       <B.Grid>
         <B.Row>
           <B.Col md={8} lg={8} mdOffset={2} lgOffset={2}>

@@ -43,7 +43,7 @@ class Checkout extends React.Component {
     render() {
         return (
         <div>
-        <TopNav user={this.props.user.fullName}/>    
+        <TopNav user={this.props.user}/>    
         <B.Grid>
             <B.Row>
             <B.Col md={10} mdOffset={1} lg={10} lgOffset={1}>
