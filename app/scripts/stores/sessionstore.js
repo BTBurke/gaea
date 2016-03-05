@@ -334,17 +334,6 @@ class SessionStore extends Marty.Store {
   getSession() {
     return this.state;
   }
-  // getSession() {
-  //   return this.fetch({
-  //     id: 'session',
-  //     locally: function() {
-  //       return this.state;
-  //     },
-  //     remotely: function() {
-  //       console.log("Unable to return the session storage.");
-  //     }
-  //   });
-  //}
 
 }
 
