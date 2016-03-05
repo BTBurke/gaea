@@ -1,0 +1,26 @@
+https://www.guangzhouaea.org {
+gzip
+root /code
+log stdout
+}
+
+https://guangzhouaea.org {
+redir https://www.guangzhouaea.org{uri}
+}
+
+http://guangzhouaea.org, http://www.guangzhouaea.org {
+redir https://www.guangzhouaea.org{uri}
+}
+
+https://api.guangzhouaea.org {
+gzip
+proxy / 127.0.0.1:8080
+}
+
+https://images.guangzhouaea.org {
+gzip
+root /images
+rewrite {
+    to {file} none.jpg
+}
+}
