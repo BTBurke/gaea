@@ -9,7 +9,8 @@ var Constants = Marty.createConstants([
   'SALES_DELETE',
   'SALES_UPDATE',
   'REQUEST_FAILED',
-  'LOGIN_REQUIRED'
+  'LOGIN_REQUIRED',
+  'DOWNLOAD_AVAILABLE'
 ]);
 
 //////////////////////////////////////////////////////////////////
@@ -36,7 +37,9 @@ class SaleAPI extends Marty.HttpStateSource {
       method: 'PUT',
       body: sale
     });
-
+   }
+   download(sale) {
+     return this.get(Config.baseURL + '/sale/' + sale + '/csv');
    }
 }
 
@@ -110,6 +113,27 @@ class SaleQueries extends Marty.Queries {
         this.dispatch(Constants.REQUEST_FAILED, err)
       });
   }
+  
+  download(sale) {
+    return this.app.SaleAPI.download(sale)
+      .then(res => {
+        switch (res.status) {
+          case 200:
+            console.log("Server receive:", res.body);
+            this.dispatch(Constants.DOWNLOAD_AVAILABLE, res.body);
+            break;
+          case 401:
+            this.dispatch(Constants.LOGIN_REQUIRED);
+            break;
+          default:
+            throw new AppError("Failed to update sale").getError();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.dispatch(Constants.REQUEST_FAILED, err)
+      });
+  }
 }
 
 
@@ -137,12 +161,13 @@ class SaleStore extends Marty.Store {
   constructor(options) {
     super(options);
     this.state = {
-      'sales': undefined
+      'sales': undefined,
     };
     this.handlers = {
       _salesRead: Constants.SALES_READ,
       _updateSale: Constants.SALES_UPDATE,
-      _createSale: Constants.SALES_CREATE
+      _createSale: Constants.SALES_CREATE,
+      _download: Constants.DOWNLOAD_AVAILABLE
     };
   }
 
@@ -168,6 +193,13 @@ class SaleStore extends Marty.Store {
     this.state['sales'] = this.state.sales.concat(new Sale(sale));
     this.hasChanged();
   }
+  
+  _download(resp) {
+    var key = 'sale-' + resp.id + '-download';
+    this.state[key]= resp.file;
+    this.hasChanged();
+    console.log('download state', this.state);
+  }
 
   // Methods
   getSales() {
@@ -180,6 +212,10 @@ class SaleStore extends Marty.Store {
         return this.app.SaleQueries.readSales();
       }
     });
+  }
+  
+  getDownload(saleID) {
+    return this.state['sale-' + saleID + '-download'];
   }
 
 }
