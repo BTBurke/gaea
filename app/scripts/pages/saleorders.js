@@ -8,6 +8,7 @@ var Loading = require('../components/loading');
 var TopNav = require('../components/topnav');
 var utils = require('../services/utils');
 var calc = require('../services/calc');
+var Config = require('../config');
 
 class SaleOrders extends React.Component {
     constructor(props) {
@@ -24,6 +25,11 @@ class SaleOrders extends React.Component {
       // common charges equally or proportionally to each order
       log.Debug("I would finalize");
     }
+    download() {
+        log.Debug("downloading zipped CSV for sale %s", this.props.params.saleID);
+        this.app.SaleQueries.download(this.props.params.saleID);
+    }
+    
     makeOpenLink(orderID) {
         return () => {
             if (this.state.open === orderID) {
@@ -32,6 +38,14 @@ class SaleOrders extends React.Component {
                 this.setState({'open': orderID});
             }
         };
+    }
+    
+    componentWillReceiveProps(newprops) {
+        log.Debug("receive new props", newprops);
+        if (newprops.download) {
+            var loc = Config.baseURL + "/" + newprops.download;
+            window.open(loc, "_blank");
+        }
     }
 
     render() {
@@ -47,7 +61,7 @@ class SaleOrders extends React.Component {
                var total = calc.ItemTotal(currentItem, item.qty, this.props.sale.users[order.user_name].role);
                var isSplit = calc.IsSplitCase(item.qty, currentItem);
                return (
-                    <tr key={currentItem.supplier_id}>
+                    <tr key={item.orderitem_id}>
                     <td>{currentItem.supplier_id}</td>
                     <td>{currentItem.name}</td>
                     <td>${price}</td>
@@ -84,6 +98,9 @@ class SaleOrders extends React.Component {
                         <div className="so-order-name">
                             {thisUser.last_name + ", " + thisUser.first_name}
                         </div>
+                        <div className="so-order-status">
+                            <span className="so-data-orange">Status: </span>{ord.status}
+                        </div>
                         <div className="so-order-qty">
                             <span className="so-data-orange">Qty: </span>{ord.item_qty}
                         </div>
@@ -117,6 +134,8 @@ class SaleOrders extends React.Component {
                     <p>Close: {new Date(thisSale.close_date).toDateString()}</p>
                     <p>Status: {utils.Capitalize(thisSale.status)}</p>
                     {thisSale.require_final && this.status == "closed" ? <B.Button bsStyle='info' onClick={this.finalize.bind(this)}>Finalize Order</B.Button> : null}
+                    {this.props.download ? <B.Button bsStyle='success' bsSize="small" href={Config.baseURL + "/" + this.props.download} target="_blank">Download orders zip</B.Button> : <B.Button bsStyle='info' bsSize="small" onClick={this.download.bind(this)}>Package all orders as zip</B.Button>}
+                    
                   </div>
                   <div className="so-sale-details-rightcol">
                     <div className="so-sale-total-header">
@@ -152,6 +171,9 @@ module.exports = Marty.createContainer(SaleOrders, {
     inventory: function() {
         return this.app.InventoryStore.getInventoryBySale(this.props.params.saleID);
     },
+    download: function() {
+        return this.app.SaleStore.getDownload(this.props.params.saleID);
+    }
   },
   pending() {
       return (

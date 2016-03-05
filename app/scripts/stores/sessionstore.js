@@ -316,12 +316,16 @@ class SessionStore extends Marty.Store {
     
     log.Debug('redirecting to ' + target);
     var loc = window.location.origin + '/#/' + target;
+    var from = window.location.pathname;
     
     if (target === 'login')
     {
       this._handleLogout();
     }
     window.location.assign(loc);
+    if (from === '/#/login') {
+      window.location.reload(true);
+    }
     
     this.setState({'auth_redirect': undefined});
   }
@@ -330,17 +334,6 @@ class SessionStore extends Marty.Store {
   getSession() {
     return this.state;
   }
-  // getSession() {
-  //   return this.fetch({
-  //     id: 'session',
-  //     locally: function() {
-  //       return this.state;
-  //     },
-  //     remotely: function() {
-  //       console.log("Unable to return the session storage.");
-  //     }
-  //   });
-  //}
 
 }
 
