@@ -1,26 +1,14 @@
-https://www.guangzhouaea.org {
+https://www.guangzhouaea.org, https://guangzhouaea.org {
 gzip
 root /code
 log stdout
+tls guangzhouaea.org.chained.pem guangzhouaea.org.key {
+    dir /certs
 }
-
-https://guangzhouaea.org {
-redir https://www.guangzhouaea.org{uri}
+proxy /api/ 127.0.0.1:8080
+proxy /images/ 127.0.0.1:8081
 }
 
 http://guangzhouaea.org, http://www.guangzhouaea.org {
 redir https://www.guangzhouaea.org{uri}
-}
-
-https://api.guangzhouaea.org {
-gzip
-proxy / 127.0.0.1:8080
-}
-
-https://images.guangzhouaea.org {
-gzip
-root /images
-rewrite {
-    to {file} none.jpg
-}
 }
