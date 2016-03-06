@@ -24,8 +24,9 @@
 
 // for production
 var Config = {
-  'baseURL': 'https://api.guangzhouaea.org',
-  'homeURL': 'https://www.guangzhouaea.org',
+  'baseURL': 'https://guangzhouaea.org/api',
+  'homeURL': 'https://guangzhouaea.org',
+  'imgURL': 'https://guangzhouaea.org/images',
   'logLevel': 'debug',
   'inventory_required': ['supplier_id', 'name', 'nonmem_price', 'mem_price', 'types']
 };
